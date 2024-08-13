@@ -1,6 +1,8 @@
 # laboratorio-de-desenvolvimento-de-software
 Eu como usuário quero gerenciar meus dados pessoais para que eu possa atualizar e consultar meus dados quando necessário.
 
+Eu como usuário quero ter uma senha para que eu possa ter a segurança que meu perfil não será acessado por qualquer pessoa.
+
 Eu como funcionário da secretaria da universidade quero gerenciar as incrições de alunos em disciplinas para que eu possa abrir/encerrar as inscrições e disciplinas quando necessário.
 
 Eu como funcionário da secretaria da universidade quero que as inscrições de uma disciplina sejam encerrada quando 60 alunos se matricularem para que não ultrapasse o número máximo de pessoas.
@@ -18,3 +20,5 @@ Eu como professor quero consultar as disciplinas que estou ministrando para que 
 Eu como professor quero consultar os alunos matriculados em uma disciplina para que eu possa verificar suas notas.
 
 Eu como aluno quero gerenciar minha matrícula para que eu possa escolher as disciplinas que vou cursar esse semestre.
+
+Eu como setor financeito quero ser notificado quando um aluno se inscrever no semestre para que eu possa gerar o boleto do aluno e cobrar o pagamento.
