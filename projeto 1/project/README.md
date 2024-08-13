@@ -3,6 +3,10 @@ Eu como usuário quero gerenciar meus dados pessoais para que eu possa atualizar
 
 Eu como funcionário da secretaria da universidade quero gerenciar as incrições de alunos em disciplinas para que eu possa abrir/encerrar as inscrições e disciplinas quando necessário.
 
+Eu como funcionário da secretaria da universidade quero que as inscrições de uma disciplina sejam encerrada quando 60 alunos se matricularem para que não ultrapasse o número máximo de pessoas.
+
+Eu como funcionário da secretaria da universidade quero que uma disciplina seja encerrada após o período de matrícula se o número de alunos for menor que 3 para que não exista alocação de horário e professores desnecessariamente.
+
 Eu como funcionário da secretaria da universidade quero gerenciar os cursos para que eu possa alterar seu currículo, adicionar e remover disciplinas.
 
 Eu como funcionário da secretaria da universidade quero gerenciar o currículo de um curso para gerá-lo automaticamente e alterá-lo se necessário.
