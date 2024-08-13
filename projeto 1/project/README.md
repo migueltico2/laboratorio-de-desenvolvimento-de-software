@@ -5,7 +5,7 @@ Eu como funcionário da secretaria da universidade quero gerenciar as incriçõe
 
 Eu como funcionário da secretaria da universidade quero gerenciar os cursos para que eu possa alterar seu currículo, adicionar e remover disciplinas.
 
-Eu como funcionário da secretaria da universidade quero gerenciar o currículo de um curso para alterá-lo se necessário.
+Eu como funcionário da secretaria da universidade quero gerenciar o currículo de um curso para gerá-lo automaticamente e alterá-lo se necessário.
 
 Eu como funcionário da secretaria da universidade quero gerenciar as disciplinas de um curso para que eu possa alterá-la, acolocar e desacolocar professores para ela.
 
