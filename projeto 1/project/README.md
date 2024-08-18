@@ -1,4 +1,6 @@
 # laboratorio-de-desenvolvimento-de-software
+## Histórias de usuários
+
 Eu como usuário quero gerenciar meus dados pessoais para que eu possa atualizar e consultar meus dados quando necessário.
 
 Eu como usuário quero ter uma senha para que eu possa ter a segurança que meu perfil não será acessado por qualquer pessoa.
