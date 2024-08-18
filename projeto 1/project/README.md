@@ -9,16 +9,18 @@ Eu como funcionário da secretaria da universidade quero que as inscrições de 
 
 Eu como funcionário da secretaria da universidade quero que uma disciplina seja encerrada após o período de matrícula se o número de alunos for menor que 3 para que não exista alocação de horário e professores desnecessariamente.
 
-Eu como funcionário da secretaria da universidade quero gerenciar os cursos para que eu possa alterar seu currículo, adicionar e remover disciplinas.
+Eu como funcionário da secretaria da universidade quero gerenciar os cursos para que eu possa alterar seu currículo, adicionar e remover disciplinas ou abri-lo/cancelá-lo se necessário.
 
 Eu como funcionário da secretaria da universidade quero gerenciar o currículo de um curso para gerá-lo automaticamente e alterá-lo se necessário.
 
 Eu como funcionário da secretaria da universidade quero gerenciar as disciplinas de um curso para que eu possa alterá-la, acolocar e desacolocar professores para ela.
 
+Eu como funcionário da secretaria da universidade quero que aluno não possa se inscrever em mais de 6 disciplinas, 4 obrigatórias e 2 optativas, para que não o grade dele não passe das horários limites.
+
 Eu como professor quero consultar as disciplinas que estou ministrando para que eu possa verificar alunos matriculados nelas.
 
-Eu como professor quero consultar os alunos matriculados em uma disciplina para que eu possa verificar suas notas.
+Eu como professor quero consultar os alunos matriculados em uma disciplina para que eu possa verificar os dados de cada um.
 
-Eu como aluno quero gerenciar minha matrícula para que eu possa escolher as disciplinas que vou cursar esse semestre.
+Eu como aluno quero gerenciar minha matrícula para que eu possa escolher as disciplinas, que vou cursar esse semestre, e/ou me desinscrever delas.
 
 Eu como setor financeito quero ser notificado quando um aluno se inscrever no semestre para que eu possa gerar o boleto do aluno e cobrar o pagamento.
