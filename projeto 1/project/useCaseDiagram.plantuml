@@ -1,0 +1,46 @@
+@startuml
+
+left to right direction
+
+actor "Usuário" as User
+actor Aluno as A
+actor Professor as P
+actor "Secretaria da Universidade" as SU
+actor "Setor Financeiro" as F
+
+rectangle Estudantil {
+usecase "Gerenciar currículo" as UC1
+usecase "Gerenciar matrícula" as UC2
+usecase "Consultar disciplina" as UC3
+usecase "Gerenciar disciplina" as UC4
+usecase "Gerenciar curso" as UC5
+usecase "Gerenciar inscrições na disciplina" as UC6
+usecase "Consultar alunos" as UC7
+usecase "Gerenciar dados pessoais" as UC8
+usecase "Logar no sistema" as UC9
+}
+
+User <|-- A
+User <|-- P
+User <|-- SU
+
+User --> UC8
+User --> UC9
+
+SU --> UC1
+SU --> UC4
+SU --> UC5
+SU --> UC6
+
+A --> UC2
+SU <-- UC2
+F <-- UC2
+
+P --> UC7
+P --> UC3
+
+note right of UC1
+    Gerenciar: Adicionar, Remover, Atualizar e Consultar
+end note
+
+@enduml
