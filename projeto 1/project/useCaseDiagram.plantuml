@@ -17,6 +17,7 @@ usecase "Gerenciar curso" as UC5
 usecase "Gerenciar inscrições na disciplina" as UC6
 usecase "Consultar alunos" as UC7
 usecase "Gerenciar dados pessoais" as UC8
+usecase "Logar no sistema" as UC9
 }
 
 User <|-- A
@@ -24,6 +25,7 @@ User <|-- P
 User <|-- SU
 
 User --> UC8
+User --> UC9
 
 SU --> UC1
 SU --> UC4
