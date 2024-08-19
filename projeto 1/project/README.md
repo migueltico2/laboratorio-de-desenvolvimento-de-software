@@ -25,4 +25,4 @@ Eu como professor quero consultar os alunos matriculados em uma disciplina para 
 
 Eu como aluno quero gerenciar minha matrícula para que eu possa escolher as disciplinas, que vou cursar esse semestre, e/ou me desinscrever delas.
 
-Eu como setor financeito quero ser notificado quando um aluno se inscrever no semestre para que eu possa gerar o boleto do aluno e cobrar o pagamento.
+Eu como setor financeiro quero ser notificado quando um aluno se inscrever no semestre para que eu possa gerar o boleto do aluno e cobrar o pagamento.

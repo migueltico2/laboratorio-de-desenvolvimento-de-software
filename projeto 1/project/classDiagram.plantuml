@@ -1,0 +1,57 @@
+@startuml
+
+class User {
+    -int id
+    -String name
+    -String email
+    -String password
+}
+class Student {
+    -Registry[] registries
+}
+class Professor {
+    -Registry[] registries
+}
+class Secretary {}
+class Course {
+    -int id
+    -String name
+    -int token
+    -Semester[] semesters
+}
+class Semester {
+    -int id
+    -int period
+    -Curriculum curriculum 
+}
+class Curriculum {
+    -int id
+    -String name
+    -Registry[] registries
+}
+class Subject {
+    -int id
+    -String name
+    -int hours
+    -int token
+}
+class Registry {
+    -int id
+    -boolean required
+    -Status status
+    -Subject subject
+    -Student[] students
+    -Professor[] professors
+}
+
+enum Status {
+    AVAILABLE
+    CANCELED
+    FULL
+}
+
+User <|-- Student
+User <|-- Professor
+User <|-- Secretary
+
+@enduml
