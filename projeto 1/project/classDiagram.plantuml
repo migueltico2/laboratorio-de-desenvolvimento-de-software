@@ -1,33 +1,54 @@
 @startuml
 
 class User {
+    -{static} String counter
     -int id
     -String name
     -String email
     -String password
+    -boolean login(String password)
+    -void changePassword(String oldPass, String newPass)
 }
 class Student {
     -Registry[] registries
+    -boolean enroll(Registry registry)
+    -boolean unenroll(Registry registry)
 }
 class Professor {
     -Registry[] registries
+    -Subject[] getSubject()
+    -Student[] getSubjectStudents(Subject subject)
 }
-class Secretary {}
+class Secretary {
+    -void allocateProfessor(Registry registry, Professor professor)
+    -void createCourse(Registry registry, Professor professor)
+}
+class Enrollment {
+    int id
+    Student student
+    Course course
+    Course course
+}
 class Course {
     -int id
     -String name
     -int token
     -Semester[] semesters
+    -void addSemester(Semester semester)
+    -void deleteSemester(Semester semester)
 }
 class Semester {
     -int id
     -int period
-    -Curriculum curriculum 
+    -Curriculum curriculum
+    -Curriculum getCurriculum()
 }
 class Curriculum {
     -int id
     -String name
     -Registry[] registries
+    -void addRegisty(Registry registry)
+    -void deleteRegisty(Registry registry)
 }
 class Subject {
     -int id
@@ -42,6 +63,13 @@ class Registry {
     -Subject subject
     -Student[] students
     -Professor[] professors
+    -Subject getSubject()
+    -Status getStatus()
+    -void addProfessor(Professor professor)
+    -Professor deleteProfessor(Professor professor)
+    -void addStudent(Student student)
+    -Student deleteStudent(Student student)
+    -void updateStatus(Status status)
 }
 
 enum Status {
@@ -53,5 +81,12 @@ enum Status {
 User <|-- Student
 User <|-- Professor
 User <|-- Secretary
+
+Course "1" -- "1..*" Semester
+Semester "1" -- "1" Curriculum
+Curriculum "1" -- "1..*" Registry
+Registry "0..*" -- "1" Subject
+Registry "0..*" -- "4..*" Student
+Registry "0..*" -- "1..*" Professor
 
 @enduml

@@ -19,6 +19,8 @@ Eu como funcionário da secretaria da universidade quero gerenciar as disciplina
 
 Eu como funcionário da secretaria da universidade quero que aluno não possa se inscrever em mais de 6 disciplinas, 4 obrigatórias e 2 optativas, para que não o grade dele não passe das horários limites.
 
+Eu como funcionário da secretaria quero ser notificado quando um aluno se inscrever no semestre para que eu possa confirmar seu cadastro no sistema.
+
 Eu como professor quero consultar as disciplinas que estou ministrando para que eu possa verificar alunos matriculados nelas.
 
 Eu como professor quero consultar os alunos matriculados em uma disciplina para que eu possa verificar os dados de cada um.
