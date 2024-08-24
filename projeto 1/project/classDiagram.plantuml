@@ -10,7 +10,7 @@ class User {
     -void changePassword(String oldPass, String newPass)
 }
 class Student {
-    -Registry[] registries
+    -Enrollment enrollment
     -boolean enroll(Registry registry)
     -boolean unenroll(Registry registry)
 }
@@ -24,10 +24,13 @@ class Secretary {
     -void createCourse(Registry registry, Professor professor)
 }
 class Enrollment {
-    int id
-    Student student
-    Course course
-    Course course
+    -int id
+    -int semester
+    -Student student
+    -Course course
+    -Registry[] registries
+    -void addRegisty(Registry registry)
+    -void deleteRegisty(Registry registry)
 }
 class Course {
     -int id
@@ -61,7 +64,7 @@ class Registry {
     -boolean required
     -Status status
     -Subject subject
-    -Student[] students
+    -Student[] student
     -Professor[] professors
     -Subject getSubject()
     -Status getStatus()
@@ -86,6 +89,8 @@ Course "1" -- "1..*" Semester
 Semester "1" -- "1" Curriculum
 Curriculum "1" -- "1..*" Registry
 Registry "0..*" -- "1" Subject
+Student "0..*" -- "1..*" Course
+(Student, Course) . Enrollment
 Registry "0..*" -- "4..*" Student
 Registry "0..*" -- "1..*" Professor
 
