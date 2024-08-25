@@ -1,6 +1,10 @@
 import Enums.Status;
 
 public class Secretary extends User {
+    public Secretary(String name, String email, String password) {
+        super(name, email, password);
+    }
+
     public void allocateProfessor(Registry registry, Professor professor) {
     }
 
@@ -21,6 +25,7 @@ public class Secretary extends User {
 
     public void updateSubjectStatus(Subject subject, Status status) {
     }
+
     public void generateCurriculum(Semester semester) {
     }
 }

@@ -1,11 +1,17 @@
 public class Student extends User {
-    Enrollment[] enrollments;
+    private Enrollment[] enrollments;
 
-    private boolean enroll(Enrollment enrollment) {
-        return true;
+    public Student(String name, String email, String password) {
+        super(name, email, password);
     }
 
-    private boolean unenroll(Enrollment enrollment) {
-        return true;
+    public void enroll(Enrollment enrollment) {
+    }
+
+    public void unenroll(Enrollment enrollment) {
+    }
+
+    public Enrollment[] getEnrollments() {
+        return enrollments;
     }
 }

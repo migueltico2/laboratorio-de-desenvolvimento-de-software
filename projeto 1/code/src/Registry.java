@@ -1,19 +1,58 @@
 import Enums.Status;
 
 public class Registry {
-    int id;
-    Boolean required;
-    Status status;
-    Subject subject;
-    Student[] students;
-    Professor[] professors;
+    private static int counter = 1;
+    private final int id;
+    private boolean required;
+    private Status status;
+    private final Subject subject;
+    private Enrollment[] enrollment;
+    private Professor[] professors;
+
+
+    public Registry(boolean required, Status status, Subject subject) {
+        this.id = counter++;
+        this.required = required;
+        this.status = status;
+        this.subject = subject;
+    }
+
 
     public Subject getSubject() {
-        return null;
+        return subject;
     }
 
     public Status getStatus() {
-        return null;
+        return status;
+    }
+
+
+    public int getId() {
+        return this.id;
+    }
+
+    public boolean isRequired() {
+        return this.required;
+    }
+
+    public boolean getRequired() {
+        return this.required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Enrollment[] getEnrollment() {
+        return this.enrollment;
+    }
+
+    public Professor[] getProfessors() {
+        return this.professors;
     }
 
     public void addProfessor(Professor professor) {
@@ -22,10 +61,10 @@ public class Registry {
     public void removeProfessor(Professor professor) {
     }
 
-    public void addStudent(Student student) {
+    public void addEnrollment(Enrollment enrollment) {
     }
 
-    public void removeStudent(Student student) {
+    public void removeEnrollment(Enrollment enrollment) {
     }
 
     public void updateStatus(Status status) {
