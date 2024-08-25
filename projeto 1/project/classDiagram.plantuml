@@ -21,7 +21,13 @@ class Professor {
 }
 class Secretary {
     -void allocateProfessor(Registry registry, Professor professor)
-    -void createCourse(Registry registry, Professor professor)
+    -void dellocateProfessor(Registry registry, Professor professor)
+    -void createCourse(Course course)
+    -void deleteCourse(Course course)
+    -void createSubject(Course course)
+    -void deleteSubject(Course course)
+    -void updateSubjectStatus(Subject subject, Status status)
+    -void generateCurriculum(Semester semester)
 }
 class Enrollment {
     -int id
@@ -38,7 +44,7 @@ class Course {
     -int token
     -Semester[] semesters
     -void addSemester(Semester semester)
-    -void deleteSemester(Semester semester)
+    -void removeSemester(Semester semester)
 }
 class Semester {
     -int id
@@ -51,13 +57,15 @@ class Curriculum {
     -String name
     -Registry[] registries
     -void addRegisty(Registry registry)
-    -void deleteRegisty(Registry registry)
+    -void removeRegisty(Registry registry)
 }
 class Subject {
     -int id
     -String name
     -int hours
     -int token
+    -int getToken()
+    -int getHours()
 }
 class Registry {
     -int id
@@ -69,9 +77,9 @@ class Registry {
     -Subject getSubject()
     -Status getStatus()
     -void addProfessor(Professor professor)
-    -Professor deleteProfessor(Professor professor)
+    -Professor removeProfessor(Professor professor)
     -void addStudent(Student student)
-    -Student deleteStudent(Student student)
+    -Student removeStudent(Student student)
     -void updateStatus(Status status)
 }
 
@@ -91,7 +99,7 @@ Curriculum "1" -- "1..*" Registry
 Registry "0..*" -- "1" Subject
 Student "0..*" -- "1..*" Course
 (Student, Course) . Enrollment
-Registry "0..*" -- "4..*" Student
+Registry "0..*" -- "4..*" Enrollment
 Registry "0..*" -- "1..*" Professor
 
 @enduml
