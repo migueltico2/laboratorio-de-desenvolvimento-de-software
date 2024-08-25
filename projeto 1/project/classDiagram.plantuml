@@ -69,8 +69,8 @@ class Subject {
     -String name
     -int hours
     -int token
-    -int getToken()
-    -int getHours()
+    +int getToken()
+    +int getHours()
 }
 class Registry {
     -{static} String counter
