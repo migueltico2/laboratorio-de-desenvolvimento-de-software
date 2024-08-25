@@ -20,14 +20,14 @@ class Student {
     +void enroll(Registry registry)
     +void unenroll(Registry registry)
     +Enrollment[] getEnrollment()
-    +void setEnrollment(Enrollment[] enrollment)
 }
 class Professor {
     -Registry[] registries
     +Subject[] getSubject()
     +Student[] getSubjectStudents(Subject subject)
     +Registry[] getRegistries()
-    +void setRegistries(Registry[] registries)
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
 }
 class Secretary {
     +void allocateProfessor(Registry registry, Professor professor)
@@ -54,9 +54,8 @@ class Enrollment {
     +Course getCourse()
     +void setCourse(Course course)
     +Registry[] getRegistries()
-    +void setRegistries(Registry[] registries)
-    +void addRegisty(Registry registry)
-    +void deleteRegisty(Registry registry)
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
 }
 class Course {
     -{static} String counter
