@@ -1,4 +1,4 @@
-public class User {
+public abstract class User {
     private static int counter = 1;
     private final int id;
     private String name;
