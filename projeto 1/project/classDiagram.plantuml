@@ -6,6 +6,12 @@ class User {
     -String name
     -String email
     -String password
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +String getEmail()
+    +void setEmail(String email)
+    +String getPassword()
     +boolean login(String password)
     +void changePassword(String oldPass, String newPass)
 }
@@ -13,11 +19,15 @@ class Student {
     -Enrollment[] enrollment
     +void enroll(Registry registry)
     +void unenroll(Registry registry)
+    +Enrollment[] getEnrollment()
+    +void setEnrollment(Enrollment[] enrollment)
 }
 class Professor {
     -Registry[] registries
     +Subject[] getSubject()
     +Student[] getSubjectStudents(Subject subject)
+    +Registry[] getRegistries()
+    +void setRegistries(Registry[] registries)
 }
 class Secretary {
     +void allocateProfessor(Registry registry, Professor professor)
@@ -36,6 +46,15 @@ class Enrollment {
     -Student student
     -Course course
     -Registry[] registries
+    +int getId()
+    +int getSemester()
+    +void setSemester(int semester)
+    +Student getStudent()
+    +void setStudent(Student student)
+    +Course getCourse()
+    +void setCourse(Course course)
+    +Registry[] getRegistries()
+    +void setRegistries(Registry[] registries)
     +void addRegisty(Registry registry)
     +void deleteRegisty(Registry registry)
 }
@@ -45,6 +64,12 @@ class Course {
     -String name
     -int token
     -Semester[] semesters
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +int getToken()
+    +void setToken(int token)
+    +Semester[] getSemesters()
     +void addSemester(Semester semester)
     +void removeSemester(Semester semester)
 }
@@ -53,13 +78,22 @@ class Semester {
     -int id
     -int period
     -Curriculum curriculum
+    +int getId()
+    +void setId(int id)
+    +int getPeriod()
+    +void setPeriod(int period)
     +Curriculum getCurriculum()
+    +void setCurriculum(Curriculum curriculum)
 }
 class Curriculum {
     -{static} String counter
     -int id
     -String name
     -Registry[] registries
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +Registry[] getRegistries()
     +void addRegisty(Registry registry)
     +void removeRegisty(Registry registry)
 }
@@ -69,8 +103,13 @@ class Subject {
     -String name
     -int hours
     -int token
-    +int getToken()
+    +int getId()
+    +String getName()
+    +void setName(String name)
     +int getHours()
+    +void setHours(int hours)
+    +int getToken()
+    +void setToken(int token)
 }
 class Registry {
     -{static} String counter
@@ -80,8 +119,16 @@ class Registry {
     -Subject subject
     -Enrollment[] enrollment
     -Professor[] professors
-    +Subject getSubject()
+    +int getId()
+    +void setId(int id)
+    +boolean isRequired()
+    +void setRequired(boolean required)
     +Status getStatus()
+    +void setStatus(Status status)
+    +Subject getSubject()
+    +void setSubject(Subject subject)
+    +Enrollment[] getEnrollment()
+    +Professor[] getProfessors()
     +void addProfessor(Professor professor)
     +void removeProfessor(Professor professor)
     +void addEnrollment(Enrollment enrollment)

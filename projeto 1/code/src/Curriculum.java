@@ -9,17 +9,9 @@ public class Curriculum {
         this.name = name;
     }
 
-    public void addRegistry(Registry registry) {
-    }
-
-    public void removeRegistry(Registry registry) {
-    }
-
-
     public int getId() {
         return this.id;
     }
-
 
     public String getName() {
         return this.name;
@@ -32,4 +24,11 @@ public class Curriculum {
     public Registry[] getRegistry() {
         return this.registry;
     }
+
+    public void addRegistry(Registry registry) {
+    }
+
+    public void removeRegistry(Registry registry) {
+    }
+
 }

@@ -37,8 +37,7 @@ public abstract class User {
         return this.password;
     }
 
-    public void setPassword(String oldPass, String newPass) {
-    }
-
     public void login(String password) {}
+
+    public void changePassword(String oldPass, String newPass) {}
 }

@@ -13,14 +13,6 @@ public class Enrollment {
         this.course = course;
     }
 
-
-    public void addRegistry(Registry registry) {
-    }
-
-    public void deleteRegistry(Registry registry) {
-    }
-
-
     public int getId() {
         return this.id;
     }
@@ -48,4 +40,12 @@ public class Enrollment {
     public Registry[] getRegistries() {
         return this.registries;
     }
+
+    public void addRegistry(Registry registry) {
+    }
+
+    public void deleteRegistry(Registry registry) {
+    }
+
+
 }
