@@ -1,12 +1,15 @@
-public class User {
+public abstract class User {
     private static int counter = 1;
     private final int id;
     private String name;
     private String email;
     private String password;
 
-    public User() {
+    public User(String name, String email, String password) {
         id = counter++;
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     public int getId() {
@@ -34,8 +37,7 @@ public class User {
         return this.password;
     }
 
-    public void setPassword(String oldPass, String newPass) {
-    }
-
     public void login(String password) {}
+
+    public void changePassword(String oldPass, String newPass) {}
 }
