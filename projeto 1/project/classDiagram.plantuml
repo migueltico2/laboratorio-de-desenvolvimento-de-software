@@ -1,0 +1,157 @@
+@startuml
+
+class User {
+    -{static} String counter
+    -int id
+    -String name
+    -String email
+    -String password
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +String getEmail()
+    +void setEmail(String email)
+    +String getPassword()
+    +boolean login(String password)
+    +void changePassword(String oldPass, String newPass)
+}
+class Student {
+    -Enrollment[] enrollment
+    +void enroll(Registry registry)
+    +void unenroll(Registry registry)
+    +Enrollment[] getEnrollment()
+}
+class Professor {
+    -Registry[] registries
+    +Subject[] getSubject()
+    +Student[] getSubjectStudents(Subject subject)
+    +Registry[] getRegistries()
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
+}
+class Secretary {
+    +void allocateProfessor(Registry registry, Professor professor)
+    +void dellocateProfessor(Registry registry, Professor professor)
+    +void createCourse(Course course)
+    +void deleteCourse(Course course)
+    +void createSubject(Course course)
+    +void deleteSubject(Course course)
+    +void updateSubjectStatus(Subject subject, Status status)
+    +void generateCurriculum(Semester semester)
+}
+class Enrollment {
+    -{static} String counter
+    -int id
+    -int semester
+    -Student student
+    -Course course
+    -Registry[] registries
+    +int getId()
+    +int getSemester()
+    +void setSemester(int semester)
+    +Student getStudent()
+    +void setStudent(Student student)
+    +Course getCourse()
+    +void setCourse(Course course)
+    +Registry[] getRegistries()
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
+}
+class Course {
+    -{static} String counter
+    -int id
+    -String name
+    -int token
+    -Semester[] semesters
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +int getToken()
+    +void setToken(int token)
+    +Semester[] getSemesters()
+    +void addSemester(Semester semester)
+    +void removeSemester(Semester semester)
+}
+class Semester {
+    -{static} String counter
+    -int id
+    -int period
+    -Curriculum curriculum
+    +int getId()
+    +void setId(int id)
+    +int getPeriod()
+    +void setPeriod(int period)
+    +Curriculum getCurriculum()
+    +void setCurriculum(Curriculum curriculum)
+}
+class Curriculum {
+    -{static} String counter
+    -int id
+    -String name
+    -Registry[] registries
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +Registry[] getRegistries()
+    +void addRegisty(Registry registry)
+    +void removeRegisty(Registry registry)
+}
+class Subject {
+    -{static} String counter
+    -int id
+    -String name
+    -int hours
+    -int token
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +int getHours()
+    +void setHours(int hours)
+    +int getToken()
+    +void setToken(int token)
+}
+class Registry {
+    -{static} String counter
+    -int id
+    -boolean required
+    -Status status
+    -Subject subject
+    -Enrollment[] enrollment
+    -Professor[] professors
+    +int getId()
+    +void setId(int id)
+    +boolean isRequired()
+    +void setRequired(boolean required)
+    +Status getStatus()
+    +void setStatus(Status status)
+    +Subject getSubject()
+    +void setSubject(Subject subject)
+    +Enrollment[] getEnrollment()
+    +Professor[] getProfessors()
+    +void addProfessor(Professor professor)
+    +void removeProfessor(Professor professor)
+    +void addEnrollment(Enrollment enrollment)
+    +void removeEnrollment(Enrollment enrollment)
+    +void updateStatus(Status status)
+}
+
+enum Status {
+    AVAILABLE
+    CANCELED
+    FULL
+}
+
+User <|-- Student
+User <|-- Professor
+User <|-- Secretary
+
+Course "1" -- "1..*" Semester
+Semester "1" -- "1" Curriculum
+Curriculum "1" -- "1..*" Registry
+Registry "0..*" -- "1" Subject
+Student "0..*" -- "1..*" Course
+(Student, Course) . Enrollment
+Registry "0..*" -- "4..*" Enrollment
+Registry "0..*" -- "1..*" Professor
+
+@enduml
