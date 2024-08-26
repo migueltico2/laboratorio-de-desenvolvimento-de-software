@@ -6,7 +6,6 @@ public class Enrollment {
     private Course course;
     private Registry[] registries;
 
-
     public Enrollment(Student student, Course course) {
         this.id = counter++;
         this.student = student;

@@ -6,7 +6,6 @@ public class Registry {
     private boolean required;
     private Status status;
     private final Subject subject;
-    private Enrollment[] enrollment;
     private Professor[] professors;
 
 

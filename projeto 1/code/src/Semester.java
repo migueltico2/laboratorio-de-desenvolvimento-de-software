@@ -4,7 +4,6 @@ public class Semester {
     private int period;
     private Curriculum curriculum;
 
-
     public Semester(int period, Curriculum curriculum) {
         this.id = counter++;
         this.period = period;

@@ -5,7 +5,6 @@ public class Course {
     private int token;
     private Semester[] semester;
 
-
     public Course(String name, int token) {
         this.id = counter++;
         this.name = name;

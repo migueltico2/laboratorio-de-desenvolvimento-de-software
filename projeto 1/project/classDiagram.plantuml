@@ -1,7 +1,7 @@
 @startuml
 
 class User {
-    -{static} String counter
+    -{static} int counter
     -int id
     -String name
     -String email
@@ -22,7 +22,6 @@ class Student {
     +Enrollment[] getEnrollment()
 }
 class Professor {
-    -Registry[] registries
     +Subject[] getSubject()
     +Student[] getSubjectStudents(Subject subject)
     +Registry[] getRegistries()
@@ -40,10 +39,9 @@ class Secretary {
     +void generateCurriculum(Semester semester)
 }
 class Enrollment {
-    -{static} String counter
+    -{static} int counter
     -int id
     -int semester
-    -Student student
     -Course course
     -Registry[] registries
     +int getId()
@@ -58,7 +56,7 @@ class Enrollment {
     +void removeRegistry(Registry registry)
 }
 class Course {
-    -{static} String counter
+    -{static} int counter
     -int id
     -String name
     -int token
@@ -73,7 +71,7 @@ class Course {
     +void removeSemester(Semester semester)
 }
 class Semester {
-    -{static} String counter
+    -{static} int counter
     -int id
     -int period
     -Curriculum curriculum
@@ -85,7 +83,7 @@ class Semester {
     +void setCurriculum(Curriculum curriculum)
 }
 class Curriculum {
-    -{static} String counter
+    -{static} int counter
     -int id
     -String name
     -Registry[] registries
@@ -97,7 +95,7 @@ class Curriculum {
     +void removeRegisty(Registry registry)
 }
 class Subject {
-    -{static} String counter
+    -{static} int counter
     -int id
     -String name
     -int hours
@@ -111,12 +109,11 @@ class Subject {
     +void setToken(int token)
 }
 class Registry {
-    -{static} String counter
+    -{static} int counter
     -int id
     -boolean required
     -Status status
     -Subject subject
-    -Enrollment[] enrollment
     -Professor[] professors
     +int getId()
     +void setId(int id)

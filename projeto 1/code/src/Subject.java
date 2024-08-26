@@ -5,7 +5,6 @@ public class Subject {
     private int hours;
     private int token;
 
-
     public Subject(String name, int hours, int token) {
         this.id = counter++;
         this.name = name;
