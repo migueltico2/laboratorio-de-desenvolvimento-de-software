@@ -1,10 +1,14 @@
 import java.util.Scanner;
 
 public class App {
+    private static Database<User> userPersistence = new Database<>("users.dat");
+
+    
     private static final Scanner scanner = new Scanner(System.in);
     private static Boolean isLoggedIn = false;
     private static Boolean exit = false;
     private static User user;
+
 
     public static void main(String[] args) throws Exception {
         while (!exit) {
@@ -76,16 +80,18 @@ public class App {
 
     private static void showLoginMenu(int option){
         // TODO: IMPLEMENT LOGIN LOGIC HERE
-        User toLog = new Student("jose","email@email.com","123456");
         System.out.println("--------------------");
         System.out.println("Enter your email:");
         String email = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
 
-        // TODO: SEARCH FOR EMAIL ON USER PERSISTENCE BEFORE COMPARING
-
-        User logged = toLog.login(password);
+        User toLog = userPersistence.findItemByEmail(email);
+        if (toLog == null) {
+            System.out.println("User not found!");
+            return;
+        }else{
+            User logged = toLog.login(password);
         if (logged != null) {
             switch (option) {
                 case 1:
@@ -102,8 +108,11 @@ public class App {
                     break;
             }
         }else{
-            System.out.println("Invalid email or password!");
+                System.out.println("Invalid email or password!");
+            }
         }
+
+        
         
     }
 
@@ -158,14 +167,13 @@ public class App {
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
 
+        User newUser = null;
         switch (registerType) {
             case "student":
-                Student student = new Student(name, email, password);
-                System.out.println(student.toString());
+                newUser = new Student(name, email, password);
                 break;
             case "professor":
-                Professor professor = new Professor(name, email, password);
-                System.out.println(professor.toString());
+                newUser = new Professor(name, email, password);
                 break;
             case "secretary":
                 Secretary secretary = new Secretary(name, email, password);
@@ -175,7 +183,9 @@ public class App {
                 System.out.println("Invalid option!");
                 break;
         }
-    } 
+        userPersistence.addItem(newUser);
+        System.out.println("User registered successfully!");
+        System.out.println(newUser.toString());    } 
 
     private static void showStudentOptions(Student user){
         System.out.println("--------------------");
