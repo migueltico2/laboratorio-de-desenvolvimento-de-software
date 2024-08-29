@@ -3,12 +3,10 @@ import java.util.Scanner;
 public class App {
     private static Database<User> userPersistence = new Database<>("users.dat");
 
-    
     private static final Scanner scanner = new Scanner(System.in);
     private static Boolean isLoggedIn = false;
     private static Boolean exit = false;
     private static User user;
-
 
     public static void main(String[] args) throws Exception {
         while (!exit) {
@@ -21,37 +19,36 @@ public class App {
         scanner.close();
     }
 
-
-    private static void showInitialMenu(boolean isLogged){
+    private static void showInitialMenu(boolean isLogged) {
         if (!isLogged) {
-        System.out.println("--------------------");
-        System.out.println("Welcome to the system!");
-        System.out.println("1 - Login");
-        System.out.println("2 - Register");
-        System.out.println("3 - Exit");
-        System.out.println("Enter your option:");
-        int option = readOption();
-        switch (option) {
-            case 1:
-                showLoginOptions();
-                break;
-            case 2:
-                showRegisterOptions();
-                break;
-            case 3:
-                exit = true;
-                System.out.println("Bye!");
-                break;
-            default:
-                System.out.println("Invalid option!");
-                break;
+            System.out.println("--------------------");
+            System.out.println("Welcome to the system!");
+            System.out.println("1 - Login");
+            System.out.println("2 - Register");
+            System.out.println("3 - Exit");
+            System.out.println("Enter your option:");
+            int option = readOption();
+            switch (option) {
+                case 1:
+                    showLoginOptions();
+                    break;
+                case 2:
+                    showRegisterOptions();
+                    break;
+                case 3:
+                    exit = true;
+                    System.out.println("Bye!");
+                    break;
+                default:
+                    System.out.println("Invalid option!");
+                    break;
+            }
+        } else {
+            showLoggedInMenu(user);
         }
-    }else{
-        showLoggedInMenu(user);
-    }
     }
 
-    private static void showLoginOptions(){
+    private static void showLoginOptions() {
         System.out.println("--------------------");
         System.out.println("Login as: ");
         System.out.println("1 - Student");
@@ -78,8 +75,7 @@ public class App {
         }
     }
 
-    private static void showLoginMenu(int option){
-        // TODO: IMPLEMENT LOGIN LOGIC HERE
+    private static void showLoginMenu(int option) {
         System.out.println("--------------------");
         System.out.println("Enter your email:");
         String email = scanner.nextLine();
@@ -90,48 +86,45 @@ public class App {
         if (toLog == null) {
             System.out.println("User not found!");
             return;
-        }else{
-            User logged = toLog.login(password);
-        if (logged != null) {
-            switch (option) {
-                case 1:
-                    isLoggedIn = true;
-                    user = (Student) logged;
-                    break;
-                case 2:
-                    isLoggedIn = true;
-                    user = (Professor) logged;
-                    break;
-                case 3:
-                    isLoggedIn = true;
-                    user = (Secretary) logged;
-                    break;
-            }
-        }else{
-                System.out.println("Invalid email or password!");
-            }
         }
 
-        
-        
+        User logged = toLog.login(password);
+        if (logged == null) {
+            System.out.println("Invalid email or password!");
+            return;
+        }
+
+        if (!isValidUserType(logged, option)) {
+            System.out.println("Invalid user type for this login option!");
+            return;
+        }
+
+        isLoggedIn = true;
+        user = logged;
+        System.out.println("Login successful!");
     }
 
-    private static void showLoggedInMenu(User user){
+    private static boolean isValidUserType(User user, int option) {
+        return (option == 1 && user instanceof Student) ||
+                (option == 2 && user instanceof Professor) ||
+                (option == 3 && user instanceof Secretary);
+    }
+
+    private static void showLoggedInMenu(User user) {
         System.out.println("--------------------");
-        if (user instanceof Student){
+        if (user instanceof Student) {
             showStudentOptions((Student) user);
-        }else if (user instanceof Professor){
+        } else if (user instanceof Professor) {
             showProfessorOptions((Professor) user);
-        }else if (user instanceof Secretary){
+        } else if (user instanceof Secretary) {
             showSecretaryOptions((Secretary) user);
-        }else{
+        } else {
             System.out.println("Invalid user type!");
         }
     }
 
-
     // REGISTER OPERATION METHODS
-    private static void showRegisterOptions(){
+    private static void showRegisterOptions() {
         System.out.println("--------------------");
         System.out.println("Register as: ");
         System.out.println("1 - Student");
@@ -158,7 +151,7 @@ public class App {
         }
     }
 
-    private static void showRegisterMenu(String registerType){
+    private static void showRegisterMenu(String registerType) {
         System.out.println("--------------------");
         System.out.println("Enter your name:");
         String name = scanner.nextLine();
@@ -185,9 +178,10 @@ public class App {
         }
         userPersistence.addItem(newUser);
         System.out.println("User registered successfully!");
-        System.out.println(newUser.toString());    } 
+        System.out.println(newUser.toString());
+    }
 
-    private static void showStudentOptions(Student user){
+    private static void showStudentOptions(Student user) {
         System.out.println("--------------------");
         System.out.println("1- Get enrollments");
         System.out.println("2- Logout");
@@ -204,9 +198,9 @@ public class App {
                 System.out.println("Invalid option!");
                 break;
         }
-    }    
+    }
 
-    private static void showProfessorOptions(Professor user){
+    private static void showProfessorOptions(Professor user) {
         System.out.println("--------------------");
         System.out.println("1- Get courses");
         System.out.println("2- Logout");
@@ -225,14 +219,14 @@ public class App {
         }
     }
 
-    private static void showSecretaryOptions(Secretary user){
+    private static void showSecretaryOptions(Secretary user) {
         System.out.println("--------------------");
         System.out.println("1- Get courses");
         System.out.println("2- Logout");
         int option = readOption();
         switch (option) {
             case 1:
-                System.out.println("Courses:"); 
+                System.out.println("Courses:");
                 break;
             case 2:
                 isLoggedIn = false;
@@ -244,7 +238,7 @@ public class App {
         }
     }
 
-    private static int readOption(){
+    private static int readOption() {
         String option = scanner.nextLine();
         return Integer.parseInt(option);
     }
