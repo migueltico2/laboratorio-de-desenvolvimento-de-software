@@ -11,9 +11,6 @@ public class Professor extends User {
         return null;
     }
 
-    public Registry[] getRegistries() {
-        return this.registries;
-    }
 
     public void addRegistry(Registry registry) {
     }

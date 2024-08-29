@@ -1,9 +1,10 @@
+import java.util.ArrayList;
 public class Course {
     private static int counter = 1;
     private final int id;
     private String name;
     private int token;
-    private Semester[] semester;
+    private ArrayList<Semester> semester;
 
     public Course(String name, int token) {
         this.id = counter++;
@@ -13,9 +14,11 @@ public class Course {
 
 
     public void addSemester(Semester semester) {
+        this.semester.add(semester);
     }
 
     public void removeSemester(Semester semester) {
+        this.semester.remove(semester);
     }
 
 
@@ -39,7 +42,7 @@ public class Course {
         this.token = token;
     }
 
-    public Semester[] getSemester() {
+    public ArrayList<Semester> getSemester() {
         return this.semester;
     }
 }

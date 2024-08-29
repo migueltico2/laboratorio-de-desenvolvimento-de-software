@@ -37,7 +37,29 @@ public abstract class User {
         return this.password;
     }
 
-    public void login(String password) {}
+    public User login(String password) {
+        if (this.password.equals(password)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
 
-    public void changePassword(String oldPass, String newPass) {}
+    public void changePassword(String oldPass, String newPass) {
+        if (this.password.equals(oldPass)) {
+            this.password = newPass;
+            System.out.println("Senha alterada com sucesso!");
+        } else {
+            System.out.println("Senha incorreta!");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

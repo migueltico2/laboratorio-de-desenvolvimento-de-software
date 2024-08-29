@@ -1,8 +1,10 @@
+import java.util.ArrayList;
+
 public class Curriculum {
     private static int counter = 1;
     private final int id;
     private String name;
-    private Registry[] registry;
+    private ArrayList<Registry> registry;
 
     public Curriculum(String name) {
         this.id = counter++;
@@ -21,14 +23,16 @@ public class Curriculum {
         this.name = name;
     }
 
-    public Registry[] getRegistry() {
+    public ArrayList<Registry> getRegistry() {
         return this.registry;
     }
 
     public void addRegistry(Registry registry) {
+        this.registry.add(registry);
     }
 
     public void removeRegistry(Registry registry) {
+        this.registry.remove(registry);
     }
 
 }

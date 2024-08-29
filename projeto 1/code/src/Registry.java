@@ -46,10 +46,6 @@ public class Registry {
         this.status = status;
     }
 
-    public Enrollment[] getEnrollment() {
-        return this.enrollment;
-    }
-
     public Professor[] getProfessors() {
         return this.professors;
     }
