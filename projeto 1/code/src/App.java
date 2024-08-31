@@ -252,6 +252,14 @@ public class App {
             option = readOption();
             switch (option) {
                 case 1:
+                    System.out.println("Enter the course name:");
+                    String name = scanner.nextLine();
+                    System.out.println("Enter the course token:");
+                    int token = readOption();
+                    Course course = new Course(name, token);
+                    courseDatabase.addItem(course);
+                    System.out.println("Course created successfully!");
+                    System.out.println(course.toString());
                     break;
                 case 2:
                     break;
