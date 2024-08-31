@@ -1,20 +1,28 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Database<T> {
     private String fileName;
-    private static final String DATABASE_FOLDER = "Database";
+    private static final String DATABASE_FOLDER = "src";
     private String subFolder;
     private List<T> items;
+    private Map<Class<?>, List<?>> childClasses;
 
-    public Database(String subFolder, String fileName) {
+    public Database(String subFolder, String fileName, Class<?>... childClasses) {
         this.subFolder = subFolder;
         this.fileName = DATABASE_FOLDER + File.separator + subFolder + File.separator + fileName;
         createDatabaseStructure();
-        items = loadFromFile();
+        this.childClasses = new HashMap<>();
+        for (Class<?> childClass : childClasses) {
+            this.childClasses.put(childClass, new ArrayList<>());
+        }
+        this.items = new ArrayList<>();
+        loadFromFile();
     }
 
     private void createDatabaseStructure() {
@@ -27,23 +35,30 @@ public class Database<T> {
     public void saveToFile() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(items);
+            for (Map.Entry<Class<?>, List<?>> entry : childClasses.entrySet()) {
+                oos.writeObject(entry.getKey());
+                oos.writeObject(entry.getValue());
+            }
         } catch (IOException e) {
             System.out.println("Error saving to file: " + e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> loadFromFile() {
-        List<T> items = new ArrayList<>();
+    private void loadFromFile() {
         File file = new File(fileName);
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
                 items = (List<T>) ois.readObject();
+                while (true) {
+                    Class<?> childClass = (Class<?>) ois.readObject();
+                    List<?> childItems = (List<?>) ois.readObject();
+                    childClasses.put(childClass, childItems);
+                }
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Error loading from file: " + e.getMessage());
+                // Reached the end of the file
             }
         }
-        return items;
     }
 
     public void addItem(T item) {
@@ -71,5 +86,10 @@ public class Database<T> {
         return items.stream()
             .filter(func)
             .collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <U> List<U> getChildItems(Class<U> childClass) {
+        return (List<U>) childClasses.get(childClass);
     }
 }

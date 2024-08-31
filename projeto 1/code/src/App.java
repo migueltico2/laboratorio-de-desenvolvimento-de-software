@@ -5,12 +5,9 @@ import Enums.Status;
 import java.util.ArrayList;
 
 public class App {
-    private static Database<User> userPersistence = new Database<>("Users", "users.dat");
+    private static Database<User> userDatabase = new Database<>("Users", "users.dat", Student.class, Professor.class, Secretary.class);
+    private static Database<Course> courseDatabase = new Database<>("Courses", "courses.dat", Semester.class, Curriculum.class, Registry.class);
     private static Database<Subject> subjectPersistence = new Database<>("Subjects", "subjects.dat");
-    private static Database<Course> coursePersistence = new Database<>("Courses", "courses.dat");
-    private static Database<Semester> semesterPersistence = new Database<>("Semesters", "semesters.dat");
-    private static Database<Curriculum> curriculumsPersistence = new Database<>("Curriculums", "curriculums.dat");
-    private static Database<Registry> registriesPersistence = new Database<>("Registries", "registries.dat");
 
     private static final Scanner scanner = new Scanner(System.in);
     private static Boolean isLoggedIn = false;
@@ -65,8 +62,7 @@ public class App {
         String password = scanner.nextLine();
 
         try {
-            User toLog = userPersistence.find(item -> item.getEmail().equals(email));
-
+            User toLog = userDatabase.find(item -> item.getEmail().equals(email));
             User logged = toLog.login(password);
             if (logged == null) {
                 System.out.println("Invalid email or password!");
@@ -147,7 +143,7 @@ public class App {
                 System.out.println("Invalid option!");
                 break;
         }
-        userPersistence.addItem(newUser);
+        userDatabase.addItem(newUser);
         System.out.println("User registered successfully!");
         System.out.println(newUser.toString());
     }
@@ -239,6 +235,7 @@ public class App {
         int token = readOption();
         Subject subject = new Subject(name, hours, token);
         ((Secretary) user).createSubject(subject);
+        subjectPersistence.addItem(subject);
         System.out.println("Subject created successfully!");
         System.out.println(subject.toString());
     }
@@ -350,7 +347,7 @@ public class App {
                     break;
                 case 2:
                     registry = getRegsitry(curriculum);
-                    if (registry != null) registriesPersistence.deleteItem(registry);
+                    // if (registry != null) registriesPersistence.deleteItem(registry);
                     break;
                 case 3:
                     registry = getRegsitry(curriculum);
