@@ -18,8 +18,6 @@ public class App {
     private static User user;
 
     public static void main(String[] args) throws Exception {
-        MySQLConnector a = new MySQLConnector();
-        a.openConnection();
         while (!exit) {
             showInitialMenu(isLoggedIn);
         }
