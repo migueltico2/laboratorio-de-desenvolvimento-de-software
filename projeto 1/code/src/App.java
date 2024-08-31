@@ -1,7 +1,8 @@
 import java.util.Scanner;
-
+import java.util.List;
 public class App {
-    private static Database<User> userPersistence = new Database<>("users.dat");
+    private static Database<User> userPersistence = new Database<>("Users", "users.dat");
+    private static Database<Subject> subjectPersistence = new Database<>("Subjects", "subjects.dat");
 
     private static final Scanner scanner = new Scanner(System.in);
     private static Boolean isLoggedIn = false;
@@ -112,11 +113,13 @@ public class App {
 
     private static void showLoggedInMenu(User user) {
         System.out.println("--------------------");
+        System.out.println(user instanceof Secretary);
         if (user instanceof Student) {
             showStudentOptions((Student) user);
         } else if (user instanceof Professor) {
             showProfessorOptions((Professor) user);
         } else if (user instanceof Secretary) {
+            System.out.println("Secretary menu");
             showSecretaryOptions((Secretary) user);
         } else {
             System.out.println("Invalid user type!");
@@ -169,8 +172,7 @@ public class App {
                 newUser = new Professor(name, email, password);
                 break;
             case "secretary":
-                Secretary secretary = new Secretary(name, email, password);
-                System.out.println(secretary.toString());
+                newUser = new Secretary(name, email, password);
                 break;
             default:
                 System.out.println("Invalid option!");
@@ -221,14 +223,24 @@ public class App {
 
     private static void showSecretaryOptions(Secretary user) {
         System.out.println("--------------------");
-        System.out.println("1- Get courses");
-        System.out.println("2- Logout");
+        System.out.println("1- Create subject");
+        System.out.println("2- Get subject by name");
+        System.out.println("3- Get all subjects");
+        System.out.println("5- Logout");
         int option = readOption();
         switch (option) {
             case 1:
-                System.out.println("Courses:");
+                createSubjectMenu();
                 break;
             case 2:
+                System.out.println("Enter the subject name:");
+                String name = scanner.nextLine();
+                System.out.println(subjectPersistence.findSubjectsByName(name).toString());
+                break;
+            case 3:
+                System.out.println(subjectPersistence.getAllSubjects().toString());
+                break;
+            case 5: 
                 isLoggedIn = false;
                 System.out.println("Bye!");
                 break;
@@ -236,6 +248,20 @@ public class App {
                 System.out.println("Invalid option!");
                 break;
         }
+    }
+
+    private static void createSubjectMenu(){
+        System.out.println("--------------------");
+        System.out.println("Enter the subject name:");
+        String name = scanner.nextLine();
+        System.out.println("Enter the subject hours:");
+        int hours = readOption();
+        System.out.println("Enter the subject token:");
+        int token = readOption();
+        Subject subject = new Subject(name, hours, token);
+        ((Secretary) user).createSubject(subject);
+        System.out.println("Subject created successfully!");
+        System.out.println(subject.toString());
     }
 
     private static int readOption() {

@@ -1,6 +1,8 @@
 import Enums.Status;
 
 public class Secretary extends User {
+    private static Database<Subject> subjectPersistence = new Database<>("Subjects", "subjects.dat");
+
     public Secretary(String name, String email, String password) {
         super(name, email, password);
     }
@@ -12,12 +14,14 @@ public class Secretary extends User {
     }
 
     public void createCourse(Course course) {
+
     }
 
     public void deleteCourse(Course course) {
     }
 
     public void createSubject(Subject subject) {
+        subjectPersistence.addItem(subject);
     }
 
     public void deleteSubject(Subject subject) {

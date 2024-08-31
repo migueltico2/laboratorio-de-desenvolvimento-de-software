@@ -1,5 +1,8 @@
-public class Subject {
-    private static int counter = 1;
+import java.io.Serializable;
+
+public class Subject implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private static transient int counter = 1;
     private final int id;
     private String name;
     private int hours;
@@ -40,5 +43,10 @@ public class Subject {
 
     public void setToken(int token) {
         this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "Subject [id=" + id + ", name=" + name + ", hours=" + hours + ", token=" + token + "]";
     }
 }

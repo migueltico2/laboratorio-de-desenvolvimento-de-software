@@ -1,27 +1,28 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Database<T> {
     private String fileName;
-    private static final String USER_DATA_FOLDER = "UserData";
+    private static final String DATABASE_FOLDER = "Database";
+    private String subFolder;
 
-    public Database(String fileName) {
-        this.fileName = USER_DATA_FOLDER + File.separator + fileName;
-        createUserDataFolder();
+    public Database(String subFolder, String fileName) {
+        this.subFolder = subFolder;
+        this.fileName = DATABASE_FOLDER + File.separator + subFolder + File.separator + fileName;
+        createDatabaseStructure();
     }
 
-    private void createUserDataFolder() {
-        File directory = new File(USER_DATA_FOLDER);
+    private void createDatabaseStructure() {
+        File directory = new File(DATABASE_FOLDER + File.separator + subFolder);
         if (!directory.exists()) {
-            directory.mkdir();
+            directory.mkdirs();
         }
     }
 
     public void saveToFile(List<T> items) {
-        File file = new File(fileName);
-        file.getParentFile().mkdirs(); // Ensure the directory exists
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(items);
         } catch (IOException e) {
             System.out.println("Error saving to file: " + e.getMessage());
@@ -61,4 +62,31 @@ public class Database<T> {
         }
         return null;
     }
+
+    // Add a method to find a subject by its code
+    public T findSubjectByCode(String code) {
+        List<T> items = loadFromFile();
+        for (T item : items) {
+            if (item instanceof Subject && ((Subject) item).getId() == Integer.parseInt(code)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public List<T> getAllSubjects() {
+        return loadFromFile().stream()
+                .filter(item -> item instanceof Subject)
+                .collect(Collectors.toList());
+    }
+
+    public List<T> findSubjectsByName(String name) {
+        List<T> items = loadFromFile();
+        return items.stream()
+                .filter(item -> item instanceof Subject && ((Subject) item).getName().toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+
+
 }
