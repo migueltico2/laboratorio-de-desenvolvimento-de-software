@@ -8,7 +8,17 @@ public class Curriculum {
 
     public Curriculum(String name) {
         this.id = counter++;
+        init(name, new ArrayList<>());
+    }
+
+    public Curriculum(String name, ArrayList<Registry> registries) {
+        this.id = counter++;
+        init(name, registries);
+    }
+
+    private void init(String name, ArrayList<Registry> registries) {
         this.name = name;
+        this.registry = registries;
     }
 
     public int getId() {
@@ -25,6 +35,13 @@ public class Curriculum {
 
     public ArrayList<Registry> getRegistry() {
         return this.registry;
+    }
+
+    public Registry findRegistry(String name) {
+        return registry.stream()
+        .filter(item -> item.getSubject().getName().equals(name))
+        .findFirst()
+        .get();
     }
 
     public void addRegistry(Registry registry) {

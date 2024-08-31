@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import Enums.Status;
 
 public class Registry {
@@ -6,8 +8,7 @@ public class Registry {
     private boolean required;
     private Status status;
     private final Subject subject;
-    private Professor[] professors;
-
+    private ArrayList<Professor> professors;
 
     public Registry(boolean required, Status status, Subject subject) {
         this.id = counter++;
@@ -46,8 +47,15 @@ public class Registry {
         this.status = status;
     }
 
-    public Professor[] getProfessors() {
+    public ArrayList<Professor> getProfessors() {
         return this.professors;
+    }
+
+    public Professor findProfessor(String name) {
+        return professors.stream()
+        .filter(item -> item.getName().equals(name))
+        .findFirst()
+        .get();
     }
 
     public void addProfessor(Professor professor) {
