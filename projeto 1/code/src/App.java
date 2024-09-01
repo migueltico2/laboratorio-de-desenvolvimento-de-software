@@ -134,24 +134,29 @@ public class App {
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
 
-        User newUser = null;
-        switch (registerType) {
-            case "student":
-                newUser = new Student(name, email, password);
-                break;
-            case "professor":
-                newUser = new Professor(name, email, password);
-                break;
-            case "secretary":
-                newUser = new Secretary(name, email, password);
-                break;
-            default:
-                System.out.println("Invalid option!");
-                break;
+        try {
+            userDatabase.find(item -> item.getEmail().equals(email));
+            System.out.println("User already exists");
+        } catch (Exception e) {
+            User newUser = null;
+            switch (registerType) {
+                case "student":
+                    newUser = new Student(name, email, password);
+                    break;
+                case "professor":
+                    newUser = new Professor(name, email, password);
+                    break;
+                case "secretary":
+                    newUser = new Secretary(name, email, password);
+                    break;
+                default:
+                    System.out.println("Invalid option!");
+                    break;
+            }
+            userDatabase.addItem(newUser);
+            System.out.println("User registered successfully!");
+            System.out.println(newUser.toString());
         }
-        userDatabase.addItem(newUser);
-        System.out.println("User registered successfully!");
-        System.out.println(newUser.toString());
     }
 
     private static void showStudentOptions(Student user) {
@@ -317,7 +322,7 @@ public class App {
         Map<String, Registry> registries = courseDatabase.getAllItems().stream()
                 .flatMap(item -> item.getSemester().stream()
                         .flatMap(semester -> semester.getCurriculum().getRegistry()
-                                .stream().filter(r -> r.findProfessor(user.getName()).equals(user))))
+                                .stream().filter(r -> r.findProfessor(user.getName()) != null)))
                 .collect(Collectors.toMap(
                         r -> r.getSubject().getName(),
                         r -> r));
@@ -357,8 +362,7 @@ public class App {
                 .filter(student -> registry.findEnrollment(student.getName()) != null)
                 .collect(Collectors.toMap(
                         Student::getName,
-                        student -> student
-                ));
+                        student -> student));
 
         while (option != 3) {
             System.out.println("--------------------");
