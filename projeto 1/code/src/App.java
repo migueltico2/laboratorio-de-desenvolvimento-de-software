@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import Enums.Status;
 
@@ -154,40 +156,181 @@ public class App {
     }
 
     private static void showStudentOptions(Student user) {
-        System.out.println("--------------------");
-        System.out.println("1- Get enrollments");
-        System.out.println("2- Logout");
-        int option = readOption();
-        switch (option) {
-            case 1:
-                System.out.println("Enrollments: " + user.getEnrollments());
-                break;
-            case 2:
-                isLoggedIn = false;
-                System.out.println("Bye!");
-                break;
-            default:
-                System.out.println("Invalid option!");
-                break;
+        int option = 0;
+        while (option != 3) {
+            System.out.println("--------------------");
+            System.out.println("1- Get enrollment");
+            System.out.println("2- List enrollments");
+            System.out.println("3- Logout");
+            option = readOption();
+            switch (option) {
+                case 1:
+                    try {
+                        System.out.println("Enter the course name:");
+                        String name = scanner.nextLine();
+                        enrollmentOptions(user.findEnrollment(name));
+                    } catch (Exception e) {
+                        System.out.println("No course with this name");
+                    }
+                    break;
+                case 2:
+                    list(user.getEnrollments());
+                    break;
+                case 3:
+                    isLoggedIn = false;
+                    System.out.println("Bye!");
+                    break;
+            }
+        }
+    }
+
+    private static void enrollmentOptions(Enrollment enrollment) {
+        int option = 0;
+        Map<String, Registry> courseRegistry = enrollment.getCourse().getSemester()
+                .stream()
+                .filter(semester -> semester.getPeriod() <= enrollment.getSemester())
+                .flatMap(semester -> semester.getCurriculum().getRegistry().stream())
+                .collect(Collectors.toMap(
+                        r -> r.getSubject().getName(),
+                        r -> r));
+
+        while (option != 5) {
+            Map<String, Registry> registries = enrollment.getCourse().getSemester()
+                    .stream()
+                    .filter(semester -> semester.getPeriod() <= enrollment.getSemester())
+                    .flatMap(semester -> semester.getCurriculum().getRegistry().stream()
+                            .filter(registry -> registry.getEnrollments().contains(enrollment)))
+                    .collect(Collectors.toMap(
+                            r -> r.getSubject().getName(),
+                            r -> r));
+
+            System.out.println("--------------------");
+            System.out.println("1- Enroll");
+            System.out.println("2- Unenroll");
+            System.out.println("3- List Subjects");
+            System.out.println("4- List All Subjects");
+            System.out.println("5- Go back");
+            option = readOption();
+
+            switch (option) {
+                case 1:
+                    try {
+                        System.out.println("Enter the subject name:");
+                        String name = scanner.nextLine();
+                        Registry registry = courseRegistry.get(name);
+                        try {
+                            if (registry.getEnrollments().size() < 60) {
+                                if (registry.getRequired()) {
+                                    long subjects = registries.values().stream().filter(Registry::getRequired).count();
+                                    if (subjects < 4) {
+                                        registry.addEnrollment(enrollment);
+                                    } else {
+                                        System.out.println("You are already 4 required subject");
+                                    }
+                                } else {
+                                    long subjects = registries.values().stream().filter(item -> !item.getRequired()).count();
+                                    if (subjects < 2) {
+                                        registry.addEnrollment(enrollment);
+                                    } else {
+                                        System.out.println("You are already 2 optionals subject");
+                                    }
+                                }
+                            } else {
+                                System.out.println("Subject no available");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("You are already enrolled in this subject");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("No subject with this name");
+                    }
+                    break;
+                case 2:
+                    try {
+                        System.out.println("Enter the subject name:");
+                        String name = scanner.nextLine();
+                        Registry registry = registries.get(name);
+                        registry.removeEnrollment(enrollment);
+                    } catch (Exception e) {
+                        System.out.println("No subject with this name");
+                    }
+                    break;
+                case 3:
+                    list(new ArrayList<>(registries.values()));
+                case 4:
+                    list(new ArrayList<>(courseRegistry.values()));
+                    break;
+            }
         }
     }
 
     private static void showProfessorOptions(Professor user) {
-        System.out.println("--------------------");
-        System.out.println("1- Get courses");
-        System.out.println("2- Logout");
-        int option = readOption();
-        switch (option) {
-            case 1:
-                System.out.println("Courses:");
-                break;
-            case 2:
-                isLoggedIn = false;
-                System.out.println("Bye!");
-                break;
-            default:
-                System.out.println("Invalid option!");
-                break;
+        int option = 0;
+        Map<String, Registry> registries = courseDatabase.getAllItems().stream()
+                .flatMap(item -> item.getSemester().stream()
+                        .flatMap(semester -> semester.getCurriculum().getRegistry()
+                                .stream().filter(r -> r.findProfessor(user.getName()).equals(user))))
+                .collect(Collectors.toMap(
+                        r -> r.getSubject().getName(),
+                        r -> r));
+
+        while (option != 3) {
+            System.out.println("--------------------");
+            System.out.println("1- Get Subject");
+            System.out.println("2- List Subjects");
+            System.out.println("3- Logout");
+            option = readOption();
+            switch (option) {
+                case 1:
+                    try {
+                        System.out.println("Enter the subject name:");
+                        String name = scanner.nextLine();
+                        registryOptionsProf(registries.get(name));
+                    } catch (Exception e) {
+                        System.out.println("No subject with this name");
+                    }
+                    break;
+                case 2:
+                    list(new ArrayList<>(registries.values()));
+                    break;
+                case 3:
+                    isLoggedIn = false;
+                    System.out.println("Bye!");
+                    break;
+            }
+        }
+    }
+
+    private static void registryOptionsProf(Registry registry) {
+        int option = 0;
+        Map<String, Student> students = userDatabase.getAllItems().stream()
+                .filter(item -> item instanceof Student)
+                .map(item -> (Student) item)
+                .filter(student -> student.getEnrollments().stream()
+                        .anyMatch(enrollment -> registry.getEnrollments().contains(enrollment)))
+                .collect(Collectors.toMap(
+                        Student::getName,
+                        student -> student));
+        while (option != 2) {
+            System.out.println("--------------------");
+            System.out.println("1- Get Student");
+            System.out.println("2- List Students");
+            System.out.println("3- Go back");
+            option = readOption();
+            switch (option) {
+                case 1:
+                    try {
+                        System.out.println("Enter the student name:");
+                        String name = scanner.nextLine();
+                        students.get(name);
+                    } catch (Exception e) {
+                        System.out.println("No student with this name");
+                    }
+                    break;
+                case 2:
+                    list(new ArrayList<>(students.values()));
+                    break;
+            }
         }
     }
 
@@ -236,10 +379,16 @@ public class App {
         String name = scanner.nextLine();
         System.out.println("Enter the subject hours:");
         int hours = readOption();
-        if (hours == 0) return;
+        if (hours == 0){
+            System.out.println("Error to create subject");
+            return;
+        }
         System.out.println("Enter the subject token:");
         int token = readOption();
-        if (token == 0) return;
+        if (token == 0) {
+            System.out.println("Error to create subject");
+            return;
+        }
 
         Subject subject = new Subject(name, hours, token);
         ((Secretary) user).createSubject(subject);
@@ -312,7 +461,7 @@ public class App {
                         course.removeSemester(semester);
                     break;
                 case 3:
-                    System.out.println("This course have " + course.getSemester() + " semesters");
+                    System.out.println("This course have " + course.getSemester().size() + " semesters");
                     break;
                 case 4:
                     semester = getSemestre(course);
@@ -425,7 +574,8 @@ public class App {
                     try {
                         System.out.println("Enter the course name:");
                         String name = scanner.nextLine();
-                        prof = (Professor) userDatabase.find(item -> item instanceof Professor && item.getName().equals(name));
+                        prof = (Professor) userDatabase
+                                .find(item -> item instanceof Professor && item.getName().equals(name));
                         registry.addProfessor(prof);
                         System.out.println("Professor added successfully");
                     } catch (Exception e) {
@@ -465,7 +615,8 @@ public class App {
         try {
             System.out.println("Enter the semester period:");
             int period = readOption();
-            if (period == 0) return null;
+            if (period == 0)
+                return null;
             semester = course.findSemester(period);
         } catch (Exception e) {
             System.out.println("No such period");
@@ -478,7 +629,8 @@ public class App {
         Semester semester = null;
         System.out.println("Enter the semester period:");
         int period = readOption();
-        if (period == 0) return null;
+        if (period == 0)
+            return null;
 
         try {
             course.findSemester(period);

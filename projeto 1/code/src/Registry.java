@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class Registry {
     private Status status;
     private final Subject subject;
     private Map<String, Professor> professors = new HashMap<>();
+    private List<Enrollment> enrollments = new ArrayList<>();
 
     public Registry(boolean required, Status status, Subject subject) {
         this.id = counter++;
@@ -50,6 +52,10 @@ public class Registry {
         this.status = status;
     }
 
+    public List<Enrollment> getEnrollments() {
+        return this.enrollments;
+    }
+
     public List<Professor> getProfessors() {
         return this.professors.values().stream().collect(Collectors.toList());
     }
@@ -71,5 +77,10 @@ public class Registry {
     }
 
     public void updateStatus(Status status) {
+    }
+
+    @Override
+    public String toString() {
+        return getSubject().toString() + " - " + (required ? "required" : "optional");
     }
 }

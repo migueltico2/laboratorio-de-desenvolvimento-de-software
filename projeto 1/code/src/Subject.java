@@ -15,7 +15,6 @@ public class Subject implements Serializable {
         this.token = token;
     }
 
-
     public int getId() {
         return this.id;
     }
@@ -47,6 +46,6 @@ public class Subject implements Serializable {
 
     @Override
     public String toString() {
-        return "Subject [id=" + id + ", name=" + name + ", hours=" + hours + ", token=" + token + "]";
+        return "Name: " + name + "- hours: " + hours;
     }
 }

@@ -52,4 +52,9 @@ public class Course implements Serializable {
     public Semester findSemester(int period) {
         return this.semester.get(period);
     }
+
+    @Override
+    public String toString() {
+        return "Name: " + name;
+    }
 }

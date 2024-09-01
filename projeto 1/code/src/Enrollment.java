@@ -1,17 +1,12 @@
-import java.util.ArrayList;
 public class Enrollment {
     private static int counter = 1;
     private final int id;
     private int semester = 1;
-    private final Student student;
     private Course course;
-    private ArrayList<Registry> registries;
 
-    public Enrollment(Student student, Course course) {
+    public Enrollment(Course course) {
         this.id = counter++;
-        this.student = student;
         this.course = course;
-        registries = new ArrayList<>();
     }
 
     public int getId() {
@@ -26,29 +21,7 @@ public class Enrollment {
         this.semester = semester;
     }
 
-    public Student getStudent() {
-        return this.student;
-    }
-
     public Course getCourse() {
         return this.course;
     }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public ArrayList<Registry> getRegistries() {
-        return this.registries;
-    }
-
-    public void addRegistry(Registry registry) {
-        this.registries.add(registry);
-    }
-
-    public void deleteRegistry(Registry registry) {
-        this.registries.remove(registry);
-    }
-
-
 }
