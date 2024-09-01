@@ -12,88 +12,92 @@ class User {
     +getEmail(): String
     +setEmail(email: String): void
     +getPassword(): String
-    +login(password: String): boolean
+    +login(password: String): User
     +changePassword(oldPass: String, newPass: String): void
 }
+
 class Student {
-    -enrollment: Enrollment[]
-    +enroll(registry: Registry): void
-    +unenroll(registry: Registry): void
-    +getEnrollment(): Enrollment[]
+    -enrollments: Map<String, Enrollment>
+    +enroll(enrollment: Enrollment): void
+    +unenroll(enrollment: Enrollment): void
+    +findEnrollment(name: String): Enrollment
+    +getEnrollments(): List<Enrollment>
+    +getStudentRegistries(enrollment: Enrollment): Map<String, Registry>
 }
+
 class Professor {
-    +getSubject(): Subject[]
-    +getSubjectStudents(subject: Subject): Student[]
-    +getRegistries(): Registry[]
-    +addRegistry(registry: Registry): void
-    +removeRegistry(registry: Registry): void
+    +getRegistries(courseDatabase: Database<Course>): Map<String, Registry>
+    +getRegistryStudents(registry: Registry, userDatabase: Database<User>): Map<String, Student>
 }
+
 class Secretary {
+    -subjectPersistence: Database<Subject>
+    -coursePersistence: Database<Course>
     +allocateProfessor(registry: Registry, professor: Professor): void
     +dellocateProfessor(registry: Registry, professor: Professor): void
     +createCourse(course: Course): void
     +deleteCourse(course: Course): void
-    +createSubject(course: Course): void
-    +deleteSubject(course: Course): void
-    +updateSubjectStatus(subject: Subject, status: Status): void
-    +generateCurriculum(semester: Semester): void
+    +createSubject(subject: Subject): void
+    +deleteSubject(subject: Subject): void
+    +updateSubjectStatus(registry: Registry, status: Status): void
+    +generateCurriculum(semester: Semester, registries: Map<String, Registry>): void
 }
+
 class Enrollment {
     -{static} counter: int
     -id: int
     -semester: int
     -course: Course
-    -registries: Registry[]
     +getId(): int
     +getSemester(): int
     +setSemester(semester: int): void
-    +getStudent(): Student
-    +setStudent(student: Student): void
     +getCourse(): Course
     +setCourse(course: Course): void
-    +getRegistries(): Registry[]
-    +addRegistry(registry: Registry): void
-    +removeRegistry(registry: Registry): void
+    +getEnrollmentRegistries(): Stream<Registry>
 }
+
 class Course {
     -{static} counter: int
     -id: int
     -name: String
     -token: int
-    -semesters: Semester[]
+    -semester: Map<Integer, Semester>
+    +addSemester(semester: Semester): void
+    +removeSemester(semester: Semester): void
     +getId(): int
     +getName(): String
     +setName(name: String): void
     +getToken(): int
     +setToken(token: int): void
-    +getSemesters(): Semester[]
-    +addSemester(semester: Semester): void
-    +removeSemester(semester: Semester): void
+    +getSemester(): List<Semester>
+    +findSemester(period: int): Semester
+    +getCourseRegistries(period: int): Stream<Registry>
 }
+
 class Semester {
     -{static} counter: int
     -id: int
     -period: int
     -curriculum: Curriculum
     +getId(): int
-    +setId(id: int): void
     +getPeriod(): int
     +setPeriod(period: int): void
     +getCurriculum(): Curriculum
     +setCurriculum(curriculum: Curriculum): void
 }
+
 class Curriculum {
     -{static} counter: int
     -id: int
-    -name: String
-    -registries: Registry[]
+    -registry: Map<String, Registry>
+    +init(Map<String, Registry> registries)
     +getId(): int
-    +getName(): String
-    +setName(name: String): void
-    +getRegistries(): Registry[]
+    +getRegistry(): List<Registry>
+    +findRegistry(name: String): Registry
     +addRegistry(registry: Registry): void
     +removeRegistry(registry: Registry): void
 }
+
 class Subject {
     -{static} counter: int
     -id: int
@@ -108,34 +112,52 @@ class Subject {
     +getToken(): int
     +setToken(token: int): void
 }
+
 class Registry {
     -{static} counter: int
     -id: int
     -required: boolean
     -status: Status
     -subject: Subject
-    -professors: Professor[]
-    +getId(): int
-    +setId(id: int): void
-    +isRequired(): boolean
-    +setRequired(required: boolean): void
-    +getStatus(): Status
-    +setStatus(status: Status): void
+    -professors: Map<String, Professor>
+    -enrollments: Map<String, Enrollment>
     +getSubject(): Subject
-    +setSubject(subject: Subject): void
-    +getEnrollment(): Enrollment[]
-    +getProfessors(): Professor[]
+    +getStatus(): Status
+    +getId(): int
+    +isRequired(): boolean
+    +getRequired(): boolean
+    +setRequired(required: boolean): void
+    +setStatus(status: Status): void
+    +getEnrollments(): List<Enrollment>
+    +getProfessors(): List<Professor>
+    +findProfessor(name: String): Professor
     +addProfessor(professor: Professor): void
     +removeProfessor(professor: Professor): void
-    +addEnrollment(enrollment: Enrollment): void
-    +removeEnrollment(enrollment: Enrollment): void
+    +addEnrollment(student: Student, enrollment: Enrollment): void
+    +removeEnrollment(student: Student): void
+    +findEnrollment(name: String): Enrollment
     +updateStatus(status: Status): void
 }
 
 enum Status {
     AVAILABLE
-    CANCELED
+    CANCELLED
     FULL
+}
+
+class Database<T> {
+    -fileName: String
+    -subFolder: String
+    -items: List<T>
+    -childClasses: Map<Class<?>, List<?>>
+    +Database(subFolder: String, fileName: String, childClasses: Class<?>...)
+    +saveToFile(): void
+    +addItem(item: T): void
+    +deleteItem(item: T): void
+    +getAllItems(): List<T>
+    +find(func: Predicate<T>): T
+    +filter(func: Predicate<T>): List<T>
+    +getChildItems(childClass: Class<U>): List<U>
 }
 
 User <|-- Student
@@ -148,7 +170,7 @@ Curriculum "1" -- "1..*" Registry
 Registry "0..*" -- "1" Subject
 Student "0..*" -- "1..*" Course
 (Student, Course) . Enrollment
-Registry "0..*" -- "4..*" Enrollment
+Registry "0..*" -- "0..*" Enrollment
 Registry "0..*" -- "1..*" Professor
 
 @enduml

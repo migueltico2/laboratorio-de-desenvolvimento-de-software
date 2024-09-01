@@ -23,7 +23,6 @@ public class Registry implements Serializable {
         this.subject = subject;
     }
 
-
     public Subject getSubject() {
         return subject;
     }

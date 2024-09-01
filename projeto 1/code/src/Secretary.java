@@ -7,18 +7,21 @@ public class Secretary extends User {
     }
 
     public void allocateProfessor(Registry registry, Professor professor) {
-        if (professor != null) return;
-        registry.addProfessor(professor);   
+        if (professor == null)
+            return;
+        registry.addProfessor(professor);
     }
 
     public void dellocateProfessor(Registry registry, Professor professor) {
-        if (professor != null) return;
+        if (professor == null)
+            return;
         registry.removeProfessor(professor);
         System.out.println("Professor removed successfully");
     }
 
     public void createCourse(Course course, Database<Course> courseDatabase) {
-        if (course == null) return;
+        if (course == null)
+            return;
         try {
             courseDatabase.find(item -> item.getName().equals(course.getName()));
             System.out.println("Course already exists");
@@ -29,13 +32,15 @@ public class Secretary extends User {
     }
 
     public void deleteCourse(Course course, Database<Course> courseDatabase) {
-        if (course == null) return;
+        if (course == null)
+            return;
         courseDatabase.deleteItem(course);
         System.out.println("Course removed successfully");
     }
 
     public void createSubject(Subject subject, Database<Subject> subjectPersistence) {
-        if (subject == null) return;
+        if (subject == null)
+            return;
         try {
             subjectPersistence.find(item -> item.getName().equals(subject.getName()));
             System.out.println("Subject already exists");
@@ -46,7 +51,8 @@ public class Secretary extends User {
     }
 
     public void deleteSubject(Subject subject, Database<Subject> subjectPersistence) {
-        if (subject == null) return;
+        if (subject == null)
+            return;
         subjectPersistence.deleteItem(subject);
     }
 
