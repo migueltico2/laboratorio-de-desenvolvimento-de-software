@@ -32,7 +32,6 @@ public class Registry implements Serializable {
         return status;
     }
 
-
     public int getId() {
         return this.id;
     }

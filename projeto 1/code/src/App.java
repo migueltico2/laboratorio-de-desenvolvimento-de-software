@@ -324,7 +324,7 @@ public class App {
 
         while (option != 3) {
             System.out.println("--------------------");
-            System.out.println("1- Get Subject");
+            System.out.println("1- Subject Options");
             System.out.println("2- List Subjects");
             System.out.println("3- Logout");
             option = readOption();
@@ -354,12 +354,13 @@ public class App {
         Map<String, Student> students = userDatabase.getAllItems().stream()
                 .filter(item -> item instanceof Student)
                 .map(item -> (Student) item)
-                .filter(student -> student.getEnrollments().stream()
-                        .anyMatch(enrollment -> registry.getEnrollments().contains(enrollment)))
+                .filter(student -> registry.findEnrollment(student.getName()) != null)
                 .collect(Collectors.toMap(
                         Student::getName,
-                        student -> student));
-        while (option != 2) {
+                        student -> student
+                ));
+
+        while (option != 3) {
             System.out.println("--------------------");
             System.out.println("1- Get Student");
             System.out.println("2- List Students");
@@ -620,7 +621,7 @@ public class App {
             switch (option) {
                 case 1:
                     try {
-                        System.out.println("Enter the course name:");
+                        System.out.println("Enter the professor name:");
                         String name = scanner.nextLine();
                         prof = (Professor) userDatabase
                                 .find(item -> item instanceof Professor && item.getName().equals(name));

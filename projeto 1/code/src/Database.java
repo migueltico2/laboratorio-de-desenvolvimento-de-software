@@ -3,13 +3,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Database<T> {
     private String fileName;
-    private static final String DATABASE_FOLDER = "src";
+    private static final String DATABASE_FOLDER = "Database";
     private String subFolder;
     private List<T> items = new ArrayList<>();
     private Map<Class<?>, List<?>> childClasses;

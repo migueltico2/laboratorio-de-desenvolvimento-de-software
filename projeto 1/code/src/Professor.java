@@ -11,7 +11,6 @@ public class Professor extends User {
         return null;
     }
 
-
     public void addRegistry(Registry registry) {
     }
 
