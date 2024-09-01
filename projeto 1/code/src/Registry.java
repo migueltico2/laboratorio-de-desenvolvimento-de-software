@@ -65,18 +65,23 @@ public class Registry {
     }
 
     public void addProfessor(Professor professor) {
+        this.professors.put(professor.getName(), professor);
     }
 
     public void removeProfessor(Professor professor) {
+        this.professors.remove(professor.getName());
     }
 
     public void addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
     }
 
     public void removeEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
     }
 
     public void updateStatus(Status status) {
+        this.status = status;
     }
 
     @Override

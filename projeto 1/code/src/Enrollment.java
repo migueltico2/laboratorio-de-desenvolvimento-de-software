@@ -1,4 +1,6 @@
-public class Enrollment {
+import java.io.Serializable;
+
+public class Enrollment implements Serializable {
     private static int counter = 1;
     private final int id;
     private int semester = 1;
@@ -23,5 +25,10 @@ public class Enrollment {
 
     public Course getCourse() {
         return this.course;
+    }
+
+    @Override
+    public String toString() {
+        return course.toString();
     }
 }

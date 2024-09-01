@@ -157,26 +157,60 @@ public class App {
 
     private static void showStudentOptions(Student user) {
         int option = 0;
-        while (option != 3) {
+        while (option != 6) {
             System.out.println("--------------------");
-            System.out.println("1- Get enrollment");
-            System.out.println("2- List enrollments");
-            System.out.println("3- Logout");
+            System.out.println("1- Enter Course");
+            System.out.println("2- Leave Course");
+            System.out.println("3- List all courses");
+            System.out.println("4- Enrollment options");
+            System.out.println("5- List enrollments");
+            System.out.println("6- Logout");
             option = readOption();
+            Enrollment enrollment = null;
+            Course course = null;
+            String name = null;
             switch (option) {
                 case 1:
-                    try {
-                        System.out.println("Enter the course name:");
-                        String name = scanner.nextLine();
-                        enrollmentOptions(user.findEnrollment(name));
-                    } catch (Exception e) {
+                    System.out.println("Enter the course name:");
+                    String course_name = scanner.nextLine();
+                    course = courseDatabase.find(item -> item.getName().equals(course_name));
+                    if (course != null) {
+                        enrollment = new Enrollment(course);
+                        user.enroll(enrollment);
+                        System.out.println("Enrollment successful!");
+                        userDatabase.saveToFile();
+                        System.out.println("User information updated.");
+                    } else {
                         System.out.println("No course with this name");
                     }
                     break;
                 case 2:
-                    list(user.getEnrollments());
+                    System.out.println("Enter the course name:");
+                    name = scanner.nextLine();
+                    enrollment = user.findEnrollment(name);
+                    if (enrollment != null) {
+                        user.unenroll(enrollment);
+                    } else {
+                        System.out.println("No course with this name");
+                    }
                     break;
                 case 3:
+                    list(courseDatabase.getAllItems());
+                    break;
+                case 4:
+                    System.out.println("Enter the course name:");
+                    name = scanner.nextLine();
+                    enrollment = user.findEnrollment(name);
+                    if (enrollment != null) {
+                        enrollmentOptions(enrollment);
+                    } else {
+                        System.out.println("No course with this name");
+                    }
+                    break;
+                case 5:
+                    list(user.getEnrollments());
+                    break;
+                case 6:
                     isLoggedIn = false;
                     System.out.println("Bye!");
                     break;
@@ -228,7 +262,8 @@ public class App {
                                         System.out.println("You are already 4 required subject");
                                     }
                                 } else {
-                                    long subjects = registries.values().stream().filter(item -> !item.getRequired()).count();
+                                    long subjects = registries.values().stream().filter(item -> !item.getRequired())
+                                            .count();
                                     if (subjects < 2) {
                                         registry.addEnrollment(enrollment);
                                     } else {
@@ -239,6 +274,7 @@ public class App {
                                 System.out.println("Subject no available");
                             }
                         } catch (Exception e) {
+                            System.err.println(e.getMessage());
                             System.out.println("You are already enrolled in this subject");
                         }
                     } catch (Exception e) {
@@ -379,7 +415,7 @@ public class App {
         String name = scanner.nextLine();
         System.out.println("Enter the subject hours:");
         int hours = readOption();
-        if (hours == 0){
+        if (hours == 0) {
             System.out.println("Error to create subject");
             return;
         }
@@ -612,16 +648,14 @@ public class App {
 
     private static Semester getSemestre(Course course) {
         Semester semester = null;
-        try {
-            System.out.println("Enter the semester period:");
-            int period = readOption();
-            if (period == 0)
-                return null;
-            semester = course.findSemester(period);
-        } catch (Exception e) {
+        System.out.println("Enter the semester period:");
+        int period = readOption();
+        if (period == 0)
+            return null;
+        semester = course.findSemester(period);
+        if (semester == null) {
             System.out.println("No such period");
         }
-
         return semester;
     }
 
@@ -631,11 +665,10 @@ public class App {
         int period = readOption();
         if (period == 0)
             return null;
-
-        try {
-            course.findSemester(period);
+        semester = course.findSemester(period);
+        if (semester != null) {
             System.out.println("This period already exists");
-        } catch (Exception e) {
+        } else {
             semester = new Semester(period, null);
             generateCurriculum(user, semester);
         }
@@ -673,11 +706,11 @@ public class App {
 
     private static Registry getRegistry(Curriculum curriculum) {
         Registry registry = null;
-        try {
+        if (curriculum != null) {
             System.out.println("Enter the registry subject name:");
             String name = scanner.nextLine();
             registry = curriculum.findRegistry(name);
-        } catch (Exception e) {
+        } else {
             System.out.println("No registry subject with this name");
         }
 
@@ -703,11 +736,10 @@ public class App {
 
     private static Professor getProfessor(Registry registry) {
         Professor professor = null;
-        try {
-            System.out.println("Enter the professor name:");
-            String name = scanner.nextLine();
-            professor = registry.findProfessor(name);
-        } catch (Exception e) {
+        System.out.println("Enter the professor name:");
+        String name = scanner.nextLine();
+        professor = registry.findProfessor(name);
+        if (professor != null) {
             System.out.println("No professor with this name");
         }
 

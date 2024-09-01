@@ -40,7 +40,7 @@ public class Database<T> {
                 oos.writeObject(entry.getValue());
             }
         } catch (IOException e) {
-            System.out.println("Error saving to file: " + e.getMessage());
+            System.out.println("Error saving to file: " + e);
         }
     }
 
@@ -77,15 +77,15 @@ public class Database<T> {
 
     public T find(Predicate<T> func) {
         return items.stream()
-            .filter(func)
-            .findFirst()
-            .get();
+                .filter(func)
+                .findFirst()
+                .get();
     }
 
     public List<T> filter(Predicate<T> func) {
         return items.stream()
-            .filter(func)
-            .collect(Collectors.toList());
+                .filter(func)
+                .collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")

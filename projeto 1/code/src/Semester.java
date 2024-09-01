@@ -1,6 +1,8 @@
-public class Semester {
+import java.io.Serializable;
+
+public class Semester implements Serializable {
     private static int counter = 1;
-    private final int id; 
+    private final int id;
     private int period;
     private Curriculum curriculum;
 
@@ -9,7 +11,6 @@ public class Semester {
         this.period = period;
         this.curriculum = curriculum;
     }
-
 
     public int getId() {
         return this.id;
@@ -29,5 +30,5 @@ public class Semester {
 
     public void setCurriculum(Curriculum curriculum) {
         this.curriculum = curriculum;
-    }    
+    }
 }
