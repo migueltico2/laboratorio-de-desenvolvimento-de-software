@@ -46,15 +46,6 @@ public abstract class User implements Serializable {
         }
     }
 
-    public void changePassword(String oldPass, String newPass) {
-        if (this.password.equals(oldPass)) {
-            this.password = newPass;
-            System.out.println("Senha alterada com sucesso!");
-        } else {
-            System.out.println("Senha incorreta!");
-        }
-    }
-
     @Override
     public String toString() {
         return "Name: " + name + "- email: " + email;

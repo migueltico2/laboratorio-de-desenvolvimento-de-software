@@ -13,7 +13,6 @@ class User {
     +setEmail(email: String): void
     +getPassword(): String
     +login(password: String): User
-    +changePassword(oldPass: String, newPass: String): void
 }
 
 class Student {
