@@ -1,9 +1,10 @@
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Curriculum {
+public class Curriculum implements Serializable {
     private static int counter = 1;
     private final int id;
     private String name;

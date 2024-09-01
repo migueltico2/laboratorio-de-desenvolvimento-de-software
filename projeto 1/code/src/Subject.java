@@ -46,6 +46,6 @@ public class Subject implements Serializable {
 
     @Override
     public String toString() {
-        return "Name: " + name + "- hours: " + hours;
+        return "Name: " + name + " - hours: " + hours;
     }
 }

@@ -1,6 +1,5 @@
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import Enums.Status;
 
@@ -34,6 +33,10 @@ public class App {
         } else {
             showLoggedInMenu(user);
         }
+
+        userDatabase.saveToFile();
+        courseDatabase.saveToFile();
+        subjectPersistence.saveToFile();
     }
 
     private static void logoutMenu() {
@@ -42,7 +45,6 @@ public class App {
         System.out.println("1 - Login");
         System.out.println("2 - Register");
         System.out.println("3 - Exit");
-        System.out.println("Enter your option:");
         int option = readOption();
         switch (option) {
             case 1:
@@ -54,9 +56,6 @@ public class App {
             case 3:
                 exit = true;
                 System.out.println("Bye!");
-                break;
-            default:
-                System.out.println("Invalid option!");
                 break;
         }
     }
@@ -171,16 +170,14 @@ public class App {
             String name = null;
             switch (option) {
                 case 1:
-                    System.out.println("Enter the course name:");
-                    String course_name = scanner.nextLine();
-                    course = courseDatabase.find(item -> item.getName().equals(course_name));
-                    if (course != null) {
+                    try {
+                        System.out.println("Enter the course name:");
+                        String course_name = scanner.nextLine();
+                        course = courseDatabase.find(item -> item.getName().equals(course_name));
                         enrollment = new Enrollment(course);
                         user.enroll(enrollment);
-                        System.out.println("Enrollment successful!");
-                        userDatabase.saveToFile();
-                        System.out.println("User information updated.");
-                    } else {
+                        System.out.println("Enrolled successfully!");
+                    } catch (Exception e) {
                         System.out.println("No course with this name");
                     }
                     break;
@@ -199,11 +196,17 @@ public class App {
                     break;
                 case 4:
                     System.out.println("Enter the course name:");
-                    name = scanner.nextLine();
-                    enrollment = user.findEnrollment(name);
-                    if (enrollment != null) {
-                        enrollmentOptions(enrollment);
-                    } else {
+                    String courseName = scanner.nextLine();
+                    try {
+                        course = courseDatabase.find(item -> item.getName().equals(courseName));
+                        enrollment = user.findEnrollment(courseName);
+                        if (enrollment != null) {
+                            enrollment.setCourse(course);
+                            enrollmentOptions(user, enrollment);
+                        } else {
+                            System.out.println("You are not in this course");
+                        }
+                    } catch (Exception e) {
                         System.out.println("No course with this name");
                     }
                     break;
@@ -218,7 +221,7 @@ public class App {
         }
     }
 
-    private static void enrollmentOptions(Enrollment enrollment) {
+    private static void enrollmentOptions(Student user, Enrollment enrollment) {
         int option = 0;
         Map<String, Registry> courseRegistry = enrollment.getCourse().getSemester()
                 .stream()
@@ -233,7 +236,7 @@ public class App {
                     .stream()
                     .filter(semester -> semester.getPeriod() <= enrollment.getSemester())
                     .flatMap(semester -> semester.getCurriculum().getRegistry().stream()
-                            .filter(registry -> registry.getEnrollments().contains(enrollment)))
+                            .filter(registry -> registry.findEnrollment(user.getName()) != null))
                     .collect(Collectors.toMap(
                             r -> r.getSubject().getName(),
                             r -> r));
@@ -252,42 +255,51 @@ public class App {
                         System.out.println("Enter the subject name:");
                         String name = scanner.nextLine();
                         Registry registry = courseRegistry.get(name);
-                        try {
-                            if (registry.getEnrollments().size() < 60) {
-                                if (registry.getRequired()) {
-                                    long subjects = registries.values().stream().filter(Registry::getRequired).count();
-                                    if (subjects < 4) {
-                                        registry.addEnrollment(enrollment);
+                        Registry oldRegistry = registries.get(name);
+
+                        if (registry != null) {
+                            if (oldRegistry == null) {
+                                if (registry.getEnrollments().size() < 60) {
+                                    if (registry.getRequired()) {
+                                        int subjects = registries.size();
+                                        if (subjects < 4) {
+                                            registry.addEnrollment(user, enrollment);
+                                            System.out.println("Enrolled successfully");
+                                        } else {
+                                            System.out.println("You are already 4 required subject");
+                                        }
                                     } else {
-                                        System.out.println("You are already 4 required subject");
+                                        int subjects = registries.size();
+                                        if (subjects < 2) {
+                                            registry.addEnrollment(user, enrollment);
+                                            courseDatabase.saveToFile();
+                                            System.out.println("Enrolled successfully");
+                                        } else {
+                                            System.out.println("You are already 2 optionals subject");
+                                        }
                                     }
                                 } else {
-                                    long subjects = registries.values().stream().filter(item -> !item.getRequired())
-                                            .count();
-                                    if (subjects < 2) {
-                                        registry.addEnrollment(enrollment);
-                                    } else {
-                                        System.out.println("You are already 2 optionals subject");
-                                    }
+                                    System.out.println("Subject not available");
                                 }
                             } else {
-                                System.out.println("Subject no available");
+                                System.out.println("You are already enrolled in this subject");
                             }
-                        } catch (Exception e) {
-                            System.err.println(e.getMessage());
-                            System.out.println("You are already enrolled in this subject");
+                        } else {
+                            System.out.println("No subject with this name");
                         }
                     } catch (Exception e) {
                         System.out.println("No subject with this name");
                     }
                     break;
                 case 2:
-                    try {
-                        System.out.println("Enter the subject name:");
-                        String name = scanner.nextLine();
-                        Registry registry = registries.get(name);
-                        registry.removeEnrollment(enrollment);
-                    } catch (Exception e) {
+                    System.out.println("Enter the subject name:");
+                    String name = scanner.nextLine();
+                    Registry registry = registries.get(name);
+
+                    if (registry != null) {
+                        registry.removeEnrollment(user);
+                        System.out.println("Unenrolled successfully");
+                    } else {
                         System.out.println("No subject with this name");
                     }
                     break;

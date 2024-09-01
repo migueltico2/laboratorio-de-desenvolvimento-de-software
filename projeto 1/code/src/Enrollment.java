@@ -27,6 +27,10 @@ public class Enrollment implements Serializable {
         return this.course;
     }
 
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
     @Override
     public String toString() {
         return course.toString();

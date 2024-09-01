@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -6,14 +7,14 @@ import java.util.stream.Collectors;
 
 import Enums.Status;
 
-public class Registry {
+public class Registry implements Serializable {
     private static int counter = 1;
     private final int id;
     private boolean required;
     private Status status;
     private final Subject subject;
     private Map<String, Professor> professors = new HashMap<>();
-    private List<Enrollment> enrollments = new ArrayList<>();
+    private Map<String, Enrollment> enrollments = new HashMap<>();
 
     public Registry(boolean required, Status status, Subject subject) {
         this.id = counter++;
@@ -53,7 +54,7 @@ public class Registry {
     }
 
     public List<Enrollment> getEnrollments() {
-        return this.enrollments;
+        return this.enrollments.values().stream().collect(Collectors.toList());
     }
 
     public List<Professor> getProfessors() {
@@ -72,12 +73,16 @@ public class Registry {
         this.professors.remove(professor.getName());
     }
 
-    public void addEnrollment(Enrollment enrollment) {
-        this.enrollments.add(enrollment);
+    public void addEnrollment(Student student, Enrollment enrollment) {
+        this.enrollments.put(student.getName(), enrollment);
     }
 
-    public void removeEnrollment(Enrollment enrollment) {
-        this.enrollments.remove(enrollment);
+    public void removeEnrollment(Student student) {
+        this.enrollments.remove(student.getName());
+    }
+
+    public Enrollment findEnrollment(String name) {
+        return enrollments.get(name);
     }
 
     public void updateStatus(Status status) {
