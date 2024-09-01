@@ -26,6 +26,14 @@ public class Student extends User {
         return enrollments.values().stream().collect(Collectors.toList());
     }
 
+    public Map<String, Registry> getStudentRegisties(Enrollment enrollment) {
+        return enrollment.getEnrollmentRegisties()
+                            .filter(registry -> registry.findEnrollment(this.getName()) != null)
+                    .collect(Collectors.toMap(
+                            r -> r.getSubject().getName(),
+                            r -> r));
+    }
+
     @Override
     public String toString() {
         return super.toString();

@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Course implements Serializable {
     private static int counter = 1;
@@ -51,6 +52,13 @@ public class Course implements Serializable {
 
     public Semester findSemester(int period) {
         return this.semester.get(period);
+    }
+
+    public Stream<Registry> getCourseRegisties(int period) {
+        return this.getSemester()
+                    .stream()
+                    .filter(semester -> semester.getPeriod() <= period)
+                    .flatMap(semester -> semester.getCurriculum().getRegistry().stream());
     }
 
     @Override

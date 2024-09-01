@@ -228,23 +228,13 @@ public class App {
 
     private static void enrollmentOptions(Student user, Enrollment enrollment) {
         int option = 0;
-        Map<String, Registry> courseRegistry = enrollment.getCourse().getSemester()
-                .stream()
-                .filter(semester -> semester.getPeriod() <= enrollment.getSemester())
-                .flatMap(semester -> semester.getCurriculum().getRegistry().stream())
+        Map<String, Registry> courseRegistry = enrollment.getEnrollmentRegisties()
                 .collect(Collectors.toMap(
                         r -> r.getSubject().getName(),
                         r -> r));
 
         while (option != 5) {
-            Map<String, Registry> registries = enrollment.getCourse().getSemester()
-                    .stream()
-                    .filter(semester -> semester.getPeriod() <= enrollment.getSemester())
-                    .flatMap(semester -> semester.getCurriculum().getRegistry().stream()
-                            .filter(registry -> registry.findEnrollment(user.getName()) != null))
-                    .collect(Collectors.toMap(
-                            r -> r.getSubject().getName(),
-                            r -> r));
+            Map<String, Registry> registries = user.getStudentRegisties(enrollment);
 
             System.out.println("--------------------");
             System.out.println("1- Enroll");

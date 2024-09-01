@@ -1,4 +1,7 @@
 import java.io.Serializable;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Enrollment implements Serializable {
     private static int counter = 1;
@@ -29,6 +32,10 @@ public class Enrollment implements Serializable {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public Stream<Registry> getEnrollmentRegisties() {
+        return this.getCourse().getCourseRegisties(this.getSemester());
     }
 
     @Override
