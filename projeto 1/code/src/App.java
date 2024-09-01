@@ -700,13 +700,13 @@ public class App {
 
     private static Registry getRegistry(Curriculum curriculum) {
         Registry registry = null;
-        if (curriculum != null) {
-            System.out.println("Enter the registry subject name:");
-            String name = scanner.nextLine();
-            registry = curriculum.findRegistry(name);
-        } else {
+        System.out.println("Enter the registry subject name:");
+        String name = scanner.nextLine();
+        registry = curriculum.findRegistry(name);
+
+        if (registry == null) {
             System.out.println("No registry subject with this name");
-        }
+        } 
 
         return registry;
     }
@@ -733,7 +733,7 @@ public class App {
         System.out.println("Enter the professor name:");
         String name = scanner.nextLine();
         professor = registry.findProfessor(name);
-        if (professor != null) {
+        if (professor == null) {
             System.out.println("No professor with this name");
         }
 

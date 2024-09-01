@@ -14,6 +14,7 @@ public class Secretary extends User {
     public void dellocateProfessor(Registry registry, Professor professor) {
         if (professor != null) return;
         registry.removeProfessor(professor);
+        System.out.println("Professor removed successfully");
     }
 
     public void createCourse(Course course, Database<Course> courseDatabase) {
@@ -30,6 +31,7 @@ public class Secretary extends User {
     public void deleteCourse(Course course, Database<Course> courseDatabase) {
         if (course == null) return;
         courseDatabase.deleteItem(course);
+        System.out.println("Course removed successfully");
     }
 
     public void createSubject(Subject subject, Database<Subject> subjectPersistence) {
