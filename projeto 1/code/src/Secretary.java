@@ -34,7 +34,13 @@ public class Secretary extends User {
 
     public void createSubject(Subject subject, Database<Subject> subjectPersistence) {
         if (subject == null) return;
-        subjectPersistence.addItem(subject);
+        try {
+            subjectPersistence.find(item -> item.getName().equals(subject.getName()));
+            System.out.println("Subject already exists");
+        } catch (Exception e) {
+            subjectPersistence.addItem(subject);
+            System.out.println("Subject created successfully!");
+        }
     }
 
     public void deleteSubject(Subject subject, Database<Subject> subjectPersistence) {
