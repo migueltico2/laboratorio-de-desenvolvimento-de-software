@@ -11,12 +11,6 @@ public class Professor extends User {
         return null;
     }
 
-    public void addRegistry(Registry registry) {
-    }
-
-    public void deleteRegistry(Registry registry) {
-    }
-
     @Override
     public String toString() {
         return super.toString();
