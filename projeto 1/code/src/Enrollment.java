@@ -11,6 +11,7 @@ public class Enrollment {
         this.id = counter++;
         this.student = student;
         this.course = course;
+        registries = new ArrayList<>();
     }
 
     public int getId() {

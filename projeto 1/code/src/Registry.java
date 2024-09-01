@@ -1,4 +1,7 @@
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import Enums.Status;
 
@@ -8,7 +11,7 @@ public class Registry {
     private boolean required;
     private Status status;
     private final Subject subject;
-    private ArrayList<Professor> professors;
+    private Map<String, Professor> professors = new HashMap<>();
 
     public Registry(boolean required, Status status, Subject subject) {
         this.id = counter++;
@@ -47,15 +50,12 @@ public class Registry {
         this.status = status;
     }
 
-    public ArrayList<Professor> getProfessors() {
-        return this.professors;
+    public List<Professor> getProfessors() {
+        return this.professors.values().stream().collect(Collectors.toList());
     }
 
     public Professor findProfessor(String name) {
-        return professors.stream()
-        .filter(item -> item.getName().equals(name))
-        .findFirst()
-        .get();
+        return professors.get(name);
     }
 
     public void addProfessor(Professor professor) {

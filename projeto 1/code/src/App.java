@@ -3,10 +3,15 @@ import java.util.Scanner;
 import Enums.Status;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class App {
-    private static Database<User> userDatabase = new Database<>("Users", "users.dat", Student.class, Professor.class, Secretary.class);
-    private static Database<Course> courseDatabase = new Database<>("Courses", "courses.dat", Semester.class, Curriculum.class, Registry.class);
+    private static Database<User> userDatabase = new Database<>("Users", "users.dat", Student.class, Professor.class,
+            Secretary.class);
+    private static Database<Course> courseDatabase = new Database<>("Courses", "courses.dat", Semester.class,
+            Curriculum.class, Registry.class);
     private static Database<Subject> subjectPersistence = new Database<>("Subjects", "subjects.dat");
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -205,14 +210,14 @@ public class App {
                     System.out.println("Enter the subject name:");
                     String name = scanner.nextLine();
                     try {
-                        System.out.println(subjectPersistence
-                                .filter(item -> item.getName().toLowerCase().contains(name.toLowerCase())).toString());
+                        list(subjectPersistence
+                                .filter(item -> item.getName().toLowerCase().contains(name.toLowerCase())));
                     } catch (Exception e) {
                         System.out.println("No subject with this name");
                     }
                     break;
                 case 3:
-                    System.out.println(subjectPersistence.getAllItems().toString());
+                    list(subjectPersistence.getAllItems());
                     break;
                 case 4:
                     courseOperations(user);
@@ -231,8 +236,11 @@ public class App {
         String name = scanner.nextLine();
         System.out.println("Enter the subject hours:");
         int hours = readOption();
+        if (hours == 0) return;
         System.out.println("Enter the subject token:");
         int token = readOption();
+        if (token == 0) return;
+
         Subject subject = new Subject(name, hours, token);
         ((Secretary) user).createSubject(subject);
         subjectPersistence.addItem(subject);
@@ -242,21 +250,24 @@ public class App {
 
     private static void courseOperations(Secretary user) {
         int option = 0;
-        while (option != 4) {
+        Course course = null;
+
+        while (option != 5) {
             System.out.println("--------------------");
             System.out.println("1- Create course");
-            System.out.println("1- Edit course");
             System.out.println("2- Delete course");
-            System.out.println("3- Semester Options");
-            System.out.println("4- Go back");
+            System.out.println("3- List courses");
+            System.out.println("4- Semester Options");
+            System.out.println("5- Go back");
             option = readOption();
+
             switch (option) {
                 case 1:
                     System.out.println("Enter the course name:");
                     String name = scanner.nextLine();
                     System.out.println("Enter the course token:");
                     int token = readOption();
-                    Course course = new Course(name, token);
+                    course = new Course(name, token);
                     courseDatabase.addItem(course);
                     System.out.println("Course created successfully!");
                     System.out.println(course.toString());
@@ -264,11 +275,12 @@ public class App {
                 case 2:
                     break;
                 case 3:
-                    System.out.println("Enter the semester period:");
-                    int period = readOption();
-                    // System.out.println(subjectPersistence.find(item -> ((Subject)
-                    // item).getName().toLowerCase().contains(name.toLowerCase())).toString());
-                    semesterOperations(user, null);
+                    list(courseDatabase.getAllItems());
+                    break;
+                case 4:
+                    course = getCourse();
+                    if (course != null)
+                        semesterOperations(user, course);
                     break;
             }
         }
@@ -276,25 +288,36 @@ public class App {
 
     private static void semesterOperations(Secretary user, Course course) {
         int option = 0;
-        while (option != 4) {
+        Semester semester = null;
+
+        while (option != 5) {
             System.out.println("--------------------");
-            System.out.println("1- Create semester");
-            System.out.println("1- Edit semester");
+            System.out.println("1- Add semester");
             System.out.println("2- Delete semester");
-            System.out.println("3- Curriculum Options");
-            System.out.println("4- Go back");
+            System.out.println("3- Number of Semesters");
+            System.out.println("4- Curriculum Options");
+            System.out.println("5- Go back");
             option = readOption();
             switch (option) {
                 case 1:
+                    semester = createSemester(user, course);
+                    if (semester != null) {
+                        course.addSemester(semester);
+                        System.out.println("Semester added successfully");
+                    }
                     break;
                 case 2:
-                    System.out.println("Enter the semester period:");
-                    int period = readOption();
-                    Semester semester = course.getSemester().get(period - 1);
-                    curriculumOperations(user, semester);
+                    semester = getSemestre(course);
+                    if (semester != null)
+                        course.removeSemester(semester);
                     break;
                 case 3:
-                    System.out.println(subjectPersistence.getAllItems().toString());
+                    System.out.println("This course have " + course.getSemester() + " semesters");
+                    break;
+                case 4:
+                    semester = getSemestre(course);
+                    if (semester != null)
+                        curriculumOperations(user, semester);
                     break;
             }
         }
@@ -311,28 +334,13 @@ public class App {
             switch (option) {
                 case 1:
                     generateCurriculum(user, semester);
+                    System.out.println("Curriculum generated successfully");
                     break;
                 case 2:
                     registryOperations(user, semester.getCurriculum());
                     break;
             }
         }
-    }
-
-    private static void generateCurriculum(Secretary user, Semester semester) {
-        System.out.println("--------------------");
-        ArrayList<Registry> registries = new ArrayList<>();
-        String value = "";
-
-        while (!value.equals("END")) {
-            System.out.println("Enter END to finalize:");
-            value = scanner.nextLine();
-
-            Registry registry = createRegistry();
-            if (registry != null) registries.add(registry);
-        }
-
-        user.generateCurriculum(semester, registries);
     }
 
     private static void registryOperations(Secretary user, Curriculum curriculum) {
@@ -343,29 +351,175 @@ public class App {
             System.out.println("--------------------");
             System.out.println("1- Add Registry");
             System.out.println("2- Remove Registry");
-            System.out.println("3- Add Professor");
-            System.out.println("4- Remove Professor");
-            System.out.println("5- Change Status");
+            System.out.println("3- Change Status");
+            System.out.println("4- List Registries");
+            System.out.println("5- Professor Options");
             System.out.println("6- Go back");
             option = readOption();
             switch (option) {
                 case 1:
                     registry = createRegistry();
-                    if (registry != null) curriculum.addRegistry(registry);
+                    if (registry != null) {
+                        curriculum.addRegistry(registry);
+                        System.out.println("Registry added successfully");
+                    }
                     break;
                 case 2:
-                    registry = getRegsitry(curriculum);
-                    // if (registry != null) registriesPersistence.deleteItem(registry);
+                    registry = getRegistry(curriculum);
+                    if (registry != null)
+                        curriculum.removeRegistry(registry);
                     break;
                 case 3:
-                    registry = getRegsitry(curriculum);
-                    if (registry != null) {}
+                    registry = getRegistry(curriculum);
+                    if (registry != null)
+                        statusOptions(registry);
+                    break;
+                case 4:
+                    list(curriculum.getRegistry());
+                    break;
+                case 5:
+                    registry = getRegistry(curriculum);
+                    if (registry != null)
+                        professorOptions(registry);
                     break;
             }
         }
     }
 
-    private static Registry getRegsitry(Curriculum curriculum) {
+    private static void statusOptions(Registry registry) {
+        System.out.println("--------------------");
+        System.out.println("1- Available");
+        System.out.println("2- Full");
+        System.out.println("3- Cancelled");
+        int option = readOption();
+        switch (option) {
+            case 1:
+                registry.setStatus(Status.AVAILABLE);
+                break;
+            case 2:
+                registry.setStatus(Status.FULL);
+                break;
+            case 3:
+                registry.setStatus(Status.CANCELLED);
+                break;
+            default:
+                System.out.println("No such status");
+                break;
+        }
+    }
+
+    private static void professorOptions(Registry registry) {
+        int option = 0;
+        Professor prof = null;
+
+        while (option != 5) {
+            System.out.println("--------------------");
+            System.out.println("1- Add Professor");
+            System.out.println("2- Remove Professor");
+            System.out.println("3- List Professors");
+            System.out.println("4- List All Professors");
+            System.out.println("5- Go back");
+            option = readOption();
+            switch (option) {
+                case 1:
+                    try {
+                        System.out.println("Enter the course name:");
+                        String name = scanner.nextLine();
+                        prof = (Professor) userDatabase.find(item -> item instanceof Professor && item.getName().equals(name));
+                        registry.addProfessor(prof);
+                        System.out.println("Professor added successfully");
+                    } catch (Exception e) {
+                        System.out.println("No professor with this name");
+                    }
+                    break;
+                case 2:
+                    prof = getProfessor(registry);
+                    if (prof != null)
+                        registry.removeProfessor(prof);
+                    break;
+                case 3:
+                    list(registry.getProfessors());
+                    break;
+                case 4:
+                    list(userDatabase.filter(item -> item instanceof Professor));
+                    break;
+            }
+        }
+    }
+
+    private static Course getCourse() {
+        Course course = null;
+        try {
+            System.out.println("Enter the course name:");
+            String name = scanner.nextLine();
+            course = courseDatabase.find(item -> item.getName().equals(name));
+        } catch (Exception e) {
+            System.out.println("No course with this name");
+        }
+
+        return course;
+    }
+
+    private static Semester getSemestre(Course course) {
+        Semester semester = null;
+        try {
+            System.out.println("Enter the semester period:");
+            int period = readOption();
+            if (period == 0) return null;
+            semester = course.findSemester(period);
+        } catch (Exception e) {
+            System.out.println("No such period");
+        }
+
+        return semester;
+    }
+
+    private static Semester createSemester(Secretary user, Course course) {
+        Semester semester = null;
+        System.out.println("Enter the semester period:");
+        int period = readOption();
+        if (period == 0) return null;
+
+        try {
+            course.findSemester(period);
+            System.out.println("This period already exists");
+        } catch (Exception e) {
+            semester = new Semester(period, null);
+            generateCurriculum(user, semester);
+        }
+
+        return semester;
+    }
+
+    private static void generateCurriculum(Secretary user, Semester semester) {
+        Map<String, Registry> registries = new HashMap<>();
+        int option = 0;
+
+        while (option != 3) {
+            System.out.println("--------------------");
+            System.out.println("1- Add Subject");
+            System.out.println("2- List Subjects");
+            System.out.println("3- End Generation");
+            option = readOption();
+
+            switch (option) {
+                case 1:
+                    Registry registry = createRegistry();
+                    if (registry != null) {
+                        registries.put(registry.getSubject().getName(), registry);
+                        System.out.println("Registry added successfully");
+                    }
+                    break;
+                case 2:
+                    list(subjectPersistence.getAllItems());
+                    break;
+            }
+        }
+
+        user.generateCurriculum(semester, registries);
+    }
+
+    private static Registry getRegistry(Curriculum curriculum) {
         Registry registry = null;
         try {
             System.out.println("Enter the registry subject name:");
@@ -379,7 +533,7 @@ public class App {
     }
 
     private static Registry createRegistry() {
-        Registry registry =  null;
+        Registry registry = null;
 
         try {
             System.out.println("Enter the subject name:");
@@ -395,22 +549,32 @@ public class App {
         return registry;
     }
 
-    private static void getProfessor(Registry registry) {
-        // Professor professor = null;
-        // try {
-        //     System.out.println("Enter the registry subject name:");
-        //     String name = scanner.nextLine();
-        //     registry = curriculum.findRegistry(name);
-        // } catch (Exception e) {
-        //     System.out.println("No registry subject with this name");
-        // }
+    private static Professor getProfessor(Registry registry) {
+        Professor professor = null;
+        try {
+            System.out.println("Enter the professor name:");
+            String name = scanner.nextLine();
+            professor = registry.findProfessor(name);
+        } catch (Exception e) {
+            System.out.println("No professor with this name");
+        }
 
-        // return registry;
+        return professor;
+    }
+
+    private static <T> void list(List<T> arr) {
+        arr.stream().forEach(item -> System.out.println(item.toString()));
     }
 
     private static int readOption() {
-        String option = scanner.nextLine();
-        return Integer.parseInt(option);
+        try {
+            String option = scanner.nextLine();
+            return Integer.parseInt(option);
+        } catch (Exception e) {
+            System.out.println("Invalid number");
+        }
+
+        return 0;
     }
 
 }

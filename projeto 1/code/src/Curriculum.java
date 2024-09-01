@@ -1,22 +1,25 @@
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Curriculum {
     private static int counter = 1;
     private final int id;
     private String name;
-    private ArrayList<Registry> registry;
+    private Map<String, Registry> registry = new HashMap<>();
 
     public Curriculum(String name) {
         this.id = counter++;
-        init(name, new ArrayList<>());
+        init(name, new HashMap<>());
     }
 
-    public Curriculum(String name, ArrayList<Registry> registries) {
+    public Curriculum(String name, Map<String, Registry> registries) {
         this.id = counter++;
         init(name, registries);
     }
 
-    private void init(String name, ArrayList<Registry> registries) {
+    private void init(String name, Map<String, Registry> registries) {
         this.name = name;
         this.registry = registries;
     }
@@ -33,23 +36,20 @@ public class Curriculum {
         this.name = name;
     }
 
-    public ArrayList<Registry> getRegistry() {
-        return this.registry;
+    public List<Registry> getRegistry() {
+        return this.registry.values().stream().collect(Collectors.toList());
     }
 
     public Registry findRegistry(String name) {
-        return registry.stream()
-        .filter(item -> item.getSubject().getName().equals(name))
-        .findFirst()
-        .get();
+        return registry.get(name);
     }
 
     public void addRegistry(Registry registry) {
-        this.registry.add(registry);
+        this.registry.put(registry.getSubject().getName(), registry);
     }
 
     public void removeRegistry(Registry registry) {
-        this.registry.remove(registry);
+        this.registry.remove(registry.getSubject().getName());
     }
 
 }

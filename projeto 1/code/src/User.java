@@ -18,7 +18,6 @@ public abstract class User implements Serializable {
         return id;
     }
 
-
     public String getName() {
         return this.name;
     }

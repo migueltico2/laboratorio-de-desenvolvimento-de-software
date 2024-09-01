@@ -10,7 +10,7 @@ public class Database<T> {
     private String fileName;
     private static final String DATABASE_FOLDER = "src";
     private String subFolder;
-    private List<T> items;
+    private List<T> items = new ArrayList<>();
     private Map<Class<?>, List<?>> childClasses;
 
     public Database(String subFolder, String fileName, Class<?>... childClasses) {
@@ -21,7 +21,6 @@ public class Database<T> {
         for (Class<?> childClass : childClasses) {
             this.childClasses.put(childClass, new ArrayList<>());
         }
-        this.items = new ArrayList<>();
         loadFromFile();
     }
 

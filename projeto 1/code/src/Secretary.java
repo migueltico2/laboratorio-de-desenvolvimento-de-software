@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-
+import java.util.Map;
 import Enums.Status;
 
 public class Secretary extends User {
@@ -32,7 +31,7 @@ public class Secretary extends User {
     public void updateSubjectStatus(Subject subject, Status status) {
     }
 
-    public void generateCurriculum(Semester semester, ArrayList<Registry> registries) {
+    public void generateCurriculum(Semester semester, Map<String, Registry> registries) {
         Curriculum curriculum = new Curriculum("", registries);
         semester.setCurriculum(curriculum);
     }
