@@ -319,13 +319,7 @@ public class App {
 
     private static void showProfessorOptions(Professor user) {
         int option = 0;
-        Map<String, Registry> registries = courseDatabase.getAllItems().stream()
-                .flatMap(item -> item.getSemester().stream()
-                        .flatMap(semester -> semester.getCurriculum().getRegistry()
-                                .stream().filter(r -> r.findProfessor(user.getName()) != null)))
-                .collect(Collectors.toMap(
-                        r -> r.getSubject().getName(),
-                        r -> r));
+        Map<String, Registry> registries = user.getRegistries(courseDatabase);
 
         while (option != 3) {
             System.out.println("--------------------");
@@ -338,7 +332,7 @@ public class App {
                     try {
                         System.out.println("Enter the subject name:");
                         String name = scanner.nextLine();
-                        registryOptionsProf(registries.get(name));
+                        registryOptionsProf(user, registries.get(name));
                     } catch (Exception e) {
                         System.out.println("No subject with this name");
                     }
@@ -354,15 +348,9 @@ public class App {
         }
     }
 
-    private static void registryOptionsProf(Registry registry) {
+    private static void registryOptionsProf(Professor user, Registry registry) {
         int option = 0;
-        Map<String, Student> students = userDatabase.getAllItems().stream()
-                .filter(item -> item instanceof Student)
-                .map(item -> (Student) item)
-                .filter(student -> registry.findEnrollment(student.getName()) != null)
-                .collect(Collectors.toMap(
-                        Student::getName,
-                        student -> student));
+        Map<String, Student> students = user.getRegistryStudents(registry, userDatabase);
 
         while (option != 3) {
             System.out.println("--------------------");
@@ -470,7 +458,7 @@ public class App {
                     System.out.println("Enter the course token:");
                     int token = readOption();
                     course = new Course(name, token);
-                    courseDatabase.addItem(course);
+                    user.createCourse(course);
                     System.out.println("Course created successfully!");
                     System.out.println(course.toString());
                     break;
@@ -574,7 +562,7 @@ public class App {
                 case 3:
                     registry = getRegistry(curriculum);
                     if (registry != null)
-                        statusOptions(registry);
+                        statusOptions(user, registry);
                     break;
                 case 4:
                     list(curriculum.getRegistry());
@@ -582,13 +570,13 @@ public class App {
                 case 5:
                     registry = getRegistry(curriculum);
                     if (registry != null)
-                        professorOptions(registry);
+                        professorOptions(user, registry);
                     break;
             }
         }
     }
 
-    private static void statusOptions(Registry registry) {
+    private static void statusOptions(Secretary user, Registry registry) {
         System.out.println("--------------------");
         System.out.println("1- Available");
         System.out.println("2- Full");
@@ -596,13 +584,13 @@ public class App {
         int option = readOption();
         switch (option) {
             case 1:
-                registry.setStatus(Status.AVAILABLE);
+                user.updateSubjectStatus(registry, Status.AVAILABLE);
                 break;
             case 2:
-                registry.setStatus(Status.FULL);
+                user.updateSubjectStatus(registry, Status.FULL);
                 break;
             case 3:
-                registry.setStatus(Status.CANCELLED);
+                user.updateSubjectStatus(registry, Status.CANCELLED);
                 break;
             default:
                 System.out.println("No such status");
@@ -610,7 +598,7 @@ public class App {
         }
     }
 
-    private static void professorOptions(Registry registry) {
+    private static void professorOptions(Secretary user, Registry registry) {
         int option = 0;
         Professor prof = null;
 
@@ -629,16 +617,14 @@ public class App {
                         String name = scanner.nextLine();
                         prof = (Professor) userDatabase
                                 .find(item -> item instanceof Professor && item.getName().equals(name));
-                        registry.addProfessor(prof);
+                        user.allocateProfessor(registry, prof);
                         System.out.println("Professor added successfully");
                     } catch (Exception e) {
                         System.out.println("No professor with this name");
                     }
                     break;
                 case 2:
-                    prof = getProfessor(registry);
-                    if (prof != null)
-                        registry.removeProfessor(prof);
+                    user.dellocateProfessor(registry, getProfessor(registry));
                     break;
                 case 3:
                     list(registry.getProfessors());

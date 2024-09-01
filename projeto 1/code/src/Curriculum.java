@@ -7,34 +7,24 @@ import java.util.stream.Collectors;
 public class Curriculum implements Serializable {
     private static int counter = 1;
     private final int id;
-    private String name;
     private Map<String, Registry> registry = new HashMap<>();
 
-    public Curriculum(String name) {
+    public Curriculum() {
         this.id = counter++;
-        init(name, new HashMap<>());
+        init(new HashMap<>());
     }
 
-    public Curriculum(String name, Map<String, Registry> registries) {
+    public Curriculum(Map<String, Registry> registries) {
         this.id = counter++;
-        init(name, registries);
+        init(registries);
     }
 
-    private void init(String name, Map<String, Registry> registries) {
-        this.name = name;
+    private void init(Map<String, Registry> registries) {
         this.registry = registries;
     }
 
     public int getId() {
         return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Registry> getRegistry() {
