@@ -422,7 +422,7 @@ public class App {
         }
 
         Subject subject = new Subject(name, hours, token);
-        ((Secretary) user).createSubject(subject);
+        ((Secretary) user).createSubject(subject, subjectPersistence);
         subjectPersistence.addItem(subject);
         System.out.println("Subject created successfully!");
         System.out.println(subject.toString());
@@ -448,11 +448,12 @@ public class App {
                     System.out.println("Enter the course token:");
                     int token = readOption();
                     course = new Course(name, token);
-                    user.createCourse(course);
-                    System.out.println("Course created successfully!");
-                    System.out.println(course.toString());
+                    user.createCourse(course, courseDatabase);
                     break;
                 case 2:
+                    course = getCourse();
+                    if (course != null)
+                        courseDatabase.deleteItem(course);
                     break;
                 case 3:
                     list(courseDatabase.getAllItems());
