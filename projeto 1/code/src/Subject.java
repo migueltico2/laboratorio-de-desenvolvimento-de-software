@@ -1,10 +1,12 @@
-public class Subject {
-    private static int counter = 1;
+import java.io.Serializable;
+
+public class Subject implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private static transient int counter = 1;
     private final int id;
     private String name;
     private int hours;
     private int token;
-
 
     public Subject(String name, int hours, int token) {
         this.id = counter++;
@@ -12,7 +14,6 @@ public class Subject {
         this.hours = hours;
         this.token = token;
     }
-
 
     public int getId() {
         return this.id;
@@ -41,5 +42,10 @@ public class Subject {
 
     public void setToken(int token) {
         this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + " - hours: " + hours;
     }
 }

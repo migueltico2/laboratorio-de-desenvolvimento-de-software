@@ -1,34 +1,46 @@
-public class Curriculum {
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class Curriculum implements Serializable {
     private static int counter = 1;
     private final int id;
-    private String name;
-    private Registry[] registry;
+    private Map<String, Registry> registry = new HashMap<>();
 
-    public Curriculum(String name) {
+    public Curriculum() {
         this.id = counter++;
-        this.name = name;
+        init(new HashMap<>());
+    }
+
+    public Curriculum(Map<String, Registry> registries) {
+        this.id = counter++;
+        init(registries);
+    }
+
+    private void init(Map<String, Registry> registries) {
+        this.registry = registries;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public String getName() {
-        return this.name;
+    public List<Registry> getRegistry() {
+        return this.registry.values().stream().collect(Collectors.toList());
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Registry[] getRegistry() {
-        return this.registry;
+    public Registry findRegistry(String name) {
+        return registry.get(name);
     }
 
     public void addRegistry(Registry registry) {
+        this.registry.put(registry.getSubject().getName(), registry);
     }
 
     public void removeRegistry(Registry registry) {
+        this.registry.remove(registry.getSubject().getName());
     }
 
 }

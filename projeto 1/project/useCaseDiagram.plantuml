@@ -18,8 +18,8 @@ usecase "Gerenciar alocação de professores" as UC6
 usecase "Consultar alunos" as UC7
 usecase "Gerenciar dados pessoais" as UC8
 usecase "Logar no sistema" as UC9
-usecase "Escolher 1 ou 2 disciplinas alternativas" as UC10
-usecase "Escolher 4 disciplinas obrigatórias" as UC11
+usecase "Escolher disciplinas alternativas" as UC10
+usecase "Escolher disciplinas obrigatórias" as UC11
 }
 
 UC2 .> UC11 : include

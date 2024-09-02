@@ -1,4 +1,6 @@
-public abstract class User {
+import java.io.Serializable;
+
+public abstract class User implements Serializable {
     private static int counter = 1;
     private final int id;
     private String name;
@@ -15,7 +17,6 @@ public abstract class User {
     public int getId() {
         return id;
     }
-
 
     public String getName() {
         return this.name;
@@ -37,7 +38,16 @@ public abstract class User {
         return this.password;
     }
 
-    public void login(String password) {}
+    public User login(String password) {
+        if (this.password.equals(password)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
 
-    public void changePassword(String oldPass, String newPass) {}
+    @Override
+    public String toString() {
+        return "Name: " + name + "- email: " + email;
+    }
 }

@@ -1,15 +1,16 @@
-public class Enrollment {
+import java.io.Serializable;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Enrollment implements Serializable {
     private static int counter = 1;
     private final int id;
     private int semester = 1;
-    private final Student student;
     private Course course;
-    private Registry[] registries;
 
-
-    public Enrollment(Student student, Course course) {
+    public Enrollment(Course course) {
         this.id = counter++;
-        this.student = student;
         this.course = course;
     }
 
@@ -25,10 +26,6 @@ public class Enrollment {
         this.semester = semester;
     }
 
-    public Student getStudent() {
-        return this.student;
-    }
-
     public Course getCourse() {
         return this.course;
     }
@@ -37,15 +34,12 @@ public class Enrollment {
         this.course = course;
     }
 
-    public Registry[] getRegistries() {
-        return this.registries;
+    public Stream<Registry> getEnrollmentRegisties() {
+        return this.getCourse().getCourseRegisties(this.getSemester());
     }
 
-    public void addRegistry(Registry registry) {
+    @Override
+    public String toString() {
+        return course.toString();
     }
-
-    public void deleteRegistry(Registry registry) {
-    }
-
-
 }

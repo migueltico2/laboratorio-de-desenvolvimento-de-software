@@ -1,10 +1,16 @@
-public class Course {
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Course implements Serializable {
     private static int counter = 1;
     private final int id;
     private String name;
     private int token;
-    private Semester[] semester;
-
+    private Map<Integer, Semester> semester = new HashMap<>();
 
     public Course(String name, int token) {
         this.id = counter++;
@@ -12,13 +18,13 @@ public class Course {
         this.token = token;
     }
 
-
     public void addSemester(Semester semester) {
+        this.semester.put(semester.getPeriod(), semester);
     }
 
     public void removeSemester(Semester semester) {
+        this.semester.remove(semester.getPeriod());
     }
-
 
     public int getId() {
         return this.id;
@@ -40,7 +46,23 @@ public class Course {
         this.token = token;
     }
 
-    public Semester[] getSemester() {
-        return this.semester;
+    public List<Semester> getSemester() {
+        return this.semester.values().stream().collect(Collectors.toList());
+    }
+
+    public Semester findSemester(int period) {
+        return this.semester.get(period);
+    }
+
+    public Stream<Registry> getCourseRegisties(int period) {
+        return this.getSemester()
+                    .stream()
+                    .filter(semester -> semester.getPeriod() <= period)
+                    .flatMap(semester -> semester.getCurriculum().getRegistry().stream());
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name;
     }
 }
