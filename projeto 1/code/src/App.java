@@ -303,6 +303,8 @@ public class App {
                 case 4:
                     list(new ArrayList<>(courseRegistry.values()));
                     break;
+                case 5:
+                    System.out.println("Enter the subject name:");
             }
         }
     }
@@ -423,9 +425,6 @@ public class App {
 
         Subject subject = new Subject(name, hours, token);
         ((Secretary) user).createSubject(subject, subjectPersistence);
-        subjectPersistence.addItem(subject);
-        System.out.println("Subject created successfully!");
-        System.out.println(subject.toString());
     }
 
     private static void courseOperations(Secretary user) {
