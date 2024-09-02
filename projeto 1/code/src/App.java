@@ -300,6 +300,7 @@ public class App {
                     break;
                 case 3:
                     list(new ArrayList<>(registries.values()));
+                    break;
                 case 4:
                     list(new ArrayList<>(courseRegistry.values()));
                     break;
