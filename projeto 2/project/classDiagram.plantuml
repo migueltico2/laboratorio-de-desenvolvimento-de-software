@@ -1,0 +1,135 @@
+@startuml
+
+class User {
+    -id: int
+    -name: String
+    -email: String
+    -password: String
+    +login(String password): boolean
+}
+class Client {
+    -RG: String
+    -CPF: String
+    -adress: String
+    -ocuupation: String
+    -hirer: String
+    -revenue: double
+}
+class Professor {
+    +Subject[] getSubject()
+    +Student[] getSubjectStudents(Subject subject)
+    +Registry[] getRegistries()
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
+}
+class Secretary {
+    +void allocateProfessor(Registry registry, Professor professor)
+    +void dellocateProfessor(Registry registry, Professor professor)
+    +void createCourse(Course course)
+    +void deleteCourse(Course course)
+    +void createSubject(Course course)
+    +void deleteSubject(Course course)
+    +void updateSubjectStatus(Subject subject, Status status)
+    +void generateCurriculum(Semester semester)
+}
+class Enrollment {
+    -{static} int counter
+    -int id
+    -int semester
+    -Course course
+    -Registry[] registries
+    +int getId()
+    +int getSemester()
+    +void setSemester(int semester)
+    +Student getStudent()
+    +void setStudent(Student student)
+    +Course getCourse()
+    +void setCourse(Course course)
+    +Registry[] getRegistries()
+    +void addRegistry(Registry registry)
+    +void removeRegistry(Registry registry)
+}
+class Course {
+    -{static} int counter
+    -int id
+    -String name
+    -int token
+    -Semester[] semesters
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +int getToken()
+    +void setToken(int token)
+    +Semester[] getSemesters()
+    +void addSemester(Semester semester)
+    +void removeSemester(Semester semester)
+}
+class Semester {
+    -{static} int counter
+    -int id
+    -int period
+    -Curriculum curriculum
+    +int getId()
+    +void setId(int id)
+    +int getPeriod()
+    +void setPeriod(int period)
+    +Curriculum getCurriculum()
+    +void setCurriculum(Curriculum curriculum)
+}
+class Curriculum {
+    -{static} int counter
+    -int id
+    -String name
+    -Registry[] registries
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +Registry[] getRegistries()
+    +void addRegisty(Registry registry)
+    +void removeRegisty(Registry registry)
+}
+class Subject {
+    -{static} int counter
+    -int id
+    -String name
+    -int hours
+    -int token
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +int getHours()
+    +void setHours(int hours)
+    +int getToken()
+    +void setToken(int token)
+}
+class Registry {
+    -{static} int counter
+    -int id
+    -boolean required
+    -Status status
+    -Subject subject
+    -Professor[] professors
+    +int getId()
+    +void setId(int id)
+    +boolean isRequired()
+    +void setRequired(boolean required)
+    +Status getStatus()
+    +void setStatus(Status status)
+    +Subject getSubject()
+    +void setSubject(Subject subject)
+    +Enrollment[] getEnrollment()
+    +Professor[] getProfessors()
+    +void addProfessor(Professor professor)
+    +void removeProfessor(Professor professor)
+    +void addEnrollment(Enrollment enrollment)
+    +void removeEnrollment(Enrollment enrollment)
+    +void updateStatus(Status status)
+}
+
+enum Status {
+    AVAILABLE
+    CANCELED
+    FULL
+}
+
+@enduml
