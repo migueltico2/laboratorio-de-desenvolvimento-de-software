@@ -8,12 +8,7 @@ class User {
     +login(String password): boolean
 }
 class Client {
-    -RG: String
-    -CPF: String
-    -adress: String
-    -ocuupation: String
-    -hirer: String
-    -revenue: double
+   - 
 }
 class Professor {
     +Subject[] getSubject()
