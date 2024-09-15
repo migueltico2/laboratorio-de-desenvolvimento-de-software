@@ -1,0 +1,34 @@
+@startuml
+
+
+package "User Management" {
+    class User
+    class Client
+    class Agent
+}
+
+package "Vehicle Management" {
+    class Vehicle
+    enum VehicleStatus
+}
+
+package "Contract Management" {
+    class Contract
+    class CreditContract
+    enum ContractStatus
+}
+
+package "Banking"{
+    class Bank
+}
+
+User <|-- Client
+User <|-- Agent
+Agent <|-- Bank
+User "1" -- "1" Vehicle
+Contract <|-- CreditContract
+Contract "1" -- "1" Vehicle
+CreditContract "1" -- "1" Bank
+
+
+@enduml
