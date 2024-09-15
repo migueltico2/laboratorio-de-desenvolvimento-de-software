@@ -10,12 +10,28 @@ class User {
     +void makeVehicleAvailable(Vehicle vehicle)
 }
 
+class Client {
+    -id: int
+    -RG: String
+    -CPF: String
+    -name: String
+    -address: String
+    -profession: String
+    -employer: String
+    -lastThreeSalaries: double[]
+    +void requestRent(Vehicle vehicle)
+    +void modifyRentRequest(Vehicle vehicle)
+    +void cancelRentRequest(Vehicle vehicle)
+    +void searchRequest(Vehicle vehicle)
+}
+
 
 class Agent {
-    +void makeContractAvailable(Contract contract)
     +Contract modifyRentalRequest(Contract contract)
-    +void issueOpinion(Contract contract)
-
+    +void analyzeRequest(Contract contract)
+    +void issueOpinion(Contract contract, ContractStatus status)
+    +void makeContractAvailable(Contract contract)
+    +void addConsideration(Contract contract, String consideration)
 }
 
 class Bank {
@@ -24,13 +40,19 @@ class Bank {
 
 class Contract {
     -id: int
-    -vehicle: Vehicle
-    -owner: String
-    -agent: Agent
     -client: Client
+    -owner: User
+    -status: ContractStatus
+    -vehicle: Vehicle
+    -value: double
     -startDate: Date
     -endDate: Date
-    -type: ContractType
+}
+
+class CreditContract {
+    -id: int
+    -bank: Bank
+    -value: double
 }
 
 class Vehicle {
@@ -40,129 +62,24 @@ class Vehicle {
     -brand: String
     -model: String
     -plate: String
+    -status: VehicleStatus
 }
 
-
-class Professor {
-    +Subject[] getSubject()
-    +Student[] getSubjectStudents(Subject subject)
-    +Registry[] getRegistries()
-    +void addRegistry(Registry registry)
-    +void removeRegistry(Registry registry)
-}
-class Secretary {
-    +void allocateProfessor(Registry registry, Professor professor)
-    +void dellocateProfessor(Registry registry, Professor professor)
-    +void createCourse(Course course)
-    +void deleteCourse(Course course)
-    +void createSubject(Course course)
-    +void deleteSubject(Course course)
-    +void updateSubjectStatus(Subject subject, Status status)
-    +void generateCurriculum(Semester semester)
-}
-class Enrollment {
-    -{static} int counter
-    -int id
-    -int semester
-    -Course course
-    -Registry[] registries
-    +int getId()
-    +int getSemester()
-    +void setSemester(int semester)
-    +Student getStudent()
-    +void setStudent(Student student)
-    +Course getCourse()
-    +void setCourse(Course course)
-    +Registry[] getRegistries()
-    +void addRegistry(Registry registry)
-    +void removeRegistry(Registry registry)
-}
-class Course {
-    -{static} int counter
-    -int id
-    -String name
-    -int token
-    -Semester[] semesters
-    +int getId()
-    +String getName()
-    +void setName(String name)
-    +int getToken()
-    +void setToken(int token)
-    +Semester[] getSemesters()
-    +void addSemester(Semester semester)
-    +void removeSemester(Semester semester)
-}
-class Semester {
-    -{static} int counter
-    -int id
-    -int period
-    -Curriculum curriculum
-    +int getId()
-    +void setId(int id)
-    +int getPeriod()
-    +void setPeriod(int period)
-    +Curriculum getCurriculum()
-    +void setCurriculum(Curriculum curriculum)
-}
-class Curriculum {
-    -{static} int counter
-    -int id
-    -String name
-    -Registry[] registries
-    +int getId()
-    +String getName()
-    +void setName(String name)
-    +Registry[] getRegistries()
-    +void addRegisty(Registry registry)
-    +void removeRegisty(Registry registry)
-}
-class Subject {
-    -{static} int counter
-    -int id
-    -String name
-    -int hours
-    -int token
-    +int getId()
-    +String getName()
-    +void setName(String name)
-    +int getHours()
-    +void setHours(int hours)
-    +int getToken()
-    +void setToken(int token)
-}
-class Registry {
-    -{static} int counter
-    -int id
-    -boolean required
-    -Status status
-    -Subject subject
-    -Professor[] professors
-    +int getId()
-    +void setId(int id)
-    +boolean isRequired()
-    +void setRequired(boolean required)
-    +Status getStatus()
-    +void setStatus(Status status)
-    +Subject getSubject()
-    +void setSubject(Subject subject)
-    +Enrollment[] getEnrollment()
-    +Professor[] getProfessors()
-    +void addProfessor(Professor professor)
-    +void removeProfessor(Professor professor)
-    +void addEnrollment(Enrollment enrollment)
-    +void removeEnrollment(Enrollment enrollment)
-    +void updateStatus(Status status)
+enum ContractStatus {
+    PENDING
+    APPROVED
+    REJECTED
 }
 
-enum Status {
+enum VehicleStatus {
     AVAILABLE
-    CANCELED
-    FULL
+    RENTED
 }
 
-enum ContractType {
-    RENTAL
-    CREDIT
-}
-
+User <|-- Agent
+User <|-- Client
+User "1" -- "1..*" Vehicle
+Contract <|-- CreditContract
+Contract "1" -- "1" Vehicle
+Agent <|-- Bank
 @enduml
