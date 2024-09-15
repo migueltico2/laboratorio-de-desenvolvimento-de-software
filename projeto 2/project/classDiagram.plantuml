@@ -1,4 +1,4 @@
-wwwwwwwwwwwwwwwwwww@startuml
+@startuml
 
 class User {
     -id: int
@@ -14,7 +14,7 @@ class User {
 class Agent {
     +void makeContractAvailable(Contract contract)
     +Contract modifyRentalRequest(Contract contract)
-    +   
+    +void issueOpinion(Contract contract)
 
 }
 
