@@ -80,9 +80,9 @@ User <|-- Agent
 User <|-- Client
 User "1" -- "1..*" Vehicle
 Contract <|-- CreditContract
-Client <|-- Contract
+Client "1" -- "0..*" Contract
 CreditContract "1" -- "1" Bank
 Contract "1" -- "1" Vehicle
 Agent <|-- Bank
-Agent <|-- Contract
+Agent "1" -- "0..*" Contract
 @enduml

@@ -25,8 +25,8 @@ package "Banking"{
 User <|-- Client
 User <|-- Agent
 Agent <|-- Bank
-Agent <|-- Contract
-Client <|-- Contract
+Agent  "1" -- "0..*" Contract
+Client  "1" -- "0..*" Contract
 User "1" -- "1" Vehicle
 Contract <|-- CreditContract
 Contract "1" -- "1" Vehicle
