@@ -1,15 +1,48 @@
-@startuml
+wwwwwwwwwwwwwwwwwww@startuml
 
 class User {
     -id: int
     -name: String
     -email: String
     -password: String
+    -vehicles: Vehicle[]
     +login(String password): boolean
+    +void makeVehicleAvailable(Vehicle vehicle)
 }
-class Client {
-   - 
+
+
+class Agent {
+    +void makeContractAvailable(Contract contract)
+    +Contract modifyRentalRequest(Contract contract)
+    +   
+
 }
+
+class Bank {
+    +boolean acceptCreditContract(Contract contract)
+}
+
+class Contract {
+    -id: int
+    -vehicle: Vehicle
+    -owner: String
+    -agent: Agent
+    -client: Client
+    -startDate: Date
+    -endDate: Date
+    -type: ContractType
+}
+
+class Vehicle {
+    -id: int
+    -registration: String
+    -year: int
+    -brand: String
+    -model: String
+    -plate: String
+}
+
+
 class Professor {
     +Subject[] getSubject()
     +Student[] getSubjectStudents(Subject subject)
@@ -125,6 +158,11 @@ enum Status {
     AVAILABLE
     CANCELED
     FULL
+}
+
+enum ContractType {
+    RENTAL
+    CREDIT
 }
 
 @enduml
