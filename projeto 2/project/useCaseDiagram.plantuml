@@ -1,0 +1,47 @@
+@startuml
+
+left to right direction
+
+actor "Usuário" as User
+actor Cliente as C
+actor Agente as A
+actor "Banco de Agente" as AB
+
+rectangle "Aluguel de Carro" {
+usecase "Gerenciar pedidos de aluguel" as UC1
+usecase "Avaliar pedidos de aluguel" as UC2
+usecase "Disponibilizar contrato" as UC3
+usecase "Gerenciar dados pessoais" as UC4
+usecase "Disponibilizar veículo" as UC5
+usecase "Criar contrado de crédito" as UC6
+usecase "Aceitar contrado de crédito" as UC7
+usecase "Logar no sistema" as UC8
+usecase "Fornecer parecer positivo" as UC9
+usecase "Adicionar considerações" as UC10
+usecase "Fornecer parecer negativo" as UC11
+usecase "Modificar pedidos de aluguel" as UC12
+}
+
+User <|-- C
+User <|-- A
+A <|-- AB
+
+UC6 .> UC3 : extends
+UC2 .> UC9 : extends
+UC9 .> UC10 : includes
+UC2 .> UC11 : extends
+
+User --> UC4
+User --> UC5
+User --> UC8
+C --> UC1
+A --> UC2
+A --> UC12
+A --> UC3
+AB --> UC7
+
+note right of UC1
+    Gerenciar: Adicionar, Remover, Atualizar e Consultar
+end note
+
+@enduml

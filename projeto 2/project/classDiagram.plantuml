@@ -1,0 +1,88 @@
+@startuml
+
+class User {
+    -id: int
+    -name: String
+    -email: String
+    -password: String
+    -vehicles: Vehicle[]
+    +login(String password): boolean
+    +void makeVehicleAvailable(Vehicle vehicle)
+}
+
+class Client {
+    -id: int
+    -RG: String
+    -CPF: String
+    -name: String
+    -address: String
+    -profession: String
+    -employer: String
+    -lastThreeSalaries: double[]
+    +void requestRent(Vehicle vehicle)
+    +void modifyRentRequest(Vehicle vehicle)
+    +void cancelRentRequest(Vehicle vehicle)
+    +void searchRequest(Vehicle vehicle)
+}
+
+
+class Agent {
+    +Contract modifyRentalRequest(Contract contract)
+    +void analyzeRequest(Contract contract)
+    +void issueOpinion(Contract contract, ContractStatus status)
+    +void makeContractAvailable(Contract contract)
+    +void addConsideration(Contract contract, String consideration)
+}
+
+class Bank {
+    +boolean acceptCreditContract(Contract contract)
+}
+
+class Contract {
+    -id: int
+    -client: Client
+    -owner: User
+    -status: ContractStatus
+    -vehicle: Vehicle
+    -value: double
+    -startDate: Date
+    -endDate: Date
+}
+
+class CreditContract {
+    -id: int
+    -bank: Bank
+    -value: double
+}
+
+class Vehicle {
+    -id: int
+    -registration: String
+    -year: int
+    -brand: String
+    -model: String
+    -plate: String
+    -status: VehicleStatus
+}
+
+enum ContractStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum VehicleStatus {
+    AVAILABLE
+    RENTED
+}
+
+User <|-- Agent
+User <|-- Client
+User "1" -- "1..*" Vehicle
+Contract <|-- CreditContract
+Client "1" -- "0..*" Contract
+CreditContract "1" -- "1" Bank
+Contract "1" -- "1" Vehicle
+Agent <|-- Bank
+Agent "1" -- "0..*" Contract
+@enduml
