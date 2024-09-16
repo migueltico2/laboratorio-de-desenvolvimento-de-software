@@ -48,11 +48,10 @@ class Contract {
     -startDate: Date
     -endDate: Date
 }
-
+ 
 class CreditContract {
     -id: int
-    -bank: Bank
-    -value: double
+    -credit: double
 }
 
 class Vehicle {
@@ -78,7 +77,7 @@ enum VehicleStatus {
 
 User <|-- Agent
 User <|-- Client
-User "1" -- "1..*" Vehicle
+User "1" -- "0..*" Vehicle
 Contract <|-- CreditContract
 Client "1" -- "0..*" Contract
 CreditContract "1" -- "1" Bank

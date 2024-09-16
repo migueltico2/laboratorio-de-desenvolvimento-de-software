@@ -18,4 +18,4 @@ Eu como agente quero poder fornecer um parecer positivo para que eu possa adicio
 
 Eu como agente quero poder disponibilizar o contrato no sistema para que veículos possam ser alugados.
 
-Eu como agente do banco quero poder aceitar contrados de crédito para que o cliente possa alugar o veículo com ele.
+Eu como agente do banco quero poder aceitar contrados de crédito para que o cliente possa alugar o veículo.

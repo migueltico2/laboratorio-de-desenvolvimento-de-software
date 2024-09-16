@@ -1,0 +1,47 @@
+@startuml
+
+component User
+component Client
+component Agent
+component Bank
+component Contract
+component Vehicle
+component Autentication
+component "Rent Order" as Order
+
+interface "Use User Data" as UserData
+interface "Use Agent Data" as AgentData
+interface Autenticate
+interface "Generate Contract" as GenerateC
+interface "Sign Contract" as SignC
+interface "Provide Vehicle" as ProvideV
+interface "Manage Vehicle" as MangeV
+interface "Manage Rent Order" as MangeR
+interface "Evaluate Order" as EvaluteOrder
+
+Autenticate - Autentication
+UserData - User
+AgentData - Agent
+GenerateC - Contract
+SignC - Contract
+ProvideV - Vehicle
+MangeV - Vehicle
+EvaluteOrder - Order
+MangeR - Order
+
+User --right-( Autenticate
+User --down-( MangeV
+
+Client --up-( UserData
+Client -right--( SignC
+Client --down-( MangeR
+
+Agent ---( UserData
+Agent ---( GenerateC
+Agent ---( EvaluteOrder
+
+Bank --right-( AgentData
+
+Order --right-( ProvideV
+
+@enduml
