@@ -7,7 +7,6 @@ component Bank
 component Contract
 component Vehicle
 component Autentication
-component "Rent Order" as Order
 
 interface "Use User Data" as UserData
 interface "Use Agent Data" as AgentData
@@ -26,8 +25,8 @@ GenerateC - Contract
 SignC - Contract
 ProvideV - Vehicle
 MangeV - Vehicle
-EvaluteOrder - Order
-MangeR - Order
+EvaluteOrder - Contract
+MangeR - Contract
 
 User --right-( Autenticate
 User --down-( MangeV
@@ -42,6 +41,6 @@ Agent ---( EvaluteOrder
 
 Bank --right-( AgentData
 
-Order --right-( ProvideV
+Contract --right-( ProvideV
 
 @enduml

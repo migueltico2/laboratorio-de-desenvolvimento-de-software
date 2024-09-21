@@ -1,36 +1,59 @@
 @startuml
 
-
-package "User Management" {
-    class User
-    class Client
-    class Agent
+package Model {
+    class UserModel
+    class ClientModel
+    class AgentModel
+    class BankModel
+    class VehicleModel
+    class ContractModel
+    class CreditContractModel
 }
 
-package "Vehicle Management" {
-    class Vehicle
+package Controller {
+    class UserController
+    class ClientController
+    class AgentController
+    class BankController
+    class VehicleController
+    class ContractController
+    class CreditContractController
+}
+
+package View {
+    class UserView
+    class ClientView
+    class AgentView
+    class BankView
+    class VehicleView
+    class ContractView
+    class CreditContractView
+}
+
+package Enums {
     enum VehicleStatus
-}
-
-package "Contract Management" {
-    class Contract
-    class CreditContract
     enum ContractStatus
 }
 
-package "Banking"{
-    class Bank
-}
+UserModel -- UserController
+UserController -- UserView
 
-User <|-- Client
-User <|-- Agent
-Agent <|-- Bank
-Agent  "1" -- "0..*" Contract
-Client  "1" -- "0..*" Contract
-User "1" -- "1" Vehicle
-Contract <|-- CreditContract
-Contract "1" -- "1" Vehicle
-CreditContract "1" -- "1" Bank
+ClientModel -- ClientController
+ClientController -- ClientView
 
+AgentModel -- AgentController
+AgentController -- AgentView
+
+BankModel -- BankController
+BankController -- BankView
+
+VehicleModel -- VehicleController
+VehicleController -- VehicleView
+
+ContractModel -- ContractController
+ContractController -- ContractView
+
+CreditContractModel -- CreditContractController
+CreditContractController -- CreditContractView
 
 @enduml
