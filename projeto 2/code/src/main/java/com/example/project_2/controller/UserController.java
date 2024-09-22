@@ -1,25 +1,50 @@
 package com.example.project_2.controller;
 
 import com.example.project_2.model.User;
-import com.example.project_2.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "User", description = "API de gerenciamento de usuários")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private List<User> users;
+    private static final String DATA_FILE = "users.dat";
+
+    public UserController() {
+        this.users = loadUsers();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<User> loadUsers() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            return (List<User>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private void saveUsers() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            oos.writeObject(users);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
@@ -27,7 +52,7 @@ public class UserController {
     })
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+        return ResponseEntity.ok(users);
     }
 
     @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário")
@@ -37,9 +62,15 @@ public class UserController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
+
+        if (userOpt.isPresent()) {
+            return ResponseEntity.ok(userOpt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Criar novo usuário", description = "Cria um novo usuário e retorna o usuário criado")
@@ -48,7 +79,9 @@ public class UserController {
     })
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = userService.createUser(user.getName(), user.getEmail(), user.getPassword());
+        User newUser = new User(user.getName(), user.getEmail(), user.getPassword(), null);
+        users.add(newUser);
+        saveUsers();
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
@@ -59,9 +92,19 @@ public class UserController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user.getName(), user.getEmail())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
+
+        if (userOpt.isPresent()) {
+            User existingUser = userOpt.get();
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            saveUsers();
+            return ResponseEntity.ok(existingUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Excluir usuário", description = "Exclui um usuário existente")
@@ -71,7 +114,9 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (userService.deleteUser(id)) {
+        boolean removed = users.removeIf(user -> user.getId().equals(id));
+        if (removed) {
+            saveUsers();
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
@@ -84,8 +129,15 @@ public class UserController {
     })
     @PostMapping("/{id}/login")
     public ResponseEntity<String> login(@PathVariable Long id, @RequestBody String password) {
-        if (userService.login(id, password)) {
-            return ResponseEntity.ok("Login bem-sucedido");
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
+
+        if (userOpt.isPresent()) {
+            User existingUser = userOpt.get();
+            if (existingUser.getPassword().equals(password)) {
+                return ResponseEntity.ok("Login bem-sucedido");
+            }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
     }
@@ -98,8 +150,17 @@ public class UserController {
     })
     @PutMapping("/{id}/change-password")
     public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        if (userService.changePassword(id, request.getOldPassword(), request.getNewPassword())) {
-            return ResponseEntity.ok("Senha alterada com sucesso");
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst();
+
+        if (userOpt.isPresent()) {
+            User existingUser = userOpt.get();
+            if (existingUser.getPassword().equals(request.getOldPassword())) {
+                existingUser.setPassword(request.getNewPassword());
+                saveUsers();
+                return ResponseEntity.ok("Senha alterada com sucesso");
+            }
         }
         return ResponseEntity.badRequest().body("Falha na alteração da senha");
     }
