@@ -1,13 +1,13 @@
 @startuml
 
 package Model {
-    class UserModel
-    class ClientModel
-    class AgentModel
-    class BankModel
-    class VehicleModel
-    class ContractModel
-    class CreditContractModel
+    class User
+    class Client
+    class Agent
+    class Bank
+    class Vehicle
+    class Contract
+    class CreditContract
 }
 
 package Controller {
@@ -39,32 +39,32 @@ package Enums {
     enum ContractStatus
 }
 
-UserModel -- UserController
-UserController -- UserView
-UserView -- Swagger
+User <.. UserController
+UserController <.. UserView
+UserView <.. Swagger
 
-ClientModel -- ClientController
-ClientController -- ClientView
-ClientView -- Swagger
+Client <.. ClientController
+ClientController <.. ClientView
+ClientView <.. Swagger
 
-AgentModel -- AgentController
-AgentController -- AgentView
-AgentView -- Swagger
+Agent <.. AgentController
+AgentController <.. AgentView
+AgentView <.. Swagger
 
-BankModel -- BankController
-BankController -- BankView
-BankView -- Swagger
+Bank <.. BankController
+BankController <.. BankView
+BankView <.. Swagger
 
-VehicleModel -- VehicleController
-VehicleController -- VehicleView
-VehicleView -- Swagger
+Vehicle <.. VehicleController
+VehicleController <.. VehicleView
+VehicleView <.. Swagger
 
-ContractModel -- ContractController
-ContractController -- ContractView
-ContractView -- Swagger
+Contract <.. ContractController
+ContractController <.. ContractView
+ContractView <.. Swagger
 
-CreditContractModel -- CreditContractController
-CreditContractController -- CreditContractView
-CreditContractView -- Swagger
+CreditContract <.. CreditContractController
+CreditContractController <.. CreditContractView
+CreditContractView <.. Swagger
 
 @enduml
