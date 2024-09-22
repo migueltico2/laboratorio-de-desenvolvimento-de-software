@@ -1,20 +1,19 @@
 @startuml
 
 class User {
-    -id: int
+    -id: Long
     -name: String
     -email: String
     -password: String
-    -vehicles: Vehicle[]
+    -vehicles: List<Vehicle>
     +login(String password): boolean
     +void makeVehicleAvailable(Vehicle vehicle)
 }
 
 class Client {
-    -id: int
+    -id: Long
     -RG: String
     -CPF: String
-    -name: String
     -address: String
     -profession: String
     -employer: String

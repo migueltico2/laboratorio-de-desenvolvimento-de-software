@@ -1,5 +1,7 @@
 package com.example.project_2.controller;
 
+import com.example.project_2.model.Agent;
+import com.example.project_2.model.Client;
 import com.example.project_2.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -85,6 +87,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
+    @PostMapping("/agent")
+    public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
+        Agent newAgent = new Agent(agent.getName(), agent.getEmail(), agent.getPassword());
+        users.add(newAgent);
+        saveUsers();
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAgent);
+    }
+
+    @PostMapping("/client")
+    public ResponseEntity<Client> createClient(@RequestBody Client client) {
+        Client newClient = new Client(client.getName(), client.getEmail(), client.getPassword());
+        users.add(newClient);
+        saveUsers();
+        return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
+    }
+
     @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
@@ -127,15 +145,17 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
-    @PostMapping("/{id}/login")
-    public ResponseEntity<String> login(@PathVariable Long id, @RequestBody String password) {
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        List<User> users = loadUsers();
+
         Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id))
+                .filter(u -> u != null && u.getEmail() != null && u.getEmail().equals(loginRequest.getEmail()))
                 .findFirst();
 
         if (userOpt.isPresent()) {
             User existingUser = userOpt.get();
-            if (existingUser.getPassword().equals(password)) {
+            if (existingUser.getPassword() != null && existingUser.getPassword().equals(loginRequest.getPassword())) {
                 return ResponseEntity.ok("Login bem-sucedido");
             }
         }
@@ -185,6 +205,29 @@ public class UserController {
 
         public void setNewPassword(String newPassword) {
             this.newPassword = newPassword;
+        }
+    }
+
+    // Classe interna para representar a requisição de login
+    private static class LoginRequest {
+        private String email;
+        private String password;
+
+        // Getters e setters
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
     }
 }
