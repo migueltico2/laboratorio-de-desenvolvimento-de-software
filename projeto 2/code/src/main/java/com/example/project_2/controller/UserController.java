@@ -87,23 +87,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
-    @PostMapping("/agent")
-    public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
-        Agent newAgent = new Agent(agent.getName(), agent.getEmail(), agent.getPassword());
-        users.add(newAgent);
-        saveUsers();
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAgent);
-    }
-
-    @PostMapping("/client")
-    public ResponseEntity<Client> createClient(@RequestBody Client client) {
-        Client newClient = new Client(client.getName(), client.getEmail(), client.getPassword(),
-                client.getRG(), client.getCPF(), client.getAddress(), client.getProfession(), client.getEmployer());
-        users.add(newClient);
-        saveUsers();
-        return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
-    }
-
     @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),

@@ -90,4 +90,12 @@ public class Client extends User {
     public void setLastThreeSalaries(double[] lastThreeSalaries) {
         this.lastThreeSalaries = lastThreeSalaries;
     }
+
+    public boolean updateAddress(String newAddress) {
+        if (newAddress != null && !newAddress.trim().isEmpty()) {
+            this.address = newAddress.trim();
+            return true;
+        }
+        return false;
+    }
 }
