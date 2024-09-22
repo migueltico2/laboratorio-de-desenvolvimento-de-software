@@ -97,7 +97,8 @@ public class UserController {
 
     @PostMapping("/client")
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
-        Client newClient = new Client(client.getName(), client.getEmail(), client.getPassword());
+        Client newClient = new Client(client.getName(), client.getEmail(), client.getPassword(),
+                client.getRG(), client.getCPF(), client.getAddress(), client.getProfession(), client.getEmployer());
         users.add(newClient);
         saveUsers();
         return ResponseEntity.status(HttpStatus.CREATED).body(newClient);

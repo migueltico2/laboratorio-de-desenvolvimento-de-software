@@ -19,6 +19,10 @@ public class Client extends User {
         this.lastThreeSalaries = new double[3];
     }
 
+    public Client() {
+        super();
+    }
+
     public Client(String name, String email, String password) {
         super(name, email, password, null);
     }
