@@ -169,12 +169,10 @@ public class UserController {
         return ResponseEntity.badRequest().body("Falha na alteração da senha");
     }
 
-    // Classe interna para representar a requisição de mudança de senha
     private static class PasswordChangeRequest {
         private String oldPassword;
         private String newPassword;
 
-        // Getters e setters
         public String getOldPassword() {
             return oldPassword;
         }
@@ -192,12 +190,10 @@ public class UserController {
         }
     }
 
-    // Classe interna para representar a requisição de login
     private static class LoginRequest {
         private String email;
         private String password;
 
-        // Getters e setters
         public String getEmail() {
             return email;
         }

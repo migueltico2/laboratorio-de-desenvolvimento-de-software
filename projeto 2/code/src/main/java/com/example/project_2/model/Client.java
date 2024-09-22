@@ -28,19 +28,15 @@ public class Client extends User {
     }
 
     public void requestRent(Vehicle vehicle) {
-        // Implementation for requesting rent
     }
 
     public void modifyRentRequest(Vehicle vehicle) {
-        // Implementation for modifying rent request
     }
 
     public void cancelRentRequest(Vehicle vehicle) {
-        // Implementation for canceling rent request
     }
 
     public void searchRequest(Vehicle vehicle) {
-        // Implementation for searching request
     }
 
     public String getRG() {
