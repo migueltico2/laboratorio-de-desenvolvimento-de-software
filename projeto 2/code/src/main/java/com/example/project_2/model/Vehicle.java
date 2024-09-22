@@ -1,5 +1,7 @@
 package com.example.project_2.model;
 
-public class Vehicle {
+import java.io.Serializable;
+
+public class Vehicle implements Serializable {
 
 }

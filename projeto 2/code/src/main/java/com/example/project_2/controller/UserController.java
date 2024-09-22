@@ -57,7 +57,6 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return userService.updateUser(id, user.getName(), user.getEmail())
@@ -70,14 +69,61 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Usuário excluído com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        if (userService.deleteUser(id.intValue())) {
+        if (userService.deleteUser(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
-    // Adicione os métodos de login e changePassword aqui, se necessário
+    @Operation(summary = "Login de usuário", description = "Realiza o login de um usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
+    @PostMapping("/{id}/login")
+    public ResponseEntity<String> login(@PathVariable Long id, @RequestBody String password) {
+        if (userService.login(id, password)) {
+            return ResponseEntity.ok("Login bem-sucedido");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
+    }
+
+    @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Falha na alteração da senha"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
+        if (userService.changePassword(id, request.getOldPassword(), request.getNewPassword())) {
+            return ResponseEntity.ok("Senha alterada com sucesso");
+        }
+        return ResponseEntity.badRequest().body("Falha na alteração da senha");
+    }
+
+    // Classe interna para representar a requisição de mudança de senha
+    private static class PasswordChangeRequest {
+        private String oldPassword;
+        private String newPassword;
+
+        // Getters e setters
+        public String getOldPassword() {
+            return oldPassword;
+        }
+
+        public void setOldPassword(String oldPassword) {
+            this.oldPassword = oldPassword;
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
+    }
 }

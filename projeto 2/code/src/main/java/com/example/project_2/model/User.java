@@ -1,9 +1,10 @@
 package com.example.project_2.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class User {
+public class User implements Serializable {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
     private Long id;
     private String name;
