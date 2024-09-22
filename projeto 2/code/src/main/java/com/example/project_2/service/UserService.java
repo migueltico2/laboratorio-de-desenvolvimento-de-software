@@ -16,7 +16,7 @@ public class UserService {
         return new ArrayList<>(users);
     }
 
-    public Optional<User> getUserById(int id) {
+    public Optional<User> getUserById(Long id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst();
@@ -28,7 +28,7 @@ public class UserService {
         return newUser;
     }
 
-    public Optional<User> updateUser(int id, String name, String email) {
+    public Optional<User> updateUser(Long id, String name, String email) {
         return getUserById(id).map(user -> {
             user.setName(name);
             user.setEmail(email);
@@ -40,13 +40,13 @@ public class UserService {
         return users.removeIf(user -> user.getId() == id);
     }
 
-    public boolean login(int id, String password) {
+    public boolean login(Long id, String password) {
         return getUserById(id)
                 .map(user -> user.getPassword().equals(password))
                 .orElse(false);
     }
 
-    public boolean changePassword(int id, String oldPass, String newPass) {
+    public boolean changePassword(Long id, String oldPass, String newPass) {
         return getUserById(id).map(user -> {
             if (user.getPassword().equals(oldPass)) {
                 user.setPassword(newPass);

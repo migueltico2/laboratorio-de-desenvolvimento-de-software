@@ -2,6 +2,10 @@ package com.example.project_2.controller;
 
 import com.example.project_2.model.User;
 import com.example.project_2.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,37 +14,62 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
+@Tag(name = "User", description = "API de gerenciamento de usuários")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
+    })
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id.intValue())
+        return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Criar novo usuário", description = "Cria um novo usuário e retorna o usuário criado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso")
+    })
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        System.out.println(user.getName());
         User newUser = userService.createUser(user.getName(), user.getEmail(), user.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
+    @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id.intValue(), user.getName(), user.getEmail())
+        return userService.updateUser(id, user.getName(), user.getEmail())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "Excluir usuário", description = "Exclui um usuário existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuário excluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -50,42 +79,5 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{id}/login")
-    public ResponseEntity<String> login(@PathVariable Long id, @RequestBody String password) {
-        if (userService.login(id.intValue(), password)) {
-            return ResponseEntity.ok("Login successful");
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-    }
-
-    @PutMapping("/{id}/change-password")
-    public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        if (userService.changePassword(id.intValue(), request.getOldPassword(), request.getNewPassword())) {
-            return ResponseEntity.ok("Password changed successfully");
-        }
-        return ResponseEntity.badRequest().body("Failed to change password");
-    }
-
-    // Inner class for password change request
-    private static class PasswordChangeRequest {
-        private String oldPassword;
-        private String newPassword;
-
-        // Getters and setters
-        public String getOldPassword() {
-            return oldPassword;
-        }
-
-        public void setOldPassword(String oldPassword) {
-            this.oldPassword = oldPassword;
-        }
-
-        public String getNewPassword() {
-            return newPassword;
-        }
-
-        public void setNewPassword(String newPassword) {
-            this.newPassword = newPassword;
-        }
-    }
+    // Adicione os métodos de login e changePassword aqui, se necessário
 }
