@@ -30,6 +30,10 @@ package View {
     class CreditContractView
 }
 
+package Interface {
+    class Swagger
+}
+
 package Enums {
     enum VehicleStatus
     enum ContractStatus
@@ -37,23 +41,30 @@ package Enums {
 
 UserModel -- UserController
 UserController -- UserView
+UserView -- Swagger
 
 ClientModel -- ClientController
 ClientController -- ClientView
+ClientView -- Swagger
 
 AgentModel -- AgentController
 AgentController -- AgentView
+AgentView -- Swagger
 
 BankModel -- BankController
 BankController -- BankView
+BankView -- Swagger
 
 VehicleModel -- VehicleController
 VehicleController -- VehicleView
+VehicleView -- Swagger
 
 ContractModel -- ContractController
 ContractController -- ContractView
+ContractView -- Swagger
 
 CreditContractModel -- CreditContractController
 CreditContractController -- CreditContractView
+CreditContractView -- Swagger
 
 @enduml
