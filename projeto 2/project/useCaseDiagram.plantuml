@@ -29,6 +29,7 @@ A <|-- AB
 UC6 .> UC3 : extends
 UC2 .> UC9 : extends
 UC9 .> UC10 : includes
+UC9 .> UC3 : includes
 UC2 .> UC11 : extends
 
 User --> UC4
@@ -37,7 +38,6 @@ User --> UC8
 C --> UC1
 A --> UC2
 A --> UC12
-A --> UC3
 AB --> UC7
 
 note right of UC1
