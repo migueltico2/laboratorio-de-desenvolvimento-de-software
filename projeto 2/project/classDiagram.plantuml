@@ -42,6 +42,7 @@ class Contract {
     -client: Client
     -owner: User
     -status: ContractStatus
+    -considerations: String
     -vehicle: Vehicle
     -value: double
     -startDate: Date
