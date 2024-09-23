@@ -10,12 +10,42 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clients")
 @Tag(name = "Client", description = "API de gerenciamento de clientes")
 public class ClientController extends BaseController {
+    @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
+    })
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> clients = users.stream()
+                .filter(u -> u instanceof Client)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(clients);
+    }
+
+    @Operation(summary = "Buscar cliente por ID", description = "Retorna um único cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<Client> getClientById(@PathVariable Long id) {
+        Optional<User> userOpt = users.stream()
+                .filter(u -> u.getId().equals(id) && u instanceof Client)
+                .findFirst();
+
+        if (userOpt.isPresent()) {
+            return ResponseEntity.ok((Client) userOpt.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @Operation(summary = "Criar novo cliente", description = "Cria um novo cliente e retorna o cliente criado")
     @ApiResponses(value = {
@@ -36,21 +66,26 @@ public class ClientController extends BaseController {
             @ApiResponse(responseCode = "400", description = "Falha na atualização do endereço"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    @PutMapping("/{id}/update-address")
-    public ResponseEntity<String> updateClientAddress(@PathVariable Long id,
-            @RequestBody AddressUpdateRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Client> updateClientAddress(@PathVariable Long id,
+            @RequestBody Client newClient) {
         Optional<User> userOpt = users.stream()
                 .filter(u -> u.getId().equals(id) && u instanceof Client)
                 .findFirst();
 
         if (userOpt.isPresent()) {
             Client client = (Client) userOpt.get();
-            if (client.updateAddress(request.getNewAddress())) {
-                saveUsers();
-                return ResponseEntity.ok("Endereço atualizado com sucesso");
-            } else {
-                return ResponseEntity.badRequest().body("Falha na atualização do endereço");
-            }
+            client.updateAddress(newClient.getAddress());
+            client.setName(newClient.getName());
+            client.setEmail(newClient.getEmail());
+            client.setPassword(newClient.getPassword());
+            client.setRG(newClient.getRG());
+            client.setCPF(newClient.getCPF());
+            client.setProfession(newClient.getProfession());
+            client.setEmployer(newClient.getEmployer());
+            saveUsers();
+
+            return ResponseEntity.ok(client);
         }
         return ResponseEntity.notFound().build();
     }
