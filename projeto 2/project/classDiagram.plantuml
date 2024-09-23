@@ -1,20 +1,19 @@
 @startuml
 
 class User {
-    -id: int
+    -id: Long
     -name: String
     -email: String
     -password: String
-    -vehicles: Vehicle[]
+    -vehicles: List<Vehicle>
     +login(String password): boolean
     +void makeVehicleAvailable(Vehicle vehicle)
 }
 
 class Client {
-    -id: int
+    -id: Long
     -RG: String
     -CPF: String
-    -name: String
     -address: String
     -profession: String
     -employer: String
@@ -48,11 +47,10 @@ class Contract {
     -startDate: Date
     -endDate: Date
 }
-
+ 
 class CreditContract {
     -id: int
-    -bank: Bank
-    -value: double
+    -credit: double
 }
 
 class Vehicle {
@@ -78,7 +76,7 @@ enum VehicleStatus {
 
 User <|-- Agent
 User <|-- Client
-User "1" -- "1..*" Vehicle
+User "1" -- "0..*" Vehicle
 Contract <|-- CreditContract
 Client "1" -- "0..*" Contract
 CreditContract "1" -- "1" Bank

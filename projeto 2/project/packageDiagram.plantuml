@@ -1,36 +1,70 @@
 @startuml
 
-
-package "User Management" {
+package Model {
     class User
     class Client
     class Agent
-}
-
-package "Vehicle Management" {
+    class Bank
     class Vehicle
-    enum VehicleStatus
-}
-
-package "Contract Management" {
     class Contract
     class CreditContract
+}
+
+package Controller {
+    class UserController
+    class ClientController
+    class AgentController
+    class BankController
+    class VehicleController
+    class ContractController
+    class CreditContractController
+}
+
+package View {
+    class UserView
+    class ClientView
+    class AgentView
+    class BankView
+    class VehicleView
+    class ContractView
+    class CreditContractView
+}
+
+package Interface {
+    class Swagger
+}
+
+package Enums {
+    enum VehicleStatus
     enum ContractStatus
 }
 
-package "Banking"{
-    class Bank
-}
+User <.. UserController
+UserController <.. UserView
+UserView <.. Swagger
 
-User <|-- Client
-User <|-- Agent
-Agent <|-- Bank
-Agent  "1" -- "0..*" Contract
-Client  "1" -- "0..*" Contract
-User "1" -- "1" Vehicle
-Contract <|-- CreditContract
-Contract "1" -- "1" Vehicle
-CreditContract "1" -- "1" Bank
+Client <.. ClientController
+ClientController <.. ClientView
+ClientView <.. Swagger
 
+Agent <.. AgentController
+AgentController <.. AgentView
+AgentView <.. Swagger
+
+Bank <.. BankController
+BankController <.. BankView
+BankView <.. Swagger
+
+Vehicle <.. VehicleController
+VehicleController <.. VehicleView
+VehicleView <.. Swagger
+
+Contract <.. ContractController
+ContractController <.. ContractView
+ContractView <.. Swagger
+
+CreditContract <.. CreditContractController
+CreditContractController <.. CreditContractView
+CreditContractView <.. Swagger
 
 @enduml
