@@ -1,17 +1,12 @@
 @startuml
 
 component User
-component Client
-component Agent
-component Bank
 component Contract
 component Vehicle
 component Autentication
 component Swagger
 component Persistence
 
-interface "Use User Data" as UserData
-interface "Use Agent Data" as AgentData
 interface Autenticate
 interface "Generate Contract" as GenerateC
 interface "Generate Credit Contract" as GenerateCC
@@ -22,36 +17,25 @@ interface "Evaluate Order" as EvaluteOrder
 interface Persist
 
 Autenticate - Autentication
-UserData - User
-Agent - AgentData
 ProvideV - Vehicle
 MangeV - Vehicle
-GenerateC - Contract
+GenerateC -down- Contract
 GenerateCC - Contract
 EvaluteOrder - Contract
 MangeR - Contract
 Persist - Persistence
 
 Swagger ..> User
-Swagger ..> Client
-Swagger ..> Agent
-Swagger ..> Bank
 Swagger ..> Contract
 Swagger ..> Vehicle
 
 User --right-( Autenticate
-User --down-( MangeV
+User --right-( MangeV
 User --down-( Persist
-
-Client --up-( UserData
-Client --down-( MangeR
-
-Agent ---( UserData
-Agent ---( GenerateC
-Agent ---( EvaluteOrder
-
-Bank --left-( AgentData
-Bank --down-( GenerateCC
+User ---( MangeR
+User ---( GenerateC
+User ---( EvaluteOrder
+User --down-( GenerateCC
 
 Contract --right-( ProvideV
 Contract --down-( Persist
