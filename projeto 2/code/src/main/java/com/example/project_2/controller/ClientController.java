@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,6 +21,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/clients")
 @Tag(name = "Client", description = "API de gerenciamento de clientes")
 public class ClientController extends BaseController {
+    // CAMINHO DO ARQUIVO DE USUÁRIOS passado para o base controller
+    private static final String DATA_FILE = "users.dat";
+
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
@@ -60,7 +62,7 @@ public class ClientController extends BaseController {
         Client newClient = new Client(client.getName(), client.getEmail(), client.getPassword(),
                 client.getRG(), client.getCPF(), client.getAddress(), client.getProfession(), client.getEmployer());
         users.add(newClient);
-        saveUsers();
+        saveUsers(DATA_FILE);
         return ResponseEntity.status(HttpStatus.CREATED).body(newClient);
     }
 
@@ -68,28 +70,51 @@ public class ClientController extends BaseController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Falha na atualização do cliente"),
+            @ApiResponse(responseCode = "403", description = "Erro ao autenticar usuário"),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Client> updateClientAddress(@PathVariable Long id,
-            @RequestBody Client newClient) {
+    public ResponseEntity<String> updateClient(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> updates,
+            @RequestHeader String token) {
+
+        if (!BaseController.isUserLoggedIn(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+        }
+
         Optional<User> userOpt = users.stream()
                 .filter(u -> u.getId().equals(id) && u instanceof Client)
                 .findFirst();
 
         if (userOpt.isPresent()) {
             Client client = (Client) userOpt.get();
-            client.updateAddress(newClient.getAddress());
-            client.setName(newClient.getName());
-            client.setEmail(newClient.getEmail());
-            client.setPassword(newClient.getPassword());
-            client.setRG(newClient.getRG());
-            client.setCPF(newClient.getCPF());
-            client.setProfession(newClient.getProfession());
-            client.setEmployer(newClient.getEmployer());
-            saveUsers();
+            Map<String, String> results = new HashMap<>();
 
-            return ResponseEntity.ok(client);
+            for (Map.Entry<String, String> entry : updates.entrySet()) {
+                String attributeName = entry.getKey();
+                String newValue = entry.getValue();
+
+                try {
+                    String setterMethodName = "set" + capitalize(attributeName);
+                    Method setterMethod = Client.class.getMethod(setterMethodName, String.class);
+                    setterMethod.invoke(client, newValue);
+                    results.put(attributeName, "atualizado com sucesso");
+                } catch (NoSuchMethodException e) {
+                    results.put(attributeName, "atributo inválido");
+                } catch (Exception e) {
+                    results.put(attributeName, "falha na atualização: " + e.getMessage());
+                }
+            }
+
+            BaseController.saveUsers(DATA_FILE);
+
+            StringBuilder responseBuilder = new StringBuilder("Resultados da atualização:\n");
+            for (Map.Entry<String, String> result : results.entrySet()) {
+                responseBuilder.append(result.getKey()).append(": ").append(result.getValue()).append("\n");
+            }
+
+            return ResponseEntity.ok(responseBuilder.toString());
         }
         return ResponseEntity.notFound().build();
     }

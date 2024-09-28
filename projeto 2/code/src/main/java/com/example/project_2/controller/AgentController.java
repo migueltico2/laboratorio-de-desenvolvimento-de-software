@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Tag(name = "Agent", description = "API de gerenciamento de agentes")
 public class AgentController extends BaseController {
 
+    private static final String DATA_FILE = "users.dat";
+
     // -------------
     // GET
     // -------------
@@ -49,7 +51,7 @@ public class AgentController extends BaseController {
     public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
         Agent newAgent = new Agent(agent.getName(), agent.getEmail(), agent.getPassword());
         users.add(newAgent);
-        BaseController.saveUsers();
+        BaseController.saveUsers(DATA_FILE);
         return ResponseEntity.status(HttpStatus.CREATED).body(newAgent);
     }
 
@@ -63,7 +65,15 @@ public class AgentController extends BaseController {
             @ApiResponse(responseCode = "404", description = "Agente não encontrado")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateAgent(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+    public ResponseEntity<String> updateAgent(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> updates,
+            @RequestHeader String token) {
+
+        if (!BaseController.isUserLoggedIn(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+        }
+
         Optional<User> userOpt = users.stream()
                 .filter(u -> u.getId().equals(id) && u instanceof Agent)
                 .findFirst();
@@ -88,7 +98,7 @@ public class AgentController extends BaseController {
                 }
             }
 
-            saveUsers();
+            BaseController.saveUsers(DATA_FILE);
 
             StringBuilder responseBuilder = new StringBuilder("Resultados da atualização:\n");
             for (Map.Entry<String, String> result : results.entrySet()) {

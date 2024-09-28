@@ -8,15 +8,15 @@ import java.util.List;
 
 public class BaseController {
     protected static List<User> users;
-    private static final String DATA_FILE = "users.dat";
+    private static final String USERS_FILE = "users.dat";
 
     static {
-        users = loadUsers();
+        users = loadUsers(USERS_FILE);
     }
 
     @SuppressWarnings("unchecked")
-    protected static List<User> loadUsers() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+    protected static List<User> loadUsers(String fileName) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
             return (List<User>) ois.readObject();
         } catch (FileNotFoundException e) {
             return new ArrayList<>();
@@ -26,11 +26,18 @@ public class BaseController {
         }
     }
 
-    protected static void saveUsers() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+    protected static void saveUsers(String fileName) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(users);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    protected static boolean isUserLoggedIn(String token) {
+        if (token == null) {
+            return false;
+        }
+        return users.stream().anyMatch(user -> user.getToken().equals(token));
     }
 }
