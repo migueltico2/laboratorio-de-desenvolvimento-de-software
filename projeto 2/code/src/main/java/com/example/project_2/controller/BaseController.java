@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseController {
-    protected List<User> users;
+    protected static List<User> users;
     private static final String DATA_FILE = "users.dat";
 
-    public BaseController() {
-        this.users = loadUsers();
+    static {
+        users = loadUsers();
     }
 
     @SuppressWarnings("unchecked")
-    protected List<User> loadUsers() {
+    protected static List<User> loadUsers() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             return (List<User>) ois.readObject();
         } catch (FileNotFoundException e) {
@@ -26,7 +26,7 @@ public class BaseController {
         }
     }
 
-    protected void saveUsers() {
+    protected static void saveUsers() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             oos.writeObject(users);
         } catch (IOException e) {

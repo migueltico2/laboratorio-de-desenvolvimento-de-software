@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 @Tag(name = "Agent", description = "API de gerenciamento de agentes")
 public class AgentController extends BaseController {
 
+    // -------------
+    // GET
+    // -------------
     @Operation(summary = "Listar todos os agentes", description = "Retorna uma lista de todos os agentes cadastrados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
@@ -35,6 +38,9 @@ public class AgentController extends BaseController {
         return ResponseEntity.ok(agents);
     }
 
+    // -------------
+    // POST
+    // -------------
     @Operation(summary = "Criar novo agente", description = "Cria um novo agente e retorna o agente criado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Agente criado com sucesso")
@@ -43,10 +49,13 @@ public class AgentController extends BaseController {
     public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
         Agent newAgent = new Agent(agent.getName(), agent.getEmail(), agent.getPassword());
         users.add(newAgent);
-        saveUsers();
+        BaseController.saveUsers();
         return ResponseEntity.status(HttpStatus.CREATED).body(newAgent);
     }
 
+    // -------------
+    // PUT
+    // -------------
     @Operation(summary = "Atualizar agente", description = "Atualiza os campos especificados de um agente existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Agente atualizado com sucesso"),

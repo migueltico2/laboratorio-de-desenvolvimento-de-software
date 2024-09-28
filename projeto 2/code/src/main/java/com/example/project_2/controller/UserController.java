@@ -19,34 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "User", description = "API de gerenciamento de usuários")
-public class UserController {
-
-    private List<User> users;
-    private static final String DATA_FILE = "users.dat";
-
-    public UserController() {
-        this.users = loadUsers();
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<User> loadUsers() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            return (List<User>) ois.readObject();
-        } catch (FileNotFoundException e) {
-            return new ArrayList<>();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    private void saveUsers() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(users);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+public class UserController extends BaseController {
 
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
@@ -54,7 +27,7 @@ public class UserController {
     })
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(BaseController.users);
     }
 
     @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário")
@@ -64,7 +37,7 @@ public class UserController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> userOpt = users.stream()
+        Optional<User> userOpt = BaseController.users.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst();
 
@@ -82,8 +55,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User newUser = new User(user.getName(), user.getEmail(), user.getPassword(), null);
-        users.add(newUser);
-        saveUsers();
+        BaseController.users.add(newUser);
+        BaseController.saveUsers();
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
@@ -94,7 +67,7 @@ public class UserController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> userOpt = users.stream()
+        Optional<User> userOpt = BaseController.users.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst();
 
@@ -102,7 +75,7 @@ public class UserController {
             User existingUser = userOpt.get();
             existingUser.setName(user.getName());
             existingUser.setEmail(user.getEmail());
-            saveUsers();
+            BaseController.saveUsers();
             return ResponseEntity.ok(existingUser);
         } else {
             return ResponseEntity.notFound().build();
@@ -116,9 +89,9 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean removed = users.removeIf(user -> user.getId().equals(id));
+        boolean removed = BaseController.users.removeIf(user -> user.getId().equals(id));
         if (removed) {
-            saveUsers();
+            BaseController.saveUsers();
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
@@ -131,7 +104,7 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        List<User> users = loadUsers();
+        List<User> users = BaseController.loadUsers();
 
         Optional<User> userOpt = users.stream()
                 .filter(u -> u != null && u.getEmail() != null && u.getEmail().equals(loginRequest.getEmail()))
@@ -154,7 +127,7 @@ public class UserController {
     })
     @PutMapping("/{id}/change-password")
     public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        Optional<User> userOpt = users.stream()
+        Optional<User> userOpt = BaseController.users.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst();
 
@@ -162,7 +135,7 @@ public class UserController {
             User existingUser = userOpt.get();
             if (existingUser.getPassword().equals(request.getOldPassword())) {
                 existingUser.setPassword(request.getNewPassword());
-                saveUsers();
+                BaseController.saveUsers();
                 return ResponseEntity.ok("Senha alterada com sucesso");
             }
         }
