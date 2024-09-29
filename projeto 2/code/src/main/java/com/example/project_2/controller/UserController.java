@@ -1,5 +1,6 @@
 package com.example.project_2.controller;
 
+import com.example.project_2.Enums.VehicleStatus;
 import com.example.project_2.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +35,25 @@ public class UserController extends BaseController {
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
         user.setUserToken(rs.getString("user_token"));
+
+        // Verificando se há dados de veículo antes de adicionar
+        if (rs.getObject("vehicle.id") != null) {
+            VehicleDTO vehicle = new VehicleDTO();
+            vehicle.setId(rs.getLong("vehicle.id"));
+            vehicle.setRegistration(rs.getString("vehicle.registration"));
+            vehicle.setYear(rs.getInt("vehicle.year"));
+            vehicle.setBrand(rs.getString("vehicle.brand"));
+            vehicle.setModel(rs.getString("vehicle.model"));
+            vehicle.setPlate(rs.getString("vehicle.plate"));
+
+            String status = rs.getString("vehicle.status");
+            if (status != null) {
+                vehicle.setStatus(VehicleStatus.valueOf(status));
+            }
+
+            user.addVehicle(vehicle);
+        }
+
         return user;
     };
 
@@ -43,29 +63,32 @@ public class UserController extends BaseController {
     })
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        String sql = "SELECT * FROM app_user";
+        String sql = "SELECT u.*, " +
+                "v.id as \"vehicle.id\", " +
+                "v.registration as \"vehicle.registration\", " +
+                "v.year as \"vehicle.year\", " +
+                "v.brand as \"vehicle.brand\", " +
+                "v.model as \"vehicle.model\", " +
+                "v.plate as \"vehicle.plate\", " +
+                "v.status as \"vehicle.status\" " +
+                "FROM app_user u " +
+                "LEFT JOIN vehicle v ON u.id = v.owner_id";
         List<UserDTO> users = jdbcTemplate.query(sql, userRowMapper);
         return ResponseEntity.ok(users);
     }
 
-    // @Operation(summary = "Buscar usuário por ID", description = "Retorna um único
-    // usuário")
-    // @ApiResponses(value = {
-    // @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
-    // @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    // })
-    // @GetMapping("/{id}")
-    // public ResponseEntity<User> getUserById(@PathVariable Long id) {
-    // Optional<User> userOpt = BaseController.users.stream()
-    // .filter(u -> u.getId().equals(id))
-    // .findFirst();
+    @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário pelo seu id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<List<UserDTO>> getUserById(@PathVariable Long id) {
+        String sql = "select * from app_user WHERE id = ? JOIN vehicle on app_user.id = vehicle.owner_id";
+        List<UserDTO> users = jdbcTemplate.query(sql, userRowMapper, id);
+        return ResponseEntity.ok(users);
 
-    // if (userOpt.isPresent()) {
-    // return ResponseEntity.ok(userOpt.get());
-    // } else {
-    // return ResponseEntity.notFound().build();
-    // }
-    // }
+    }
 
     @Operation(summary = "Excluir usuário", description = "Exclui um usuárioexistente")
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Usuário excluído comsucesso"),
@@ -92,18 +115,20 @@ public class UserController extends BaseController {
     })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
-        List<UserDTO> user = jdbcTemplate.query(sql, userRowMapper, loginRequest.getEmail(),
-                loginRequest.getPassword());
-        if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
-        }
+        try {
+            String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
+            List<UserDTO> user = jdbcTemplate.query(sql, userRowMapper, loginRequest.getEmail(),
+                    loginRequest.getPassword());
 
-        UserDTO userDTO = user.get(0);
-        if (AuthUtil.validatePassword(loginRequest.getPassword(), userDTO.getUserToken())) {
-            return ResponseEntity.ok(userDTO.getUserToken());
+            if (user.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
+            }
+
+            return ResponseEntity.ok(user.get(0).getUserToken());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao autenticar usuário" + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
     }
 
     @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário existente")
@@ -138,9 +163,9 @@ public class UserController extends BaseController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
         }
 
-        String sql = "INSERT into vehicle (registration, year, brand, model, plate, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT into vehicle (registration, year, brand, model, plate, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, (SELECT id from app_user where user_token = ?)";
         jdbcTemplate.update(sql, vehicleDTO.getRegistration(), vehicleDTO.getYear(), vehicleDTO.getBrand(),
-                vehicleDTO.getModel(), vehicleDTO.getPlate(), vehicleDTO.getStatus(), vehicleDTO.getOwnerId());
+                vehicleDTO.getModel(), vehicleDTO.getPlate(), vehicleDTO.getStatus(), token);
         return ResponseEntity.ok("Veículo adicionado com sucesso");
     }
 

@@ -1,12 +1,15 @@
 package com.example.project_2.model.DTO;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class UserDTO {
     private Long id;
     private String name;
     private String email;
     private String user_token;
     private String password;
-    // Construtores, getters e setters
+    private List<VehicleDTO> vehicles;
 
     public UserDTO(Long id, String name, String email, String user_token) {
         this.id = id;
@@ -58,4 +61,18 @@ public class UserDTO {
         this.user_token = user_token;
     }
 
+    public List<VehicleDTO> getVehicles() {
+        return this.vehicles;
+    }
+
+    public void setVehicles(List<VehicleDTO> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public void addVehicle(VehicleDTO vehicle) {
+        if (this.vehicles == null) {
+            this.vehicles = new ArrayList<>();
+        }
+        this.vehicles.add(vehicle);
+    }
 }
