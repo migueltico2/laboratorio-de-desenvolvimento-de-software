@@ -34,10 +34,4 @@ public class BaseController {
         }
     }
 
-    protected static boolean isUserLoggedIn(String token) {
-        if (token == null) {
-            return false;
-        }
-        return users.stream().anyMatch(user -> user.getToken().equals(token));
-    }
 }

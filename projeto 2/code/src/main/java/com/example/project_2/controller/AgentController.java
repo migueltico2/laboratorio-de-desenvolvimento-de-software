@@ -1,42 +1,60 @@
 package com.example.project_2.controller;
 
 import com.example.project_2.model.Agent;
+import com.example.project_2.model.Client;
 import com.example.project_2.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.example.project_2.model.DTO.AgentDTO;
 
 @RestController
 @RequestMapping("/api/agents")
+@CrossOrigin(origins = "*")
 @Tag(name = "Agent", description = "API de gerenciamento de agentes")
 public class AgentController extends BaseController {
 
-    private static final String DATA_FILE = "users.dat";
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    // -------------
-    // GET
-    // -------------
+    private final RowMapper<AgentDTO> agentRowMapper = (rs, rowNum) -> {
+        AgentDTO agent = new AgentDTO();
+
+        // Mapeando atributos da classe User
+        agent.setId(rs.getLong("id"));
+        agent.setName(rs.getString("name"));
+        agent.setEmail(rs.getString("email"));
+        agent.setPassword(rs.getString("password"));
+        agent.setUserToken(rs.getString("user_token"));
+
+        return agent;
+    };
+
     @Operation(summary = "Listar todos os agentes", description = "Retorna uma lista de todos os agentes cadastrados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
     })
     @GetMapping
-    public ResponseEntity<List<Agent>> getAllAgents() {
-        List<Agent> agents = users.stream()
-                .filter(user -> user instanceof Agent)
-                .map(user -> (Agent) user)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<AgentDTO>> getAllAgents() {
+        String sql = "SELECT * FROM agent JOIN app_user ON agent.user_id = app_user.id";
+        List<AgentDTO> agents = jdbcTemplate.query(sql, agentRowMapper);
         return ResponseEntity.ok(agents);
     }
 
@@ -48,11 +66,15 @@ public class AgentController extends BaseController {
             @ApiResponse(responseCode = "201", description = "Agente criado com sucesso")
     })
     @PostMapping
-    public ResponseEntity<Agent> createAgent(@RequestBody Agent agent) {
-        Agent newAgent = new Agent(agent.getName(), agent.getEmail(), agent.getPassword());
-        users.add(newAgent);
-        BaseController.saveUsers(DATA_FILE);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAgent);
+    public ResponseEntity<String> createAgent(@RequestBody Agent agent) {
+        String userSql = "INSERT INTO app_user (name, email, password) VALUES (?, ?, ?) RETURNING id";
+        Long userId = jdbcTemplate.queryForObject(userSql, Long.class, agent.getName(), agent.getEmail(),
+                agent.getPassword());
+
+        String agentSql = "INSERT INTO agent (user_id) VALUES (?)";
+        jdbcTemplate.update(agentSql, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Agente criado com sucesso");
     }
 
     // -------------
@@ -70,44 +92,64 @@ public class AgentController extends BaseController {
             @RequestBody Map<String, String> updates,
             @RequestHeader String token) {
 
-        if (!BaseController.isUserLoggedIn(token)) {
+        // Verificar autenticação
+        String checkTokenSql = "SELECT COUNT(*) FROM app_user WHERE token = ?";
+        Integer count = jdbcTemplate.queryForObject(checkTokenSql, Integer.class, token);
+        if (count == null || count == 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
         }
 
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id) && u instanceof Agent)
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            Agent agent = (Agent) userOpt.get();
-            Map<String, String> results = new HashMap<>();
-
-            for (Map.Entry<String, String> entry : updates.entrySet()) {
-                String attributeName = entry.getKey();
-                String newValue = entry.getValue();
-
-                try {
-                    String setterMethodName = "set" + capitalize(attributeName);
-                    Method setterMethod = Agent.class.getMethod(setterMethodName, String.class);
-                    setterMethod.invoke(agent, newValue);
-                    results.put(attributeName, "atualizado com sucesso");
-                } catch (NoSuchMethodException e) {
-                    results.put(attributeName, "atributo inválido");
-                } catch (Exception e) {
-                    results.put(attributeName, "falha na atualização: " + e.getMessage());
-                }
-            }
-
-            BaseController.saveUsers(DATA_FILE);
-
-            StringBuilder responseBuilder = new StringBuilder("Resultados da atualização:\n");
-            for (Map.Entry<String, String> result : results.entrySet()) {
-                responseBuilder.append(result.getKey()).append(": ").append(result.getValue()).append("\n");
-            }
-
-            return ResponseEntity.ok(responseBuilder.toString());
+        // Verificar se o agente existe
+        String checkAgentSql = "SELECT COUNT(*) FROM agent WHERE user_id = ?";
+        count = jdbcTemplate.queryForObject(checkAgentSql, Integer.class, id);
+        if (count == null || count == 0) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+
+        StringBuilder updateSql = new StringBuilder("UPDATE app_user SET ");
+        List<Object> params = new ArrayList<>();
+        Map<String, String> results = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : updates.entrySet()) {
+            String attributeName = entry.getKey();
+            String newValue = entry.getValue();
+
+            // Verificar se o atributo é válido
+            if (isValidAttribute(attributeName)) {
+                updateSql.append(attributeName).append(" = ?, ");
+                params.add(newValue);
+                results.put(attributeName, "atualizado com sucesso");
+            } else {
+                results.put(attributeName, "atributo inválido");
+            }
+        }
+
+        // Remover a última vírgula e espaço
+        updateSql.setLength(updateSql.length() - 2);
+        updateSql.append(" WHERE id = ?");
+        params.add(id);
+
+        try {
+            int rowsAffected = jdbcTemplate.update(updateSql.toString(), params.toArray());
+            if (rowsAffected > 0) {
+                StringBuilder responseBuilder = new StringBuilder("Resultados da atualização:\n");
+                for (Map.Entry<String, String> result : results.entrySet()) {
+                    responseBuilder.append(result.getKey()).append(": ").append(result.getValue()).append("\n");
+                }
+                return ResponseEntity.ok(responseBuilder.toString());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar o agente: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidAttribute(String attributeName) {
+        // Lista de atributos válidos
+        List<String> validAttributes = Arrays.asList("name", "email", "password");
+        return validAttributes.contains(attributeName.toLowerCase());
     }
 
     private String capitalize(String str) {

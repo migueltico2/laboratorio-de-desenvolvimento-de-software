@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Vehicle implements Serializable {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
     private Long id;
-    private int propertaryId;
+    private int owner_id;
     private String registration;
     private int year;
     private String brand;
@@ -15,10 +15,10 @@ public class Vehicle implements Serializable {
     private String plate;
     private VehicleStatus status;
 
-    public Vehicle(Long id, int propertaryId, String registration, int year, String brand, String model, String plate,
+    public Vehicle(Long id, int owner_id, String registration, int year, String brand, String model, String plate,
             VehicleStatus status) {
         this.id = ID_GENERATOR.getAndIncrement();
-        this.propertaryId = propertaryId;
+        this.owner_id = owner_id;
         this.registration = registration;
         this.year = year;
         this.brand = brand;
@@ -31,12 +31,12 @@ public class Vehicle implements Serializable {
         return this.id;
     }
 
-    public int getPropertaryId() {
-        return this.propertaryId;
+    public int getOwnerId() {
+        return this.owner_id;
     }
 
-    public void setPropertaryId(int propertaryId) {
-        this.propertaryId = propertaryId;
+    public void setOwnerId(int owner_id) {
+        this.owner_id = owner_id;
     }
 
     public String getRegistration() {
