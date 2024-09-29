@@ -1,10 +1,24 @@
 package com.example.project_2.model.DTO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.project_2.model.Client;
+import com.example.project_2.util.AuthUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Component
 public class ClientDTO extends UserDTO {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private AuthUtil authUtil;
 
     @Schema(description = "RG do cliente", example = "18983332")
     private String RG;
@@ -28,9 +42,10 @@ public class ClientDTO extends UserDTO {
         super();
     }
 
-    public ClientDTO(Long id, String name, String email, String user_token, String RG, String CPF, String address,
+    public ClientDTO(Long id, String name, String email, String user_token, String role, String RG, String CPF,
+            String address,
             String profession, String employer, double[] lastThreeSalaries) {
-        super(id, name, email, user_token);
+        super(id, name, email, user_token, role);
         this.RG = RG;
         this.CPF = CPF;
         this.address = address;
@@ -89,7 +104,33 @@ public class ClientDTO extends UserDTO {
         this.lastThreeSalaries = lastThreeSalaries;
     }
 
-    // Métodos de conversão
+    public ClientDTO createClient(Client client) {
+        try {
+            System.out.println("Creating client: " + client.toString());
+            String userSql = "INSERT INTO app_user (name, email, password, role) VALUES (?, ?, ?, ?) RETURNING id";
+            Long userId = jdbcTemplate.queryForObject(userSql, Long.class,
+                    client.getName(), client.getEmail(),
+                    client.getPassword(), "CLIENT");
+
+            String clientSql = "INSERT INTO client (rg, cpf, address, profession, employer, user_id, salary_one, salary_two, salary_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *";
+            jdbcTemplate.update(
+                    clientSql,
+                    client.getRG(),
+                    client.getCPF(),
+                    client.getAddress(),
+                    client.getProfession(),
+                    client.getEmployer(),
+                    userId,
+                    client.getLastThreeSalaries()[0],
+                    client.getLastThreeSalaries()[1],
+                    client.getLastThreeSalaries()[2]);
+
+            return ClientDTO.fromClient(client);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static ClientDTO fromClient(Client client) {
         ClientDTO dto = new ClientDTO();

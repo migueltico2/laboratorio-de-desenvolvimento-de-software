@@ -5,7 +5,7 @@ public class AgentDTO extends UserDTO {
         super();
     }
 
-    public AgentDTO(Long id, String name, String email, String user_token) {
-        super(id, name, email, user_token);
+    public AgentDTO(Long id, String name, String email, String user_token, String role) {
+        super(id, name, email, user_token, role);
     }
 }

@@ -14,53 +14,34 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Date;
 import com.example.project_2.model.DTO.ClientDTO;
+import com.example.project_2.model.mapper.ClientMapper;
+import com.example.project_2.util.AuthUtil;
+import com.example.project_2.model.DTO.ContractDTO;
+import com.example.project_2.model.DTO.RentalDTO;
+import com.example.project_2.model.mapper.ContractMapper;
+
+import java.util.Map;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/clients")
 @CrossOrigin(origins = "*")
 @Tag(name = "Client", description = "API de gerenciamento de clientes")
-public class ClientController extends BaseController {
-    // CAMINHO DO ARQUIVO DE USUÁRIOS passado para o base controller
-    private static final String DATA_FILE = "users.dat";
+public class ClientController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<ClientDTO> clientRowMapper = (rs, rowNum) -> {
-        ClientDTO client = new ClientDTO();
+    @Autowired
+    private ClientDTO clientDTO;
+    @Autowired
+    private AuthUtil authUtil;
 
-        // Mapeando atributos da classe User
-        client.setId(rs.getLong("id"));
-        client.setName(rs.getString("name"));
-        client.setEmail(rs.getString("email"));
-        client.setPassword(rs.getString("password"));
-        client.setUserToken(rs.getString("user_token"));
-
-        // Mapeando atributos específicos da classe Client
-        client.setRG(rs.getString("rg"));
-        client.setCPF(rs.getString("cpf"));
-        client.setAddress(rs.getString("address"));
-        client.setProfession(rs.getString("profession"));
-        client.setEmployer(rs.getString("employer"));
-
-        // Mapeando os três últimos salários
-        double[] lastThreeSalaries = new double[3];
-        lastThreeSalaries[0] = rs.getDouble("salary_one");
-        lastThreeSalaries[1] = rs.getDouble("salary_two");
-        lastThreeSalaries[2] = rs.getDouble("salary_three");
-        client.setLastThreeSalaries(lastThreeSalaries);
-
-        return client;
-    };
+    private final RowMapper<ClientDTO> clientRowMapper = ClientMapper.clientRowMapper();
+    private final RowMapper<ContractDTO> contractRowMapper = ContractMapper.contractRowMapper();
 
     @Operation(summary = "Listar todos os clientes", description = "Retorna uma lista de todos os clientes cadastrados")
     @ApiResponses(value = {
@@ -73,53 +54,123 @@ public class ClientController extends BaseController {
         return ResponseEntity.ok(clients);
     }
 
-    @Operation(summary = "Buscar cliente por ID", description = "Retorna um único cliente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<Client> getClientById(@PathVariable Long id) {
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id) && u instanceof Client)
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            return ResponseEntity.ok((Client) userOpt.get());
-        }
-        return ResponseEntity.notFound().build();
-    }
-
     @Operation(summary = "Criar novo cliente", description = "Cria um novo cliente e retorna o cliente criado")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Cliente criado com sucesso") })
     @PostMapping
-    public ResponseEntity<String> createClient(@RequestBody Client client) {
+    public ResponseEntity<?> createClient(@RequestBody Client client) {
         try {
-            String userSql = "INSERT INTO app_user (name, email, password) VALUES (?, ?, ?) RETURNING id";
-            Long userId = jdbcTemplate.queryForObject(userSql, Long.class,
-                    client.getName(), client.getEmail(),
-                    client.getPassword());
-
-            String clientSql = "INSERT INTO client (rg, cpf, address, profession, employer, user_id, salary_one, salary_two, salary_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *";
-            jdbcTemplate.update(
-                    clientSql,
-                    client.getRG(),
-                    client.getCPF(),
-                    client.getAddress(),
-                    client.getProfession(),
-                    client.getEmployer(),
-                    userId,
-                    client.getLastThreeSalaries()[0],
-                    client.getLastThreeSalaries()[1],
-                    client.getLastThreeSalaries()[2]);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body("Cliente criado com sucesso");
+            ClientDTO createdClient = clientDTO.createClient(client);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Cliente criado com sucesso: " + createdClient);
         } catch (Exception e) {
             e.printStackTrace(); // Para logging mais detalhado
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao criar cliente: " + e.getMessage());
         }
     }
 
+    @Operation(summary = "Solicitar aluguel de veículo", description = "Solicita o aluguel de um veículo para o cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Aluguel solicitado com sucesso")
+    })
+    @PostMapping("/request-rent")
+    public ResponseEntity<String> requestRent(@RequestBody RentalDTO rentalDTO, @RequestHeader String token) {
+        try {
+            if (!authUtil.authenticateToken(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+            }
+
+            String sql = "INSERT INTO contract (considerations, start_date, end_date, value, agent_id, vehicle_id, owner_id, client_id, status) "
+                    +
+                    "VALUES (?, ?::date, ?::date, ?, ?, ?, " +
+                    "(SELECT owner_id FROM vehicle v WHERE v.id = ?), " +
+                    "(SELECT c.id FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid), " +
+                    "'PENDING') RETURNING id";
+            int contract = jdbcTemplate.update(sql,
+                    "",
+                    rentalDTO.getStartDate(),
+                    rentalDTO.getEndDate(),
+                    rentalDTO.getValue(),
+                    null,
+                    rentalDTO.getVehicleId(),
+                    rentalDTO.getVehicleId(),
+                    token);
+
+            if (contract > 0) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Aluguel solicitado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Falha ao solicitar aluguel");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao solicitar aluguel: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Verificar aluguéis do cliente", description = "Verifica os aluguéis do cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Aluguéis verificados com sucesso")
+    })
+    @GetMapping("/check-rentals")
+    public ResponseEntity<?> checkRentals(@RequestHeader String token) {
+        try {
+            if (!authUtil.authenticateToken(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
+
+            String sql = "SELECT * FROM contract WHERE contract.client_id = (SELECT id FROM app_user WHERE user_token = UUID(?))";
+            List<ContractDTO> contracts = jdbcTemplate.query(sql, contractRowMapper, token);
+            if (contracts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum aluguel encontrado");
+            }
+            return ResponseEntity.ok(contracts);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao verificar aluguéis: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualizar aluguel", description = "Atualiza os campos especificados de um contrato de aluguel existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Contrato atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Falha na atualização do contrato"),
+            @ApiResponse(responseCode = "403", description = "Erro ao autenticar usuário"),
+            @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
+    })
+    @PutMapping("/update-rental/{id}")
+    public ResponseEntity<String> updateRental(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> updates,
+            @RequestHeader String token) {
+        try {
+            if (!authUtil.authenticateToken(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+            }
+
+            StringBuilder sqlBuilder = new StringBuilder("UPDATE contract SET ");
+            List<Object> params = new ArrayList<>();
+
+            for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                sqlBuilder.append(entry.getKey()).append(" = ?, ");
+                params.add(entry.getValue());
+            }
+
+            // Remove a última vírgula e espaço
+            sqlBuilder.setLength(sqlBuilder.length() - 2);
+            sqlBuilder.append(" WHERE id = ? AND client_id = (SELECT id FROM app_user WHERE user_token = ?)");
+
+            params.add(id);
+            params.add(token);
+
+            int updatedRows = jdbcTemplate.update(sqlBuilder.toString(), params.toArray());
+
+            if (updatedRows > 0) {
+                return ResponseEntity.ok("Contrato atualizado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Contrato não encontrado ou você não tem permissão para atualizá-lo");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Falha na atualização do contrato: " + e.getMessage());
+        }
+    }
     // @Operation(summary = "Atualizar cliente", description = "Atualiza os campos
     // especificados de um cliente existente")
     // @ApiResponses(value = {

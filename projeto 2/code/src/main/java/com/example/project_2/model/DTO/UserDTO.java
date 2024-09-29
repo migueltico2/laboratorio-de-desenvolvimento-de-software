@@ -7,15 +7,17 @@ public class UserDTO {
     private Long id;
     private String name;
     private String email;
-    private String user_token;
     private String password;
-    private List<VehicleDTO> vehicles;
+    private String userToken;
+    private String role;
+    private List<VehicleDTO> vehicles = new ArrayList<>(); // Inicialize com uma lista vazia
 
-    public UserDTO(Long id, String name, String email, String user_token) {
+    public UserDTO(Long id, String name, String email, String userToken, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.user_token = user_token;
+        this.userToken = userToken;
+        this.role = role;
     }
 
     public UserDTO() {
@@ -54,25 +56,32 @@ public class UserDTO {
     }
 
     public String getUserToken() {
-        return this.user_token;
+        return this.userToken;
     }
 
-    public void setUserToken(String user_token) {
-        this.user_token = user_token;
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 
     public List<VehicleDTO> getVehicles() {
-        return this.vehicles;
+        return vehicles;
     }
 
     public void setVehicles(List<VehicleDTO> vehicles) {
-        this.vehicles = vehicles;
+        this.vehicles = vehicles != null ? vehicles : new ArrayList<>();
     }
 
     public void addVehicle(VehicleDTO vehicle) {
-        if (this.vehicles == null) {
-            this.vehicles = new ArrayList<>();
+        if (vehicle != null) {
+            this.vehicles.add(vehicle);
         }
-        this.vehicles.add(vehicle);
+    }
+
+    public String getRole() {
+        return this.role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

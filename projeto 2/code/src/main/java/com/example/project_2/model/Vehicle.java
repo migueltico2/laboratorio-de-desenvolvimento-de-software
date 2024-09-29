@@ -2,10 +2,8 @@ package com.example.project_2.model;
 
 import com.example.project_2.Enums.VehicleStatus;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Vehicle implements Serializable {
-    private static final AtomicLong ID_GENERATOR = new AtomicLong(1);
     private Long id;
     private int owner_id;
     private String registration;
@@ -17,7 +15,7 @@ public class Vehicle implements Serializable {
 
     public Vehicle(Long id, int owner_id, String registration, int year, String brand, String model, String plate,
             VehicleStatus status) {
-        this.id = ID_GENERATOR.getAndIncrement();
+        this.id = id;
         this.owner_id = owner_id;
         this.registration = registration;
         this.year = year;

@@ -24,20 +24,25 @@ public abstract class User implements Serializable {
     @Schema(name = "user_token", description = "Token do usuário", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
     private String userToken;
 
-    public User(Long id, String name, String email, String password, Vehicle vehicle) {
+    @Schema(description = "Papel do usuário", example = "CLIENTE")
+    private String role;
+
+    public User(Long id, String name, String email, String password, Vehicle vehicle, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.vehicle = new ArrayList<Vehicle>();
+        this.role = role;
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, String role) {
         this.id = null;
         this.name = name;
         this.email = email;
         this.password = password;
         this.vehicle = new ArrayList<Vehicle>();
+        this.role = role;
     }
 
     public void addVehicle(Vehicle vehicle) {

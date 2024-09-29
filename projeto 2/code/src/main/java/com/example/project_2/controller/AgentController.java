@@ -24,28 +24,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import com.example.project_2.model.DTO.AgentDTO;
+import com.example.project_2.model.mapper.AgentMapper;
 
 @RestController
 @RequestMapping("/api/agents")
 @CrossOrigin(origins = "*")
 @Tag(name = "Agent", description = "API de gerenciamento de agentes")
-public class AgentController extends BaseController {
+public class AgentController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<AgentDTO> agentRowMapper = (rs, rowNum) -> {
-        AgentDTO agent = new AgentDTO();
-
-        // Mapeando atributos da classe User
-        agent.setId(rs.getLong("id"));
-        agent.setName(rs.getString("name"));
-        agent.setEmail(rs.getString("email"));
-        agent.setPassword(rs.getString("password"));
-        agent.setUserToken(rs.getString("user_token"));
-
-        return agent;
-    };
+    private static final RowMapper<AgentDTO> agentRowMapper = AgentMapper.agentRowMapper();
 
     @Operation(summary = "Listar todos os agentes", description = "Retorna uma lista de todos os agentes cadastrados")
     @ApiResponses(value = {
@@ -67,9 +56,9 @@ public class AgentController extends BaseController {
     })
     @PostMapping
     public ResponseEntity<String> createAgent(@RequestBody Agent agent) {
-        String userSql = "INSERT INTO app_user (name, email, password) VALUES (?, ?, ?) RETURNING id";
+        String userSql = "INSERT INTO app_user (name, email, password, role) VALUES (?, ?, ?, ?) RETURNING id";
         Long userId = jdbcTemplate.queryForObject(userSql, Long.class, agent.getName(), agent.getEmail(),
-                agent.getPassword());
+                agent.getPassword(), "AGENT");
 
         String agentSql = "INSERT INTO agent (user_id) VALUES (?)";
         jdbcTemplate.update(agentSql, userId);

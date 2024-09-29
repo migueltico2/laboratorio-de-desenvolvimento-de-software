@@ -23,8 +23,8 @@ public class Client extends User {
     private double[] lastThreeSalaries;
 
     public Client(String name, String email, String password, String RG, String CPF, String address, String profession,
-            String employer) {
-        super(null, name, email, password, null);
+            String employer, String role) {
+        super(null, name, email, password, null, role);
         this.RG = RG;
         this.CPF = CPF;
         this.address = address;
@@ -34,8 +34,8 @@ public class Client extends User {
     }
 
     public Client(Long id, String name, String email, String password, String RG, String CPF, String address,
-            String profession, String employer) {
-        super(id, name, email, password, null);
+            String profession, String employer, String role) {
+        super(id, name, email, password, null, role);
         this.RG = RG;
         this.CPF = CPF;
         this.address = address;
@@ -48,8 +48,8 @@ public class Client extends User {
         super();
     }
 
-    public Client(String name, String email, String password) {
-        super(null, name, email, password, null);
+    public Client(String name, String email, String password, String role) {
+        super(null, name, email, password, null, role);
     }
 
     public void requestRent(Vehicle vehicle) {
