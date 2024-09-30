@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.example.project_2.Enums.VehicleStatus;
 import com.example.project_2.model.User;
 import com.example.project_2.model.Vehicle;
 import com.example.project_2.model.mapper.UserMapper;
@@ -38,6 +39,27 @@ public class UserDTO {
     public List<UserDTO> getAllUsers(JdbcTemplate jdbcTemplate) {
         String sql = "SELECT * FROM app_user";
         return jdbcTemplate.query(sql, baseUserRowMapper);
+    }
+
+    public Integer getUserIdByToken(String token, JdbcTemplate jdbcTemplate) {
+        String userIdSql = "SELECT app_user.id FROM app_user WHERE user_token = ?::uuid";
+        try {
+            return jdbcTemplate.queryForObject(userIdSql, Integer.class, token);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean addVehicle(VehicleDTO vehicleDTO, Integer userId) {
+        String insertSql = "INSERT INTO vehicle (registration, year, brand, model, plate, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
+        int rowsAffected = jdbcTemplate.update(insertSql,
+                vehicleDTO.getRegistration(),
+                vehicleDTO.getYear(),
+                vehicleDTO.getBrand(),
+                vehicleDTO.getModel(),
+                vehicleDTO.getPlate(),
+                userId);
+        return rowsAffected > 0;
     }
 
     public UserDTO(Long id, String name, String email, String userToken, String role) {

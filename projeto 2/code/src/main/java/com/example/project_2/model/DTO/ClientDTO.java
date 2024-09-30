@@ -117,15 +117,15 @@ public class ClientDTO extends UserDTO {
                     client.getName(), client.getEmail(),
                     client.getPassword(), "CLIENT");
 
-            String clientSql = "INSERT INTO client (rg, cpf, address, profession, employer, user_id, salary_one, salary_two, salary_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *";
+            String clientSql = "INSERT INTO client (rg, cpf, id, address, profession, employer, salary_one, salary_two, salary_three) VALUES (?, ?,(SELECT id FROM app_user WHERE user_token = ?), ?, ?, ?, ?, ?, ?) RETURNING *";
             jdbcTemplate.update(
                     clientSql,
                     client.getRG(),
                     client.getCPF(),
+                    client.getUserToken(),
                     client.getAddress(),
                     client.getProfession(),
                     client.getEmployer(),
-                    userId,
                     client.getLastThreeSalaries()[0],
                     client.getLastThreeSalaries()[1],
                     client.getLastThreeSalaries()[2]);
@@ -137,24 +137,24 @@ public class ClientDTO extends UserDTO {
         }
     }
 
-    @Transactional
     public int requestRental(RentalDTO rentalDTO, String token) {
-        String sql = "INSERT INTO contract (considerations, start_date, end_date, value, agent_id, vehicle_id, owner_id, client_id, status) "
-                +
-                "VALUES (?, ?::date, ?::date, ?, ?, ?, " +
-                "(SELECT owner_id FROM vehicle v WHERE v.id = ?), " +
-                "(SELECT c.id FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid), " +
-                "'PENDING') RETURNING id";
 
-        return jdbcTemplate.update(sql,
+        Integer clientId = jdbcTemplate.queryForObject(
+                "SELECT  FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid",
+                Integer.class, token);
+
+        System.out.println("Client ID:===========>>>> " + clientId);
+
+        String sql = "INSERT INTO contract (considerations, client_id, vehicle_id, start_date, end_date, value) VALUES (?, ?, ?, ?::date, ?::date, ?) RETURNING id";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class,
                 "",
+                clientId,
+                rentalDTO.getVehicleId(),
+                rentalDTO.getVehicleId(),
                 rentalDTO.getStartDate(),
                 rentalDTO.getEndDate(),
-                rentalDTO.getValue(),
-                null,
-                rentalDTO.getVehicleId(),
-                rentalDTO.getVehicleId(),
-                token);
+                rentalDTO.getValue());
     }
 
     public List<ContractDTO> getClientContracts(String token) {

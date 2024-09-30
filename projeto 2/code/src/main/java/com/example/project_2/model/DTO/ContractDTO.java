@@ -2,12 +2,19 @@ package com.example.project_2.model.DTO;
 
 import com.example.project_2.Enums.ContractStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Component
 public class ContractDTO {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Schema(description = "Identificador único do contrato", example = "1")
     private Long id;
 
@@ -56,6 +63,12 @@ public class ContractDTO {
     // Construtores
 
     public ContractDTO() {
+    }
+
+    public boolean updateContract(Long contractId, String status) {
+        String sql = "UPDATE contract SET status = ? WHERE id = ?";
+        int rowsAffected = jdbcTemplate.update(sql, status, contractId);
+        return rowsAffected > 0;
     }
 
     // Getters e Setters

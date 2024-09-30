@@ -22,6 +22,7 @@ import com.example.project_2.util.AuthUtil;
 import com.example.project_2.model.DTO.ContractDTO;
 import com.example.project_2.model.DTO.RentalDTO;
 import com.example.project_2.model.mapper.ContractMapper;
+import com.example.project_2.model.DTO.ContractDTO;
 
 import java.util.Map;
 import java.util.ArrayList;
@@ -38,10 +39,11 @@ public class ClientController {
     @Autowired
     private ClientDTO clientDTO;
     @Autowired
+    private ContractDTO contractDTO;
+    @Autowired
     private AuthUtil authUtil;
 
     private final RowMapper<ClientDTO> clientRowMapper = ClientMapper.clientRowMapper();
-    private final RowMapper<ContractDTO> contractRowMapper = ContractMapper.contractRowMapper();
 
     @Operation(summary = "Listar todos os clientes", description = "Retorna uma lista de todos os clientes cadastrados")
     @ApiResponses(value = {
@@ -120,102 +122,24 @@ public class ClientController {
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
     @PutMapping("/update-rental/{id}")
-    public ResponseEntity<String> updateRental(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> updates,
+    public ResponseEntity<?> updateRental(@PathVariable Long id, @RequestBody String status,
             @RequestHeader String token) {
         try {
             if (!authUtil.authenticateToken(token)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
             }
 
-            StringBuilder sqlBuilder = new StringBuilder("UPDATE contract SET ");
-            List<Object> params = new ArrayList<>();
+            boolean updatedRows = contractDTO.updateContract(id, status);
 
-            for (Map.Entry<String, Object> entry : updates.entrySet()) {
-                sqlBuilder.append(entry.getKey()).append(" = ?, ");
-                params.add(entry.getValue());
-            }
-
-            // Remove a última vírgula e espaço
-            sqlBuilder.setLength(sqlBuilder.length() - 2);
-            sqlBuilder.append(" WHERE id = ? AND client_id = (SELECT id FROM app_user WHERE user_token = ?)");
-
-            params.add(id);
-            params.add(token);
-
-            int updatedRows = jdbcTemplate.update(sqlBuilder.toString(), params.toArray());
-
-            if (updatedRows > 0) {
+            if (updatedRows) {
                 return ResponseEntity.ok("Contrato atualizado com sucesso");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Contrato não encontrado ou você não tem permissão para atualizá-lo");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contrato não encontrado");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Falha na atualização do contrato: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao atualizar contrato: " + e.getMessage());
         }
     }
-    // @Operation(summary = "Atualizar cliente", description = "Atualiza os campos
-    // especificados de um cliente existente")
-    // @ApiResponses(value = {
-    // @ApiResponse(responseCode = "200", description = "Cliente atualizado com
-    // sucesso"),
-    // @ApiResponse(responseCode = "400", description = "Falha na atualização do
-    // cliente"),
-    // @ApiResponse(responseCode = "403", description = "Erro ao autenticar
-    // usuário"),
-    // @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-    // })
-    // @PutMapping("/{id}")
-    // public ResponseEntity<String> updateClient(
-    // @PathVariable Long id,
-    // @RequestBody Map<String, String> updates,
-    // @RequestHeader String token) {
-
-    // if (!BaseController.isUserLoggedIn(token)) {
-    // return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar
-    // usuário");
-    // }
-
-    // Optional<User> userOpt = users.stream()
-    // .filter(u -> u.getId().equals(id) && u instanceof Client)
-    // .findFirst();
-
-    // if (userOpt.isPresent()) {
-    // Client client = (Client) userOpt.get();
-    // Map<String, String> results = new HashMap<>();
-
-    // for (Map.Entry<String, String> entry : updates.entrySet()) {
-    // String attributeName = entry.getKey();
-    // String newValue = entry.getValue();
-
-    // try {
-    // String setterMethodName = "set" + capitalize(attributeName);
-    // Method setterMethod = Client.class.getMethod(setterMethodName, String.class);
-    // setterMethod.invoke(client, newValue);
-    // results.put(attributeName, "atualizado com sucesso");
-    // } catch (NoSuchMethodException e) {
-    // results.put(attributeName, "atributo inválido");
-    // } catch (Exception e) {
-    // results.put(attributeName, "falha na atualização: " + e.getMessage());
-    // }
-    // }
-
-    // BaseController.saveUsers(DATA_FILE);
-
-    // StringBuilder responseBuilder = new StringBuilder("Resultados da
-    // atualização:\n");
-    // for (Map.Entry<String, String> result : results.entrySet()) {
-    // responseBuilder.append(result.getKey()).append(":
-    // ").append(result.getValue()).append("\n");
-    // }
-
-    // return ResponseEntity.ok(responseBuilder.toString());
-    // }
-    // return ResponseEntity.notFound().build();
-    // }
 
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) {

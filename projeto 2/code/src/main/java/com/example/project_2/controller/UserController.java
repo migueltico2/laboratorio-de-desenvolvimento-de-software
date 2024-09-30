@@ -138,24 +138,13 @@ public class UserController {
     @PostMapping("/add-vehicle")
     public ResponseEntity<String> addVehicle(@RequestBody VehicleDTO vehicleDTO, @RequestHeader String token) {
         try {
-            String userIdSql = "SELECT app_user.id FROM app_user WHERE user_token = ?::uuid";
-            Integer userId = jdbcTemplate.queryForObject(userIdSql, Integer.class, token);
-            System.out.println("userId: " + userId);
+            Integer userId = userDTO.getUserIdByToken(token, jdbcTemplate);
             if (userId == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token inválido ou usuário não encontrado");
             }
 
-            String insertSql = "INSERT INTO vehicle (registration, year, brand, model, plate, status, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            int rowsAffected = jdbcTemplate.update(insertSql,
-                    vehicleDTO.getRegistration(),
-                    vehicleDTO.getYear(),
-                    vehicleDTO.getBrand(),
-                    vehicleDTO.getModel(),
-                    vehicleDTO.getPlate(),
-                    VehicleStatus.AVAILABLE,
-                    userId);
-
-            if (rowsAffected > 0) {
+            boolean vehicleAdded = userDTO.addVehicle(vehicleDTO, userId);
+            if (vehicleAdded) {
                 return ResponseEntity.ok("Veículo adicionado com sucesso");
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
