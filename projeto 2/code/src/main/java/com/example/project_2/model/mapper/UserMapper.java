@@ -32,17 +32,6 @@ public class UserMapper implements RowMapper<UserDTO> {
         return user;
     }
 
-    public static UserDTO toDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setUserToken(user.getUserToken());
-        dto.setRole(user.getRole());
-
-        return dto;
-    }
-
     public static RowMapper<UserDTO> userWithVehiclesMapper() {
         return new RowMapper<UserDTO>() {
             private UserDTO currentUser = null;

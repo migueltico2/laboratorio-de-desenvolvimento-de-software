@@ -32,9 +32,6 @@ public class Contract {
     @Schema(name = "end_date", description = "Data de término do contrato", example = "2023-06-07")
     private Date endDate;
 
-    @Schema(name = "agent", description = "Agente associado ao contrato", example = "Itau")
-    private Agent agent;
-
     public Contract() {
         this.status = ContractStatus.PENDING;
     }
@@ -128,13 +125,6 @@ public class Contract {
         this.endDate = endDate;
     }
 
-    public Agent getAgent() {
-        return agent;
-    }
-
-    public void setAgent(Agent agent) {
-        this.agent = agent;
-    }
 }
 
 enum ContractStatus {

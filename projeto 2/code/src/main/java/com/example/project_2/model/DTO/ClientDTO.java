@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,12 +13,17 @@ import com.example.project_2.model.Client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class ClientDTO extends UserDTO {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Schema(description = "RG do cliente", example = "18983332")
     private String RG;
@@ -128,6 +135,39 @@ public class ClientDTO extends UserDTO {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean updateClient(Long clientId, Map<String, Object> fields) {
+        if (fields == null || fields.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum campo fornecido para atualização");
+        }
+
+        // Filtrar campos nulos e criar conjunto de parâmetros
+        Map<String, Object> nonNullFields = fields.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (nonNullFields.isEmpty()) {
+            throw new IllegalArgumentException("Todos os campos fornecidos são nulos");
+        }
+
+        // Construir a query SQL dinamicamente
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE client SET ");
+        sqlBuilder.append(nonNullFields.keySet().stream()
+                .map(key -> key + " = :" + key)
+                .collect(Collectors.joining(", ")));
+        sqlBuilder.append(" WHERE id = :id");
+
+        // Adicionar o ID do cliente aos parâmetros
+        nonNullFields.put("id", clientId);
+
+        // Criar o objeto de parâmetros nomeados
+        MapSqlParameterSource parameters = new MapSqlParameterSource(nonNullFields);
+
+        // Executar a atualização
+        int rowsAffected = namedParameterJdbcTemplate.update(sqlBuilder.toString(), parameters);
+
+        return rowsAffected > 0;
     }
 
     public static ClientDTO fromClient(Client client) {

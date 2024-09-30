@@ -36,17 +36,4 @@ public class ContractMapper implements RowMapper<ContractDTO> {
         return contract;
     }
 
-    public static ContractDTO toDTO(Contract contract) {
-        ContractDTO dto = new ContractDTO();
-        dto.setId(contract.getId());
-        dto.setStatus(contract.getStatusString());
-        dto.setConsiderations(contract.getConsiderations());
-        dto.setValue(contract.getValue());
-        dto.setStartDate(contract.getStartDate());
-        dto.setEndDate(contract.getEndDate());
-        dto.setVehicleId(contract.getVehicle().getId());
-
-        return dto;
-    }
-
 }

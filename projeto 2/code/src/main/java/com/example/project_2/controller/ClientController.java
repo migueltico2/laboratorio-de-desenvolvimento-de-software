@@ -15,10 +15,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 import com.example.project_2.model.DTO.ClientDTO;
 import com.example.project_2.model.DTO.ContractDTO;
 import com.example.project_2.model.DTO.RentalDTO;
 import com.example.project_2.model.mapper.ClientMapper;
+import com.example.project_2.Util.Auth;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -33,7 +36,7 @@ public class ClientController {
     private ClientDTO clientDTO;
 
     @Autowired
-    private ContractDTO contractDTO;
+    private Auth auth;
 
     private final RowMapper<ClientDTO> clientRowMapper = ClientMapper.clientRowMapper();
 
@@ -61,24 +64,34 @@ public class ClientController {
         }
     }
 
-    @Operation(summary = "Solicitar aluguel de veículo", description = "Solicita o aluguel de um veículo para o cliente")
+    @Operation(summary = "Atualizar cliente", description = "Atualiza os campos especificados de um cliente existente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Aluguel solicitado com sucesso")
+            @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
     })
-    @PostMapping("/request-rent")
-    public ResponseEntity<String> requestRent(@RequestBody RentalDTO rentalDTO, @RequestHeader String token) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateClient(@PathVariable Long id,
+            @RequestBody Map<String, Object> updateFields,
+            @RequestHeader String token) {
         try {
-
-            int contract = contractDTO.requestRental(rentalDTO, token);
-
-            if (contract > 0) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("Aluguel solicitado com sucesso");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Falha ao solicitar aluguel");
+            if (!auth.authenticate(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
             }
+
+            boolean updated = clientDTO.updateClient(id, updateFields);
+
+            if (updated) {
+                return ResponseEntity.ok("Cliente atualizado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace(); // Para logging mais detalhado
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao solicitar aluguel: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar cliente: " + e.getMessage());
         }
     }
 
