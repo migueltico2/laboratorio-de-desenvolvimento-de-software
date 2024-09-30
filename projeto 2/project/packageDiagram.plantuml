@@ -1,6 +1,13 @@
 @startuml
 
 package Model {
+    class UserDTO
+    class ClientDTO
+    class AgentDTO
+    class BankDTO
+    class VehicleDTO
+    class ContractDTO
+    class CreditContractDTO
     class User
     class Client
     class Agent
@@ -39,31 +46,38 @@ package Enums {
     enum ContractStatus
 }
 
-User <.. UserController
+User <.. UserDTO
+UserDTO <.. UserController
 UserController <.. UserView
 UserView <.. Swagger
 
-Client <.. ClientController
+Client <.. ClientDTO
+ClientDTO <.. ClientController
 ClientController <.. ClientView
 ClientView <.. Swagger
 
-Agent <.. AgentController
+Agent <.. AgentDTO
+AgentDTO <.. AgentController
 AgentController <.. AgentView
 AgentView <.. Swagger
 
-Bank <.. BankController
+Bank <.. BankDTO
+BankDTO <.. BankController
 BankController <.. BankView
 BankView <.. Swagger
 
-Vehicle <.. VehicleController
+Vehicle <.. VehicleDTO
+VehicleDTO <.. VehicleController
 VehicleController <.. VehicleView
 VehicleView <.. Swagger
 
-Contract <.. ContractController
+Contract <.. ContractDTO
+ContractDTO <.. ContractController
 ContractController <.. ContractView
 ContractView <.. Swagger
 
-CreditContract <.. CreditContractController
+CreditContract <.. CreditContractDTO
+CreditContractDTO <.. CreditContractController
 CreditContractController <.. CreditContractView
 CreditContractView <.. Swagger
 

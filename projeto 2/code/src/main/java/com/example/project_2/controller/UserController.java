@@ -1,8 +1,5 @@
 package com.example.project_2.controller;
 
-import com.example.project_2.model.Agent;
-import com.example.project_2.model.Client;
-import com.example.project_2.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,117 +8,60 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
-import java.util.ArrayList;
+import com.example.project_2.model.DTO.UserDTO;
+import com.example.project_2.model.DTO.VehicleDTO;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
-import java.util.Optional;
+import com.example.project_2.Util.Auth;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
 @Tag(name = "User", description = "API de gerenciamento de usuários")
 public class UserController {
 
-    private List<User> users;
-    private static final String DATA_FILE = "users.dat";
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    public UserController() {
-        this.users = loadUsers();
-    }
+    @Autowired
+    private UserDTO userDTO;
 
-    @SuppressWarnings("unchecked")
-    private List<User> loadUsers() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            return (List<User>) ois.readObject();
-        } catch (FileNotFoundException e) {
-            return new ArrayList<>();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    private void saveUsers() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(users);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    private Auth auth;
 
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operação bem-sucedida")
     })
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userDTO.getAllUsers(jdbcTemplate);
         return ResponseEntity.ok(users);
     }
 
-    @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            return ResponseEntity.ok(userOpt.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @Operation(summary = "Criar novo usuário", description = "Cria um novo usuário e retorna o usuário criado")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso")
-    })
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = new User(user.getName(), user.getEmail(), user.getPassword(), null);
-        users.add(newUser);
-        saveUsers();
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-    }
-
-    @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            User existingUser = userOpt.get();
-            existingUser.setName(user.getName());
-            existingUser.setEmail(user.getEmail());
-            saveUsers();
-            return ResponseEntity.ok(existingUser);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @Operation(summary = "Excluir usuário", description = "Exclui um usuário existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Usuário excluído com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Usuário excluído comsucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Erro ao autenticarusuário")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean removed = users.removeIf(user -> user.getId().equals(id));
-        if (removed) {
-            saveUsers();
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteUser(@PathVariable Long id,
+            @RequestHeader String token) {
+
+        if (!auth.authenticate(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
         }
-        return ResponseEntity.notFound().build();
+
+        boolean deleted = userDTO.deleteUser(id, token);
+
+        if (deleted) {
+            return ResponseEntity.ok("Usuário excluído com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado ou não pôde ser excluído");
+        }
     }
 
     @Operation(summary = "Login de usuário", description = "Realiza o login de um usuário")
@@ -131,62 +71,74 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        List<User> users = loadUsers();
+        try {
+            UserDTO user = userDTO.login(loginRequest.getEmail(), loginRequest.getPassword(), jdbcTemplate);
 
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u != null && u.getEmail() != null && u.getEmail().equals(loginRequest.getEmail()))
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            User existingUser = userOpt.get();
-            if (existingUser.getPassword() != null && existingUser.getPassword().equals(loginRequest.getPassword())) {
-                return ResponseEntity.ok("Login bem-sucedido");
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
             }
+
+            return ResponseEntity.ok(user.getUserToken());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao autenticar usuário: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
     }
 
-    @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário existente")
+    @Operation(summary = "Adicionar veículo ao usuário", description = "Adiciona um veículo ao usuário")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Veículo adicionado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Erro ao autenticar usuário")
+    })
+    @PostMapping("/add-vehicle")
+    public ResponseEntity<String> addVehicle(@RequestBody VehicleDTO vehicleDTO, @RequestHeader String token) {
+        try {
+            Integer userId = userDTO.getUserIdByToken(token, jdbcTemplate);
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token inválido ou usuário não encontrado");
+            }
+
+            boolean vehicleAdded = vehicleDTO.addVehicle(vehicleDTO, userId, jdbcTemplate);
+            if (vehicleAdded) {
+                return ResponseEntity.ok("Veículo adicionado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Falha ao adicionar veículo");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao adicionar veículo: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualizar usuário", description = "Atualiza os campos especificados de um usuário existente")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Falha na alteração da senha"),
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    @PutMapping("/{id}/change-password")
-    public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        Optional<User> userOpt = users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
-
-        if (userOpt.isPresent()) {
-            User existingUser = userOpt.get();
-            if (existingUser.getPassword().equals(request.getOldPassword())) {
-                existingUser.setPassword(request.getNewPassword());
-                saveUsers();
-                return ResponseEntity.ok("Senha alterada com sucesso");
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id,
+            @RequestBody Map<String, Object> updateFields,
+            @RequestHeader String token) {
+        try {
+            if (!auth.authenticate(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
             }
-        }
-        return ResponseEntity.badRequest().body("Falha na alteração da senha");
-    }
 
-    private static class PasswordChangeRequest {
-        private String oldPassword;
-        private String newPassword;
+            boolean updated = userDTO.updateUser(id, updateFields);
 
-        public String getOldPassword() {
-            return oldPassword;
-        }
-
-        public void setOldPassword(String oldPassword) {
-            this.oldPassword = oldPassword;
-        }
-
-        public String getNewPassword() {
-            return newPassword;
-        }
-
-        public void setNewPassword(String newPassword) {
-            this.newPassword = newPassword;
+            if (updated) {
+                return ResponseEntity.ok("Usuário atualizado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar usuário: " + e.getMessage());
         }
     }
 
@@ -198,16 +150,9 @@ public class UserController {
             return email;
         }
 
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
         public String getPassword() {
             return password;
         }
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
     }
 }

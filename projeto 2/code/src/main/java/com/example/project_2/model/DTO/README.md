@@ -1,0 +1,1 @@
+    DTO entities to be used in the project in order to transfer data between the API and the frontend, without exposing the internal structure of the API, garanting the extensibility of the API in case of the use of a service layer that will use the base entity instead of the DTO.
