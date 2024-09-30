@@ -15,9 +15,7 @@ import com.example.project_2.model.DTO.VehicleDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import com.example.project_2.util.AuthUtil;
 import java.util.List;
-import com.example.project_2.model.mapper.UserMapper;
 import com.example.project_2.Enums.VehicleStatus;
 
 @RestController
@@ -30,13 +28,7 @@ public class UserController {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private AuthUtil authUtil;
-
-    @Autowired
     private UserDTO userDTO;
-
-    private final RowMapper<UserDTO> userRowMapper = UserMapper.userWithVehiclesMapper();
-    private final RowMapper<UserDTO> baseUserRowMapper = UserMapper.userRowMapper();
 
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
@@ -45,28 +37,6 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userDTO.getAllUsers(jdbcTemplate);
-        return ResponseEntity.ok(users);
-    }
-
-    @Operation(summary = "Buscar usuário por ID", description = "Retorna um único usuário pelo seu id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<List<UserDTO>> getUserById(@PathVariable Long id) {
-        String sql = "SELECT u.*, " +
-                "v.id as \"vehicle.id\", " +
-                "v.registration as \"vehicle.registration\", " +
-                "v.year as \"vehicle.year\", " +
-                "v.brand as \"vehicle.brand\", " +
-                "v.model as \"vehicle.model\", " +
-                "v.plate as \"vehicle.plate\", " +
-                "v.status as \"vehicle.status\" " +
-                "FROM app_user u " +
-                "LEFT JOIN vehicle v ON u.id = v.owner_id " +
-                "WHERE u.id = ?::integer";
-        List<UserDTO> users = jdbcTemplate.query(sql, userRowMapper, id);
         return ResponseEntity.ok(users);
     }
 
@@ -79,13 +49,13 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable Long id,
             @RequestHeader String token) {
 
-        if (!authUtil.authenticateToken(token)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
-        }
+        boolean deleted = userDTO.deleteUser(id, token);
 
-        String sql = "DELETE FROM app_user WHERE id = ? AND user_token = ?::uuid";
-        jdbcTemplate.update(sql, id, token);
-        return ResponseEntity.ok("Usuário excluído com sucesso");
+        if (deleted) {
+            return ResponseEntity.ok("Usuário excluído com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado ou não pôde ser excluído");
+        }
     }
 
     @Operation(summary = "Login de usuário", description = "Realiza o login de um usuário")
@@ -120,15 +90,14 @@ public class UserController {
             @RequestBody PasswordChangeRequest request,
             @RequestHeader String token) {
 
-        if (!authUtil.authenticateToken(token)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+        boolean changed = userDTO.changePassword(request.getNewPassword(), token);
+
+        if (changed) {
+            return ResponseEntity.ok("Senha alterada com sucesso");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Usuário não encontrado ou senha não pôde ser alterada");
         }
-
-        // TODO: validar se a senha antiga é a mesma do usuário cadastrado
-
-        String sql = "UPDATE app_user SET password = ? WHERE user_token = ?";
-        jdbcTemplate.update(sql, baseUserRowMapper, request.getNewPassword(), token);
-        return ResponseEntity.ok("Senha alterada com sucesso");
     }
 
     @Operation(summary = "Adicionar veículo ao usuário", description = "Adiciona um veículo ao usuário")
@@ -143,7 +112,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token inválido ou usuário não encontrado");
             }
 
-            boolean vehicleAdded = userDTO.addVehicle(vehicleDTO, userId);
+            boolean vehicleAdded = vehicleDTO.addVehicle(vehicleDTO, userId, jdbcTemplate);
             if (vehicleAdded) {
                 return ResponseEntity.ok("Veículo adicionado com sucesso");
             } else {

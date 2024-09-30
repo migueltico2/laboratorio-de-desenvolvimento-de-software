@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class ContractDTO {
@@ -15,35 +17,23 @@ public class ContractDTO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private RowMapper<ContractDTO> contractRowMapper;
+
     @Schema(description = "Identificador único do contrato", example = "1")
     private Long id;
 
     @Schema(description = "ID do cliente associado ao contrato", example = "1")
-    private Long clientId;
-
-    @Schema(description = "Nome do cliente associado ao contrato", example = "John Doe")
-    private String clientName;
-
-    @Schema(description = "ID do proprietário do veículo", example = "2")
-    private Long ownerId;
-
-    @Schema(description = "Nome do proprietário do veículo", example = "Jane Smith")
-    private String ownerName;
+    private String client_id;
 
     @Schema(description = "Status atual do contrato", example = "PENDING")
-    private ContractStatus status;
+    private String status;
 
     @Schema(description = "Considerações adicionais sobre o contrato", example = "Entrega do veículo às 10h")
     private String considerations;
 
     @Schema(description = "ID do veículo associado ao contrato", example = "3")
     private Long vehicleId;
-
-    @Schema(description = "Modelo do veículo associado ao contrato", example = "Corolla")
-    private String vehicleModel;
-
-    @Schema(description = "Marca do veículo associado ao contrato", example = "Toyota")
-    private String vehicleBrand;
 
     @Schema(description = "Valor total do contrato", example = "1000.00")
     private BigDecimal value;
@@ -54,24 +44,46 @@ public class ContractDTO {
     @Schema(description = "Data de término do contrato", example = "2023-06-07")
     private Date endDate;
 
-    @Schema(description = "ID do agente associado ao contrato", example = "4")
-    private Long agentId;
-
-    @Schema(description = "Nome do agente associado ao contrato", example = "Itau")
-    private String agentName;
-
-    // Construtores
-
     public ContractDTO() {
     }
 
-    public boolean updateContract(Long contractId, String status) {
-        String sql = "UPDATE contract SET status = ? WHERE id = ?";
-        int rowsAffected = jdbcTemplate.update(sql, status, contractId);
+    public List<ContractDTO> getClientContracts(String token) {
+
+        String clientId = jdbcTemplate.queryForObject(
+                "SELECT c.cpf FROM client c JOIN app_user u ON c.id = u.id WHERE u.user_token = ?::uuid",
+                String.class, token);
+
+        String sql = "SELECT * FROM contract c WHERE c.client_id = ?";
+        return jdbcTemplate.query(sql, contractRowMapper, clientId);
+    }
+
+    public boolean updateContract(Long contractId, String status, String considerations) {
+
+        if (status == null) {
+            throw new IllegalArgumentException("Status não pode ser nulo");
+        }
+
+        String sql = "UPDATE contract SET status = ?::contract_status_enum, considerations = ? WHERE id = ?";
+        int rowsAffected = jdbcTemplate.update(sql, status, considerations, contractId);
         return rowsAffected > 0;
     }
 
-    // Getters e Setters
+    public int requestRental(RentalDTO rentalDTO, String token) {
+
+        String clientId = jdbcTemplate.queryForObject(
+                "SELECT c.cpf FROM client c JOIN app_user u ON c.id = u.id WHERE u.user_token = ?::uuid",
+                String.class, token);
+
+        String sql = "INSERT INTO contract (considerations, client_id, vehicle_id, start_date, end_date, value) VALUES (?, ?, ?, ?::date, ?::date, ?) RETURNING id";
+
+        return jdbcTemplate.queryForObject(sql, Integer.class,
+                "",
+                clientId,
+                rentalDTO.getVehicleId(),
+                rentalDTO.getStartDate(),
+                rentalDTO.getEndDate(),
+                rentalDTO.getValue());
+    }
 
     public Long getId() {
         return id;
@@ -81,39 +93,7 @@ public class ContractDTO {
         this.id = id;
     }
 
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
-
-    public ContractStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -121,7 +101,7 @@ public class ContractDTO {
         return status.toString();
     }
 
-    public void setStatus(ContractStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -139,22 +119,6 @@ public class ContractDTO {
 
     public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
-    }
-
-    public String getVehicleModel() {
-        return vehicleModel;
-    }
-
-    public void setVehicleModel(String vehicleModel) {
-        this.vehicleModel = vehicleModel;
-    }
-
-    public String getVehicleBrand() {
-        return vehicleBrand;
-    }
-
-    public void setVehicleBrand(String vehicleBrand) {
-        this.vehicleBrand = vehicleBrand;
     }
 
     public BigDecimal getValue() {
@@ -179,21 +143,5 @@ public class ContractDTO {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public Long getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(Long agentId) {
-        this.agentId = agentId;
-    }
-
-    public String getAgentName() {
-        return agentName;
-    }
-
-    public void setAgentName(String agentName) {
-        this.agentName = agentName;
     }
 }

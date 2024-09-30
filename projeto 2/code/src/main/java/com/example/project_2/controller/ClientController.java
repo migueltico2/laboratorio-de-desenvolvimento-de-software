@@ -15,17 +15,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Date;
 import com.example.project_2.model.DTO.ClientDTO;
-import com.example.project_2.model.mapper.ClientMapper;
-import com.example.project_2.util.AuthUtil;
 import com.example.project_2.model.DTO.ContractDTO;
 import com.example.project_2.model.DTO.RentalDTO;
-import com.example.project_2.model.mapper.ContractMapper;
-import com.example.project_2.model.DTO.ContractDTO;
-
-import java.util.Map;
-import java.util.ArrayList;
+import com.example.project_2.model.mapper.ClientMapper;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -38,10 +31,9 @@ public class ClientController {
 
     @Autowired
     private ClientDTO clientDTO;
+
     @Autowired
     private ContractDTO contractDTO;
-    @Autowired
-    private AuthUtil authUtil;
 
     private final RowMapper<ClientDTO> clientRowMapper = ClientMapper.clientRowMapper();
 
@@ -51,7 +43,7 @@ public class ClientController {
     })
     @GetMapping
     public ResponseEntity<List<ClientDTO>> getAllUsers() {
-        String sql = "SELECT * FROM client JOIN app_user ON client.user_id = app_user.id";
+        String sql = "SELECT * FROM client LEFT JOIN app_user ON client.id = app_user.id";
         List<ClientDTO> clients = jdbcTemplate.query(sql, clientRowMapper);
         return ResponseEntity.ok(clients);
     }
@@ -76,11 +68,8 @@ public class ClientController {
     @PostMapping("/request-rent")
     public ResponseEntity<String> requestRent(@RequestBody RentalDTO rentalDTO, @RequestHeader String token) {
         try {
-            if (!authUtil.authenticateToken(token)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
-            }
 
-            int contract = clientDTO.requestRental(rentalDTO, token);
+            int contract = contractDTO.requestRental(rentalDTO, token);
 
             if (contract > 0) {
                 return ResponseEntity.status(HttpStatus.CREATED).body("Aluguel solicitado com sucesso");
@@ -93,58 +82,4 @@ public class ClientController {
         }
     }
 
-    @Operation(summary = "Verificar aluguéis do cliente", description = "Verifica os aluguéis do cliente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Aluguéis verificados com sucesso")
-    })
-    @GetMapping("/check-rentals")
-    public ResponseEntity<?> checkRentals(@RequestHeader String token) {
-        try {
-            if (!authUtil.authenticateToken(token)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-            }
-
-            List<ContractDTO> contracts = clientDTO.getClientContracts(token);
-            if (contracts.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum aluguel encontrado");
-            }
-            return ResponseEntity.ok(contracts);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao verificar aluguéis: " + e.getMessage());
-        }
-    }
-
-    @Operation(summary = "Atualizar aluguel", description = "Atualiza os campos especificados de um contrato de aluguel existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Contrato atualizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Falha na atualização do contrato"),
-            @ApiResponse(responseCode = "403", description = "Erro ao autenticar usuário"),
-            @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
-    })
-    @PutMapping("/update-rental/{id}")
-    public ResponseEntity<?> updateRental(@PathVariable Long id, @RequestBody String status,
-            @RequestHeader String token) {
-        try {
-            if (!authUtil.authenticateToken(token)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
-            }
-
-            boolean updatedRows = contractDTO.updateContract(id, status);
-
-            if (updatedRows) {
-                return ResponseEntity.ok("Contrato atualizado com sucesso");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contrato não encontrado");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao atualizar contrato: " + e.getMessage());
-        }
-    }
-
-    private String capitalize(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-        return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
 }

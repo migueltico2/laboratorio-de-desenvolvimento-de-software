@@ -1,7 +1,16 @@
 package com.example.project_2.model.DTO;
 
 import com.example.project_2.Enums.VehicleStatus;
+import com.example.project_2.model.mapper.ClientMapper;
+import com.example.project_2.model.mapper.VehicleMapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import java.util.List;
+
+@Component
 public class VehicleDTO {
     private Long id;
     private int ownerId;
@@ -11,6 +20,8 @@ public class VehicleDTO {
     private String model;
     private String plate;
     private VehicleStatus status;
+
+    private RowMapper<VehicleDTO> vehicleRowMapper = VehicleMapper.vehicleRowMapper();
 
     public VehicleDTO() {
     }
@@ -25,6 +36,23 @@ public class VehicleDTO {
         this.model = model;
         this.plate = plate;
         this.status = status;
+    }
+
+    public boolean addVehicle(VehicleDTO vehicleDTO, Integer userId, JdbcTemplate jdbcTemplate) {
+        String insertSql = "INSERT INTO vehicle (registration, year, brand, model, plate, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
+        int rowsAffected = jdbcTemplate.update(insertSql,
+                vehicleDTO.getRegistration(),
+                vehicleDTO.getYear(),
+                vehicleDTO.getBrand(),
+                vehicleDTO.getModel(),
+                vehicleDTO.getPlate(),
+                userId);
+        return rowsAffected > 0;
+    }
+
+    public List<VehicleDTO> getAllVehicles(JdbcTemplate jdbcTemplate) {
+        String sql = "SELECT * FROM vehicle";
+        return jdbcTemplate.query(sql, vehicleRowMapper);
     }
 
     // Getters

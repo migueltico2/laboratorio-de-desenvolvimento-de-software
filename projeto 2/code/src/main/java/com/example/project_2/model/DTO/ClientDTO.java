@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.project_2.model.Client;
-import com.example.project_2.util.AuthUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -18,12 +17,6 @@ public class ClientDTO extends UserDTO {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private RowMapper<ContractDTO> contractRowMapper;
-
-    @Autowired
-    private AuthUtil authUtil;
 
     @Schema(description = "RG do cliente", example = "18983332")
     private String RG;
@@ -117,12 +110,12 @@ public class ClientDTO extends UserDTO {
                     client.getName(), client.getEmail(),
                     client.getPassword(), "CLIENT");
 
-            String clientSql = "INSERT INTO client (rg, cpf, id, address, profession, employer, salary_one, salary_two, salary_three) VALUES (?, ?,(SELECT id FROM app_user WHERE user_token = ?), ?, ?, ?, ?, ?, ?) RETURNING *";
+            String clientSql = "INSERT INTO client (cpf, id, rg, address, profession, employer, salary_one, salary_two, salary_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(
                     clientSql,
-                    client.getRG(),
                     client.getCPF(),
-                    client.getUserToken(),
+                    userId,
+                    client.getRG(),
                     client.getAddress(),
                     client.getProfession(),
                     client.getEmployer(),
@@ -135,31 +128,6 @@ public class ClientDTO extends UserDTO {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public int requestRental(RentalDTO rentalDTO, String token) {
-
-        Integer clientId = jdbcTemplate.queryForObject(
-                "SELECT  FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid",
-                Integer.class, token);
-
-        System.out.println("Client ID:===========>>>> " + clientId);
-
-        String sql = "INSERT INTO contract (considerations, client_id, vehicle_id, start_date, end_date, value) VALUES (?, ?, ?, ?::date, ?::date, ?) RETURNING id";
-
-        return jdbcTemplate.queryForObject(sql, Integer.class,
-                "",
-                clientId,
-                rentalDTO.getVehicleId(),
-                rentalDTO.getVehicleId(),
-                rentalDTO.getStartDate(),
-                rentalDTO.getEndDate(),
-                rentalDTO.getValue());
-    }
-
-    public List<ContractDTO> getClientContracts(String token) {
-        String sql = "SELECT * FROM contract WHERE contract.client_id = (SELECT id FROM app_user WHERE user_token = UUID(?))";
-        return jdbcTemplate.query(sql, contractRowMapper, token);
     }
 
     public static ClientDTO fromClient(Client client) {

@@ -23,34 +23,16 @@ public class VehicleController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<VehicleDTO> vehicleRowMapper = VehicleMapper.vehicleRowMapper();
+    @Autowired
+    private VehicleDTO vehicleDTO;
 
-    @GetMapping
-    @Operation(summary = "Listar todos os veículos")
+    @Operation(summary = "Listar todos os veículos", description = "Retorna uma lista de todos os veículos")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Veículos listados com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado"),
+            @ApiResponse(responseCode = "200", description = "Lista de veículos retornada com sucesso"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
+    @GetMapping("/all")
     public ResponseEntity<List<VehicleDTO>> getAllVehicles() {
-        String sql = "SELECT * FROM vehicle";
-        List<VehicleDTO> vehicles = jdbcTemplate.query(sql, vehicleRowMapper);
-        return ResponseEntity.ok(vehicles);
+        return ResponseEntity.ok(vehicleDTO.getAllVehicles(jdbcTemplate));
     }
-
-    @GetMapping("/available")
-    @Operation(summary = "Listar todos os veículos disponíveis para aluguel")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Veículos listados com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acesso negado"),
-            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
-    })
-    public ResponseEntity<List<VehicleDTO>> getAllVehiclesAvaliable() {
-        String sql = "SELECT * FROM vehicle WHERE status = 'AVAILABLE'";
-        List<VehicleDTO> vehicles = jdbcTemplate.query(sql, vehicleRowMapper);
-        return ResponseEntity.ok(vehicles);
-    }
-
 }

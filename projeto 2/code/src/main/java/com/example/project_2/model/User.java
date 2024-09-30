@@ -19,6 +19,8 @@ public abstract class User implements Serializable {
 
     @Schema(description = "Senha do usuário", example = "senha123")
     private String password;
+
+    @Schema(hidden = true)
     private ArrayList<Vehicle> vehicle;
 
     @Schema(name = "user_token", description = "Token do usuário", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")

@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.example.project_2.Enums.VehicleStatus;
-import com.example.project_2.model.User;
 import com.example.project_2.model.Vehicle;
-import com.example.project_2.model.mapper.UserMapper;
 
 import java.util.ArrayList;
 import org.springframework.stereotype.Component;
@@ -48,18 +45,6 @@ public class UserDTO {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public boolean addVehicle(VehicleDTO vehicleDTO, Integer userId) {
-        String insertSql = "INSERT INTO vehicle (registration, year, brand, model, plate, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
-        int rowsAffected = jdbcTemplate.update(insertSql,
-                vehicleDTO.getRegistration(),
-                vehicleDTO.getYear(),
-                vehicleDTO.getBrand(),
-                vehicleDTO.getModel(),
-                vehicleDTO.getPlate(),
-                userId);
-        return rowsAffected > 0;
     }
 
     public UserDTO(Long id, String name, String email, String userToken, String role) {
@@ -133,5 +118,17 @@ public class UserDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean deleteUser(Long id, String token) {
+        String sql = "DELETE FROM app_user WHERE id = ? AND user_token = ?::uuid";
+        int rowsAffected = jdbcTemplate.update(sql, id, token);
+        return rowsAffected > 0;
+    }
+
+    public boolean changePassword(String newPassword, String token) {
+        String sql = "UPDATE app_user SET password = ? WHERE user_token = ?::uuid";
+        int rowsAffected = jdbcTemplate.update(sql, newPassword, token);
+        return rowsAffected > 0;
     }
 }
