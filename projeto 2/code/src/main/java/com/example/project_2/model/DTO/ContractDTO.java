@@ -2,10 +2,11 @@ package com.example.project_2.model.DTO;
 
 import com.example.project_2.Enums.ContractStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Component
 public class ContractDTO {
     @Schema(description = "Identificador único do contrato", example = "1")
     private Long id;

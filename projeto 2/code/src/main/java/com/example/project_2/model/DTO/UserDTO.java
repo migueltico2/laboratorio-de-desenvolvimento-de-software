@@ -1,8 +1,19 @@
 package com.example.project_2.model.DTO;
 
 import java.util.List;
-import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import com.example.project_2.model.User;
+import com.example.project_2.model.Vehicle;
+import com.example.project_2.model.mapper.UserMapper;
+
+import java.util.ArrayList;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserDTO {
     private Long id;
     private String name;
@@ -10,7 +21,24 @@ public class UserDTO {
     private String password;
     private String userToken;
     private String role;
-    private List<VehicleDTO> vehicles = new ArrayList<>(); // Inicialize com uma lista vazia
+    private List<Vehicle> vehicles = new ArrayList<>();
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private RowMapper<UserDTO> baseUserRowMapper;
+
+    public UserDTO login(String email, String password) {
+        String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
+        List<UserDTO> users = jdbcTemplate.query(sql, baseUserRowMapper, email, password);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    public List<UserDTO> getAllUsers() {
+        String sql = "SELECT * FROM app_user";
+        return jdbcTemplate.query(sql, baseUserRowMapper);
+    }
 
     public UserDTO(Long id, String name, String email, String userToken, String role) {
         this.id = id;
@@ -63,15 +91,15 @@ public class UserDTO {
         this.userToken = userToken;
     }
 
-    public List<VehicleDTO> getVehicles() {
+    public List<Vehicle> getVehicles() {
         return vehicles;
     }
 
-    public void setVehicles(List<VehicleDTO> vehicles) {
+    public void setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles != null ? vehicles : new ArrayList<>();
     }
 
-    public void addVehicle(VehicleDTO vehicle) {
+    public void addVehicle(Vehicle vehicle) {
         if (vehicle != null) {
             this.vehicles.add(vehicle);
         }

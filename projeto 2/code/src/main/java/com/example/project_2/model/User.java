@@ -105,4 +105,12 @@ public abstract class User implements Serializable {
         this.userToken = userToken;
     }
 
+    public String getRole() {
+        return this.role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 }

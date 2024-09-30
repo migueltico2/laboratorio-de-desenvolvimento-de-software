@@ -3,6 +3,7 @@ package com.example.project_2.model.DTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,12 +11,16 @@ import com.example.project_2.model.Client;
 import com.example.project_2.util.AuthUtil;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 @Component
 public class ClientDTO extends UserDTO {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private RowMapper<ContractDTO> contractRowMapper;
 
     @Autowired
     private AuthUtil authUtil;
@@ -130,6 +135,31 @@ public class ClientDTO extends UserDTO {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Transactional
+    public int requestRental(RentalDTO rentalDTO, String token) {
+        String sql = "INSERT INTO contract (considerations, start_date, end_date, value, agent_id, vehicle_id, owner_id, client_id, status) "
+                +
+                "VALUES (?, ?::date, ?::date, ?, ?, ?, " +
+                "(SELECT owner_id FROM vehicle v WHERE v.id = ?), " +
+                "(SELECT c.id FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid), " +
+                "'PENDING') RETURNING id";
+
+        return jdbcTemplate.update(sql,
+                "",
+                rentalDTO.getStartDate(),
+                rentalDTO.getEndDate(),
+                rentalDTO.getValue(),
+                null,
+                rentalDTO.getVehicleId(),
+                rentalDTO.getVehicleId(),
+                token);
+    }
+
+    public List<ContractDTO> getClientContracts(String token) {
+        String sql = "SELECT * FROM contract WHERE contract.client_id = (SELECT id FROM app_user WHERE user_token = UUID(?))";
+        return jdbcTemplate.query(sql, contractRowMapper, token);
     }
 
     public static ClientDTO fromClient(Client client) {

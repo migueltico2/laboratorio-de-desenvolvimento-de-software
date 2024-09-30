@@ -7,7 +7,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContractMapper implements RowMapper<ContractDTO> {
 
     public static RowMapper<ContractDTO> contractRowMapper() {
@@ -81,15 +83,4 @@ public class ContractMapper implements RowMapper<ContractDTO> {
         return dto;
     }
 
-    public static Contract toEntity(ContractDTO dto) {
-        Contract contract = new Contract();
-        contract.setId(dto.getId());
-        contract.setStatus(dto.getStatusString());
-        contract.setConsiderations(dto.getConsiderations());
-        contract.setValue(dto.getValue());
-        contract.setStartDate(dto.getStartDate());
-        contract.setEndDate(dto.getEndDate());
-
-        return contract;
-    }
 }

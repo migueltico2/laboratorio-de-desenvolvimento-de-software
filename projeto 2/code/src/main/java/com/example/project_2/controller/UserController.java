@@ -32,8 +32,11 @@ public class UserController {
     @Autowired
     private AuthUtil authUtil;
 
+    @Autowired
+    private UserDTO userDTO;
+
     private final RowMapper<UserDTO> userRowMapper = UserMapper.userWithVehiclesMapper();
-    private final RowMapper<UserDTO> baseUserRowMapper = UserMapper.baseUserMapper();
+    private final RowMapper<UserDTO> baseUserRowMapper = UserMapper.userRowMapper();
 
     @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista de todos os usuários cadastrados")
     @ApiResponses(value = {
@@ -41,17 +44,7 @@ public class UserController {
     })
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        String sql = "SELECT u.*, " +
-                "v.id as \"vehicle.id\", " +
-                "v.registration as \"vehicle.registration\", " +
-                "v.year as \"vehicle.year\", " +
-                "v.brand as \"vehicle.brand\", " +
-                "v.model as \"vehicle.model\", " +
-                "v.plate as \"vehicle.plate\", " +
-                "v.status as \"vehicle.status\" " +
-                "FROM app_user u " +
-                "LEFT JOIN vehicle v ON u.id = v.owner_id";
-        List<UserDTO> users = jdbcTemplate.query(sql, userRowMapper);
+        List<UserDTO> users = userDTO.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -103,18 +96,16 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
-            List<UserDTO> user = jdbcTemplate.query(sql, baseUserRowMapper, loginRequest.getEmail(),
-                    loginRequest.getPassword());
+            UserDTO user = userDTO.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-            if (user.isEmpty()) {
+            if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
             }
 
-            return ResponseEntity.ok(user.get(0).getUserToken());
+            return ResponseEntity.ok(user.getUserToken());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao autenticar usuário" + e.getMessage());
+                    .body("Erro ao autenticar usuário: " + e.getMessage());
         }
     }
 

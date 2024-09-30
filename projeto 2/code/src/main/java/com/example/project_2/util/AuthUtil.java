@@ -17,7 +17,7 @@ public class AuthUtil {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static final RowMapper<UserDTO> userRowMapper = UserMapper.baseUserMapper();
+    private static final RowMapper<UserDTO> userRowMapper = UserMapper.userRowMapper();
 
     public ResponseEntity<String> authenticateUser(String email, String password) {
         String sql = "SELECT * FROM app_user WHERE email = ?";

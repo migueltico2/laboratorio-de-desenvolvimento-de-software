@@ -62,7 +62,7 @@ public class ClientController {
             ClientDTO createdClient = clientDTO.createClient(client);
             return ResponseEntity.status(HttpStatus.CREATED).body("Cliente criado com sucesso: " + createdClient);
         } catch (Exception e) {
-            e.printStackTrace(); // Para logging mais detalhado
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao criar cliente: " + e.getMessage());
         }
     }
@@ -78,21 +78,7 @@ public class ClientController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
             }
 
-            String sql = "INSERT INTO contract (considerations, start_date, end_date, value, agent_id, vehicle_id, owner_id, client_id, status) "
-                    +
-                    "VALUES (?, ?::date, ?::date, ?, ?, ?, " +
-                    "(SELECT owner_id FROM vehicle v WHERE v.id = ?), " +
-                    "(SELECT c.id FROM client c JOIN app_user u ON c.user_id = u.id WHERE u.user_token = ?::uuid), " +
-                    "'PENDING') RETURNING id";
-            int contract = jdbcTemplate.update(sql,
-                    "",
-                    rentalDTO.getStartDate(),
-                    rentalDTO.getEndDate(),
-                    rentalDTO.getValue(),
-                    null,
-                    rentalDTO.getVehicleId(),
-                    rentalDTO.getVehicleId(),
-                    token);
+            int contract = clientDTO.requestRental(rentalDTO, token);
 
             if (contract > 0) {
                 return ResponseEntity.status(HttpStatus.CREATED).body("Aluguel solicitado com sucesso");
@@ -100,6 +86,7 @@ public class ClientController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Falha ao solicitar aluguel");
             }
         } catch (Exception e) {
+            e.printStackTrace(); // Para logging mais detalhado
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao solicitar aluguel: " + e.getMessage());
         }
     }
@@ -115,8 +102,7 @@ public class ClientController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
             }
 
-            String sql = "SELECT * FROM contract WHERE contract.client_id = (SELECT id FROM app_user WHERE user_token = UUID(?))";
-            List<ContractDTO> contracts = jdbcTemplate.query(sql, contractRowMapper, token);
+            List<ContractDTO> contracts = clientDTO.getClientContracts(token);
             if (contracts.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhum aluguel encontrado");
             }
