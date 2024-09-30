@@ -44,7 +44,7 @@ public class UserController {
     })
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> users = userDTO.getAllUsers();
+        List<UserDTO> users = userDTO.getAllUsers(jdbcTemplate);
         return ResponseEntity.ok(users);
     }
 
@@ -96,7 +96,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            UserDTO user = userDTO.login(loginRequest.getEmail(), loginRequest.getPassword());
+            UserDTO user = userDTO.login(loginRequest.getEmail(), loginRequest.getPassword(), jdbcTemplate);
 
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");

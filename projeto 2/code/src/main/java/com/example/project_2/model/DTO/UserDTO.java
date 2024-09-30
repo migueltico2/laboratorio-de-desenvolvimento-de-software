@@ -29,13 +29,13 @@ public class UserDTO {
     @Autowired
     private RowMapper<UserDTO> baseUserRowMapper;
 
-    public UserDTO login(String email, String password) {
+    public UserDTO login(String email, String password, JdbcTemplate jdbcTemplate) {
         String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
         List<UserDTO> users = jdbcTemplate.query(sql, baseUserRowMapper, email, password);
         return users.isEmpty() ? null : users.get(0);
     }
 
-    public List<UserDTO> getAllUsers() {
+    public List<UserDTO> getAllUsers(JdbcTemplate jdbcTemplate) {
         String sql = "SELECT * FROM app_user";
         return jdbcTemplate.query(sql, baseUserRowMapper);
     }
