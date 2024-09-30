@@ -28,7 +28,6 @@ public class UserMapper implements RowMapper<UserDTO> {
         user.setEmail(rs.getString("email"));
         user.setUserToken(rs.getString("user_token"));
         user.setRole(rs.getString("role"));
-        // Não mapeamos a senha por razões de segurança
         return user;
     }
 

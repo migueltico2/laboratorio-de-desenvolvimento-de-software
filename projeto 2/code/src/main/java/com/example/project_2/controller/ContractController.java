@@ -93,7 +93,7 @@ public class ContractController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Falha ao solicitar aluguel");
             }
         } catch (Exception e) {
-            e.printStackTrace(); // Para logging mais detalhado
+            e.printStackTrace(); 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao solicitar aluguel: " + e.getMessage());
         }
     }

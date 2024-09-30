@@ -25,11 +25,6 @@ public class ContractMapper implements RowMapper<ContractDTO> {
         contract.setStartDate(rs.getDate("start_date"));
         contract.setEndDate(rs.getDate("end_date"));
 
-        // Mapeando o cliente
-
-        // Mapeando o proprietário
-
-        // Mapeando o veículo
         contract.setVehicleId(rs.getLong("vehicle_id"));
 
         return contract;

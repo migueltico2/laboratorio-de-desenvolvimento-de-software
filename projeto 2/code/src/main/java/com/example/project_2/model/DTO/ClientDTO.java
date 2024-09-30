@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 public class ClientDTO extends UserDTO {
 
     @Autowired
+    private ContractDTO contractDTO;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -61,7 +64,6 @@ public class ClientDTO extends UserDTO {
         this.lastThreeSalaries = lastThreeSalaries;
     }
 
-    // Getters e Setters
 
     public String getRG() {
         return RG;
@@ -132,7 +134,6 @@ public class ClientDTO extends UserDTO {
                     client.getEmployer(),
                     averageSalary);
 
-            // Create a new ClientDTO with the inserted data
             ClientDTO newClientDTO = new ClientDTO();
             newClientDTO.setId(userId);
             newClientDTO.setName(client.getName());
@@ -156,7 +157,6 @@ public class ClientDTO extends UserDTO {
             throw new IllegalArgumentException("Nenhum campo fornecido para atualização");
         }
 
-        // Filtrar campos nulos e criar conjunto de parâmetros
         Map<String, Object> nonNullFields = fields.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -165,23 +165,29 @@ public class ClientDTO extends UserDTO {
             throw new IllegalArgumentException("Todos os campos fornecidos são nulos");
         }
 
-        // Construir a query SQL dinamicamente
         StringBuilder sqlBuilder = new StringBuilder("UPDATE client SET ");
         sqlBuilder.append(nonNullFields.keySet().stream()
                 .map(key -> key + " = :" + key)
                 .collect(Collectors.joining(", ")));
         sqlBuilder.append(" WHERE id = :id");
 
-        // Adicionar o ID do cliente aos parâmetros
         nonNullFields.put("id", clientId);
 
-        // Criar o objeto de parâmetros nomeados
         MapSqlParameterSource parameters = new MapSqlParameterSource(nonNullFields);
 
-        // Executar a atualização
         int rowsAffected = namedParameterJdbcTemplate.update(sqlBuilder.toString(), parameters);
 
         return rowsAffected > 0;
+    }
+
+    public boolean deleteClient(Long clientId) {
+        
+        String getCpf = "SELECT cpf FROM client WHERE id = ?";
+        String cpf = jdbcTemplate.queryForObject(getCpf, String.class, clientId);
+        contractDTO.deleteContract(cpf);
+
+        String sql = "DELETE FROM client WHERE id = ?";
+        return jdbcTemplate.update(sql, clientId) > 0;
     }
 
     public static ClientDTO fromClient(Client client) {

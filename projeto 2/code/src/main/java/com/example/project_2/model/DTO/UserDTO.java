@@ -32,6 +32,15 @@ public class UserDTO {
     private RowMapper<UserDTO> baseUserRowMapper;
 
     @Autowired
+    private ContractDTO contractDTO;
+
+    @Autowired
+    private VehicleDTO vehicleDTO;
+
+    @Autowired
+    private ClientDTO clientDTO;
+
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public UserDTO login(String email, String password, JdbcTemplate jdbcTemplate) {
@@ -128,6 +137,9 @@ public class UserDTO {
     }
 
     public boolean deleteUser(Long id, String token) {
+        vehicleDTO.deleteVehicle(id, jdbcTemplate);
+        clientDTO.deleteClient(id);
+
         String sql = "DELETE FROM app_user WHERE id = ? AND user_token = ?::uuid";
         int rowsAffected = jdbcTemplate.update(sql, id, token);
         return rowsAffected > 0;
