@@ -5,9 +5,10 @@ class User {
     -name: String
     -email: String
     -password: String
-    -vehicles: List<Vehicle>
+    -userToken: String
+    -role: String
     +login(String password): boolean
-    +makeVehicleAvailable(Vehicle vehicle): void
+    +getAllUsers(): List<User>
 }
 
 class Client {
@@ -40,7 +41,6 @@ class Bank {
 class Contract {
     -id: int
     -client: Client
-    -owner: User
     -status: ContractStatus
     -considerations: String
     -vehicle: Vehicle
@@ -63,6 +63,7 @@ class Vehicle {
     -model: String
     -plate: String
     -status: VehicleStatus
+    -owner: User
 }
 
 enum ContractStatus {
@@ -78,9 +79,9 @@ enum VehicleStatus {
 
 User <|-- Agent
 User <|-- Client
-User "1" -- "0..*" Vehicle
+User "1" -- "0.." Vehicle
 Contract <|-- CreditContract
-Client "1" -- "0..*" Contract
+Client "1" -- "0.." Contract
 CreditContract "1" -- "1" Bank
 Contract "1" -- "1" Vehicle
 Agent <|-- Bank
