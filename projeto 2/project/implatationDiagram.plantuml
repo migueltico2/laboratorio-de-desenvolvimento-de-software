@@ -1,11 +1,20 @@
 @startuml
 
-component User
-component Contract
-component Vehicle
-component Autentication
-component Swagger
-component Persistence
+node "Front-end" as FrontEnd {
+    component Swagger
+}
+
+node "Back-end" as BackEnd {
+    component User
+    component Contract
+    component Vehicle
+    component Autentication
+    component Swagger
+}
+
+node "Banco de Dados" as DB {
+    component Persistence
+}
 
 interface Autenticate
 interface "Generate Contract" as GenerateC
@@ -41,5 +50,9 @@ Contract --right-( ProvideV
 Contract --down-( Persist
 
 Vehicle --down-( Persist
+
+
+FrontEnd --right- BackEnd : <<HTTP>>
+BackEnd --right- DB : <<ODBC>>
 
 @enduml

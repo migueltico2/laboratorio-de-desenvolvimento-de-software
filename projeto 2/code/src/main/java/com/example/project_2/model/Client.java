@@ -1,16 +1,30 @@
 package com.example.project_2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class Client extends User {
+
+    @Schema(description = "RG do cliente", example = "18983332")
     private String RG;
+
+    @Schema(description = "CPF do cliente", example = "123.456.789-00")
     private String CPF;
+
+    @Schema(description = "Endereço do cliente", example = "Rua Example, 123")
     private String address;
+
+    @Schema(description = "Profissão do cliente", example = "Engenheiro")
     private String profession;
+
+    @Schema(description = "Empregador do cliente", example = "Empresa XYZ")
     private String employer;
+
+    @Schema(description = "Últimos três salários do cliente", example = "[5000.00, 5200.00, 5500.00]")
     private double[] lastThreeSalaries;
 
     public Client(String name, String email, String password, String RG, String CPF, String address, String profession,
-            String employer) {
-        super(name, email, password, null);
+            String employer, String role) {
+        super(null, name, email, password, null, role);
         this.RG = RG;
         this.CPF = CPF;
         this.address = address;
@@ -19,12 +33,23 @@ public class Client extends User {
         this.lastThreeSalaries = new double[3];
     }
 
+    public Client(Long id, String name, String email, String password, String RG, String CPF, String address,
+            String profession, String employer, String role) {
+        super(id, name, email, password, null, role);
+        this.RG = RG;
+        this.CPF = CPF;
+        this.address = address;
+        this.profession = profession;
+        this.employer = employer;
+        this.lastThreeSalaries = null;
+    }
+
     public Client() {
         super();
     }
 
-    public Client(String name, String email, String password) {
-        super(name, email, password, null);
+    public Client(String name, String email, String password, String role) {
+        super(null, name, email, password, null, role);
     }
 
     public void requestRent(Vehicle vehicle) {
@@ -93,5 +118,17 @@ public class Client extends User {
             return true;
         }
         return false;
+    }
+
+    public User getUser() {
+        return super.getUser();
+    }
+
+    public String getUserToken() {
+        return super.getUserToken();
+    }
+
+    public void setUserToken(String userToken) {
+        super.setUserToken(userToken);
     }
 }
