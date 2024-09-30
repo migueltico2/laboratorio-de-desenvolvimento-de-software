@@ -1,0 +1,58 @@
+@startuml
+
+node "Front-end" as FrontEnd {
+    component Swagger
+}
+
+node "Back-end" as BackEnd {
+    component User
+    component Contract
+    component Vehicle
+    component Autentication
+    component Swagger
+}
+
+node "Banco de Dados" as DB {
+    component Persistence
+}
+
+interface Autenticate
+interface "Generate Contract" as GenerateC
+interface "Generate Credit Contract" as GenerateCC
+interface "Provide Vehicle" as ProvideV
+interface "Manage Vehicle" as MangeV
+interface "Manage Rent Order" as MangeR
+interface "Evaluate Order" as EvaluteOrder
+interface Persist
+
+Autenticate - Autentication
+ProvideV - Vehicle
+MangeV - Vehicle
+GenerateC -down- Contract
+GenerateCC - Contract
+EvaluteOrder - Contract
+MangeR - Contract
+Persist - Persistence
+
+Swagger ..> User
+Swagger ..> Contract
+Swagger ..> Vehicle
+
+User --right-( Autenticate
+User --right-( MangeV
+User --down-( Persist
+User ---( MangeR
+User ---( GenerateC
+User ---( EvaluteOrder
+User --down-( GenerateCC
+
+Contract --right-( ProvideV
+Contract --down-( Persist
+
+Vehicle --down-( Persist
+
+
+FrontEnd --right- BackEnd : <<HTTP>>
+BackEnd --right- DB : <<ODBC>>
+
+@enduml
