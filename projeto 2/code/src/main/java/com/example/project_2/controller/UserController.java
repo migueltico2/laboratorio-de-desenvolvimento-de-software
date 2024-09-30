@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.project_2.model.DTO.UserDTO;
 import com.example.project_2.model.DTO.VehicleDTO;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -107,6 +108,37 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao adicionar veículo: " + e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Atualizar usuário", description = "Atualiza os campos especificados de um usuário existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id,
+            @RequestBody Map<String, Object> updateFields,
+            @RequestHeader String token) {
+        try {
+            if (!auth.authenticate(token)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Erro ao autenticar usuário");
+            }
+
+            boolean updated = userDTO.updateUser(id, updateFields);
+
+            if (updated) {
+                return ResponseEntity.ok("Usuário atualizado com sucesso");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar usuário: " + e.getMessage());
         }
     }
 

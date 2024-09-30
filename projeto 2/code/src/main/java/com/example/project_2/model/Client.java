@@ -41,7 +41,7 @@ public class Client extends User {
         this.address = address;
         this.profession = profession;
         this.employer = employer;
-        this.lastThreeSalaries = new double[3];
+        this.lastThreeSalaries = null;
     }
 
     public Client() {

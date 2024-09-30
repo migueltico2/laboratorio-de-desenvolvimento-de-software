@@ -1,7 +1,6 @@
 package com.example.project_2.controller;
 
 import com.example.project_2.model.Client;
-import com.example.project_2.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.project_2.model.DTO.ClientDTO;
-import com.example.project_2.model.DTO.ContractDTO;
-import com.example.project_2.model.DTO.RentalDTO;
 import com.example.project_2.model.mapper.ClientMapper;
 import com.example.project_2.Util.Auth;
 
@@ -57,7 +54,11 @@ public class ClientController {
     public ResponseEntity<?> createClient(@RequestBody Client client) {
         try {
             ClientDTO createdClient = clientDTO.createClient(client);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Cliente criado com sucesso: " + createdClient);
+            if (createdClient != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdClient);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao criar cliente");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao criar cliente: " + e.getMessage());

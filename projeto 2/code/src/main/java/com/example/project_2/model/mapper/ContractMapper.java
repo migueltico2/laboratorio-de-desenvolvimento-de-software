@@ -1,6 +1,5 @@
 package com.example.project_2.model.mapper;
 
-import com.example.project_2.model.Contract;
 import com.example.project_2.model.DTO.ContractDTO;
 import org.springframework.jdbc.core.RowMapper;
 

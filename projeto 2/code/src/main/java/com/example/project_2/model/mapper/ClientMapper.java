@@ -18,7 +18,6 @@ public class ClientMapper {
             client.setId(rs.getLong("id"));
             client.setName(rs.getString("name"));
             client.setEmail(rs.getString("email"));
-            client.setPassword(rs.getString("password"));
             client.setUserToken(rs.getString("user_token"));
 
             // Mapeando atributos específicos da classe Client
@@ -28,12 +27,8 @@ public class ClientMapper {
             client.setProfession(rs.getString("profession"));
             client.setEmployer(rs.getString("employer"));
 
-            // Mapeando os três últimos salários
-            double[] lastThreeSalaries = new double[3];
-            lastThreeSalaries[0] = rs.getDouble("salary_one");
-            lastThreeSalaries[1] = rs.getDouble("salary_two");
-            lastThreeSalaries[2] = rs.getDouble("salary_three");
-            client.setLastThreeSalaries(lastThreeSalaries);
+            // Mapeando a média dos três últimos salários
+            client.setLastThreeSalaries(rs.getDouble("last_three_salaries"));
 
             return client;
         };

@@ -25,6 +25,8 @@ public class ClientDTO extends UserDTO {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    private static final int NUMBER_OF_SALARIES = 3;
+
     @Schema(description = "RG do cliente", example = "18983332")
     private String RG;
 
@@ -40,8 +42,8 @@ public class ClientDTO extends UserDTO {
     @Schema(description = "Empregador do cliente", example = "Empresa XYZ")
     private String employer;
 
-    @Schema(description = "Últimos três salários do cliente", example = "[5000.00, 5200.00, 5500.00]")
-    private double[] lastThreeSalaries;
+    @Schema(description = "Média dos últimos três salários do cliente", example = "5233.33")
+    private Double lastThreeSalaries;
 
     public ClientDTO() {
         super();
@@ -49,7 +51,7 @@ public class ClientDTO extends UserDTO {
 
     public ClientDTO(Long id, String name, String email, String user_token, String role, String RG, String CPF,
             String address,
-            String profession, String employer, double[] lastThreeSalaries) {
+            String profession, String employer, Double lastThreeSalaries) {
         super(id, name, email, user_token, role);
         this.RG = RG;
         this.CPF = CPF;
@@ -101,11 +103,11 @@ public class ClientDTO extends UserDTO {
         this.employer = employer;
     }
 
-    public double[] getLastThreeSalaries() {
+    public Double getLastThreeSalaries() {
         return lastThreeSalaries;
     }
 
-    public void setLastThreeSalaries(double[] lastThreeSalaries) {
+    public void setLastThreeSalaries(Double lastThreeSalaries) {
         this.lastThreeSalaries = lastThreeSalaries;
     }
 
@@ -117,20 +119,32 @@ public class ClientDTO extends UserDTO {
                     client.getName(), client.getEmail(),
                     client.getPassword(), "CLIENT");
 
-            String clientSql = "INSERT INTO client (cpf, id, rg, address, profession, employer, salary_one, salary_two, salary_three) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            Double averageSalary = calculateAverageSalary(client.getLastThreeSalaries());
+
+            String clientSql = "INSERT INTO client (id, cpf, rg, address, profession, employer, last_three_salaries) VALUES (?, ?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(
                     clientSql,
-                    client.getCPF(),
                     userId,
+                    client.getCPF(),
                     client.getRG(),
                     client.getAddress(),
                     client.getProfession(),
                     client.getEmployer(),
-                    client.getLastThreeSalaries()[0],
-                    client.getLastThreeSalaries()[1],
-                    client.getLastThreeSalaries()[2]);
+                    averageSalary);
 
-            return ClientDTO.fromClient(client);
+            // Create a new ClientDTO with the inserted data
+            ClientDTO newClientDTO = new ClientDTO();
+            newClientDTO.setId(userId);
+            newClientDTO.setName(client.getName());
+            newClientDTO.setEmail(client.getEmail());
+            newClientDTO.setCPF(client.getCPF());
+            newClientDTO.setRG(client.getRG());
+            newClientDTO.setAddress(client.getAddress());
+            newClientDTO.setProfession(client.getProfession());
+            newClientDTO.setEmployer(client.getEmployer());
+            newClientDTO.setLastThreeSalaries(averageSalary);
+
+            return newClientDTO;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -181,22 +195,18 @@ public class ClientDTO extends UserDTO {
         dto.setAddress(client.getAddress());
         dto.setProfession(client.getProfession());
         dto.setEmployer(client.getEmployer());
-        dto.setLastThreeSalaries(client.getLastThreeSalaries());
+        dto.setLastThreeSalaries(calculateAverageSalary(client.getLastThreeSalaries()));
         return dto;
     }
 
-    public Client toClient() {
-        Client client = new Client();
-        client.setId(this.getId());
-        client.setName(this.getName());
-        client.setEmail(this.getEmail());
-        client.setUserToken(this.getUserToken());
-        client.setRG(this.getRG());
-        client.setCPF(this.getCPF());
-        client.setAddress(this.getAddress());
-        client.setProfession(this.getProfession());
-        client.setEmployer(this.getEmployer());
-        client.setLastThreeSalaries(this.getLastThreeSalaries());
-        return client;
+    private static double calculateAverageSalary(double[] salaries) {
+        if (salaries == null || salaries.length == 0) {
+            return 0.0;
+        }
+        double sum = 0;
+        for (double salary : salaries) {
+            sum += salary;
+        }
+        return sum / NUMBER_OF_SALARIES;
     }
 }

@@ -17,7 +17,7 @@ class Client {
     -address: String
     -profession: String
     -employer: String
-    -numberOfSalaries: int = 3
+    -NUMBER_OF_SALARIES: int = 3
     -lastSalaries: double[]
     +requestRent(Vehicle vehicle): void
     +modifyRentRequest(Vehicle vehicle): void

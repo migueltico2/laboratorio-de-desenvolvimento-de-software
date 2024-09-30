@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.example.project_2.model.Vehicle;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,6 +30,9 @@ public class UserDTO {
 
     @Autowired
     private RowMapper<UserDTO> baseUserRowMapper;
+
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public UserDTO login(String email, String password, JdbcTemplate jdbcTemplate) {
         String sql = "SELECT * FROM app_user WHERE email = ? AND password = ?";
@@ -129,6 +136,34 @@ public class UserDTO {
     public boolean changePassword(String newPassword, String token) {
         String sql = "UPDATE app_user SET password = ? WHERE user_token = ?::uuid";
         int rowsAffected = jdbcTemplate.update(sql, newPassword, token);
+        return rowsAffected > 0;
+    }
+
+    public boolean updateUser(Long userId, Map<String, Object> fields) {
+        if (fields == null || fields.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum campo fornecido para atualização");
+        }
+
+        Map<String, Object> nonNullFields = fields.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (nonNullFields.isEmpty()) {
+            throw new IllegalArgumentException("Todos os campos fornecidos são nulos");
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE app_user SET ");
+        sqlBuilder.append(nonNullFields.keySet().stream()
+                .map(key -> key + " = :" + key)
+                .collect(Collectors.joining(", ")));
+        sqlBuilder.append(" WHERE id = :id");
+
+        nonNullFields.put("id", userId);
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource(nonNullFields);
+
+        int rowsAffected = namedParameterJdbcTemplate.update(sqlBuilder.toString(), parameters);
+
         return rowsAffected > 0;
     }
 }
