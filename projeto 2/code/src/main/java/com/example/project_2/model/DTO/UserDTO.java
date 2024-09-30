@@ -40,6 +40,7 @@ public class UserDTO {
     @Autowired
     private ClientDTO clientDTO;
 
+    @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public UserDTO login(String email, String password, JdbcTemplate jdbcTemplate) {
