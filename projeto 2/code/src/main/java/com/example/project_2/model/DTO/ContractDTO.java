@@ -85,6 +85,12 @@ public class ContractDTO {
                 rentalDTO.getValue());
     }
 
+
+    public boolean deleteContract(String client_id) {
+        String sql = "DELETE FROM contract WHERE client_id = ?";
+        return jdbcTemplate.update(sql, client_id) > 0;
+    }
+
     public Long getId() {
         return id;
     }

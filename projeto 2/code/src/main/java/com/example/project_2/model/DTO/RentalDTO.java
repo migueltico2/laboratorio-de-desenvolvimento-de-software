@@ -8,7 +8,6 @@ public class RentalDTO {
     private String endDate;
     private BigDecimal value;
 
-    // Getters e Setters
     public int getVehicleId() {
         return vehicleId;
     }

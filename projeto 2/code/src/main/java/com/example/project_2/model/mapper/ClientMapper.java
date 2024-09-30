@@ -14,20 +14,17 @@ public class ClientMapper {
         return (rs, rowNum) -> {
             ClientDTO client = new ClientDTO();
 
-            // Mapeando atributos da classe User
             client.setId(rs.getLong("id"));
             client.setName(rs.getString("name"));
             client.setEmail(rs.getString("email"));
             client.setUserToken(rs.getString("user_token"));
 
-            // Mapeando atributos específicos da classe Client
             client.setRG(rs.getString("rg"));
             client.setCPF(rs.getString("cpf"));
             client.setAddress(rs.getString("address"));
             client.setProfession(rs.getString("profession"));
             client.setEmployer(rs.getString("employer"));
 
-            // Mapeando a média dos três últimos salários
             client.setLastThreeSalaries(rs.getDouble("last_three_salaries"));
 
             return client;

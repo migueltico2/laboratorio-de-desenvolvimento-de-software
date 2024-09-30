@@ -55,7 +55,12 @@ public class VehicleDTO {
         return jdbcTemplate.query(sql, vehicleRowMapper);
     }
 
-    // Getters
+
+    public boolean deleteVehicle(Long owner_id, JdbcTemplate jdbcTemplate) {
+        String sql = "DELETE FROM vehicle WHERE owner_id = ?";
+        return jdbcTemplate.update(sql, owner_id) > 0;
+    }
+
     public Long getId() {
         return id;
     }
@@ -88,7 +93,6 @@ public class VehicleDTO {
         return status;
     }
 
-    // Setters
     public void setId(Long id) {
         this.id = id;
     }
