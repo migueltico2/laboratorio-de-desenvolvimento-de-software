@@ -1,0 +1,64 @@
+@startuml
+
+class User {
+    -{static} int counter
+    -int id
+    -String name
+    -String email
+    -String password
+    +int getId()
+    +String getName()
+    +void setName(String name)
+    +String getEmail()
+    +void setEmail(String email)
+    +String getPassword()
+    +boolean login(String password)
+    +void changePassword(String oldPass, String newPass)
+}
+
+class Professor implements IConsultarExtrato {
+    -String cpf
+    -String department
+    -int coins
+    -void sendCoins(int coins, Student student, String reason)
+}
+
+class Student implements IConsultarExtrato {
+    -String cpf
+    -String rg
+    -String endereco
+    -Institution institution
+    -String course
+    -void exchangeCoins(int coins, Advantage advantage)
+}
+
+class Advantage {
+    -int id
+    -int partnerId
+    -String name
+    -int coins
+    -String description
+    -String image
+}
+
+class Partner {
+    -String id
+    -String cnpj
+    +void registerAdvantage(Advantage advantage)
+}
+
+class Institution {
+    -String name
+    -Professor[] professors
+    -Student[] students
+}
+
+interface IConsultarExtrato {
+    +int consultarExtrato()
+}
+
+User <|-- Professor
+User <|-- Student
+User <|-- Partner
+
+@enduml
