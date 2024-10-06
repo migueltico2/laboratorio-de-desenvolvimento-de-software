@@ -1,64 +1,85 @@
 @startuml
 
-class User {
-    -{static} int counter
-    -int id
-    -String name
-    -String email
-    -String password
-    +int getId()
-    +String getName()
-    +void setName(String name)
-    +String getEmail()
-    +void setEmail(String email)
-    +String getPassword()
-    +boolean login(String password)
-    +void changePassword(String oldPass, String newPass)
+abstract class User {
+    -id : int
+    -name : String
+    -email : String
+    -password : String
+    -role : Role
+    +getId() : int
+    +getName() : String
+    +setName(String name) : void
+    +getEmail() : String
+    +setEmail(String email) : void
+    +getPassword() : String
+    +login(String password) : boolean
+    +changePassword(String oldPass, String newPass) : void
 }
 
-class Professor implements IConsultarExtrato {
-    -String cpf
-    -String department
-    -int coins
-    -void sendCoins(int coins, Student student, String reason)
+enum Role {
+    PROFESSOR,
+    STUDENT,
+    ENTERPRISE
 }
 
-class Student implements IConsultarExtrato {
-    -String cpf
-    -String rg
-    -String endereco
-    -Institution institution
-    -String course
-    -void exchangeCoins(int coins, Advantage advantage)
+class Professor {
+    -cpf : String
+    -department : String
+    -institutionId : int
+    -account : Account
+    -sendCoins(int coins, Student student, String reason) : void
+}
+
+class Student {
+    -cpf : String
+    -rg : String
+    -endereco : String
+    -institutionId : int
+    -course : String
+    -account : Account
+    -exchangeCoins(int coins, Advantage advantage) : void
+}
+
+class Account {
+    -coins : int
+    +consultarExtrato() : int
 }
 
 class Advantage {
-    -int id
-    -int partnerId
-    -String name
-    -int coins
-    -String description
-    -String image
+    -id : int
+    -partnerId : int
+    -name : String
+    -coins : int
+    -description : String
+    -image : String
 }
 
-class Partner {
-    -String id
-    -String cnpj
-    +void registerAdvantage(Advantage advantage)
+class Enterprise {
+    -cnpj : String
+    -institutionType : InstitutionType
+    -advantages : Advantage[]
+    +registerAdvantage(Advantage advantage) : void
+    +validateExchange(Advantage advantage) : boolean
+}
+
+enum InstitutionType {
+    INSTITUTION,
+    PARTNER_ENTERPRISE
 }
 
 class Institution {
-    -String name
-    -Professor[] professors
-    -Student[] students
-}
-
-interface IConsultarExtrato {
-    +int consultarExtrato()
 }
 
 User <|-- Professor
 User <|-- Student
-User <|-- Partner
+User <|-- Enterprise
+
+Enterprise <|-- Institution
+
+Professor "1" o-- "1" Account
+Student "1" o-- "1" Account
+Enterprise "1" o-- "0..*" Advantage
+Institution "1" o-- "1..*" Professor
+Institution "1" o--  "0..n" Student
 
 @enduml
