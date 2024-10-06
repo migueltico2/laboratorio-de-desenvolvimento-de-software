@@ -1,0 +1,85 @@
+@startuml
+
+abstract class User {
+    -id : int
+    -name : String
+    -email : String
+    -password : String
+    -role : Role
+    +getId() : int
+    +getName() : String
+    +setName(String name) : void
+    +getEmail() : String
+    +setEmail(String email) : void
+    +getPassword() : String
+    +login(String password) : boolean
+    +changePassword(String oldPass, String newPass) : void
+}
+
+enum Role {
+    PROFESSOR,
+    STUDENT,
+    ENTERPRISE
+}
+
+class Professor {
+    -cpf : String
+    -department : String
+    -institutionId : int
+    -account : Account
+    -sendCoins(int coins, Student student, String reason) : void
+}
+
+class Student {
+    -cpf : String
+    -rg : String
+    -endereco : String
+    -institutionId : int
+    -course : String
+    -account : Account
+    -exchangeCoins(int coins, Advantage advantage) : void
+}
+
+class Account {
+    -coins : int
+    +consultarExtrato() : int
+}
+
+class Advantage {
+    -id : int
+    -partnerId : int
+    -name : String
+    -coins : int
+    -description : String
+    -image : String
+}
+
+class Enterprise {
+    -cnpj : String
+    -institutionType : InstitutionType
+    -advantages : Advantage[]
+    +registerAdvantage(Advantage advantage) : void
+    +validateExchange(Advantage advantage) : boolean
+}
+
+enum InstitutionType {
+    INSTITUTION,
+    PARTNER_ENTERPRISE
+}
+
+class Institution {
+}
+
+User <|-- Professor
+User <|-- Student
+User <|-- Enterprise
+
+Enterprise <|-- Institution
+
+Professor "1" o-- "1" Account
+Student "1" o-- "1" Account
+Enterprise "1" o-- "0..*" Advantage
+Institution "1" o-- "1..*" Professor
+Institution "1" o--  "0..n" Student
+
+@enduml
