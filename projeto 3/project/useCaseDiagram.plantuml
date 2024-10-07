@@ -29,6 +29,7 @@ UC5 .> UC6 : include
 UC4 .> UC9 : include
 UC3 .> UC8 : include
 UC11 .> UC14 : include
+UC4 .> UC14 : include
 UC15 .> UC16 : include
 
 User <|-- A
@@ -41,7 +42,6 @@ EP <|-- IE
 A --> UC5
 
 EP --> UC3
-EP --> UC14
 EP --> UC17
 A --> UC2
 A --> UC11
