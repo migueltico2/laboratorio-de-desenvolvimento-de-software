@@ -41,7 +41,7 @@ EP <|-- IE
 A --> UC5
 
 EP --> UC3
-EP <-- UC14
+EP --> UC14
 EP --> UC17
 A --> UC2
 A --> UC11
