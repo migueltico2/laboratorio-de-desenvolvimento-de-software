@@ -33,7 +33,7 @@ class Professor {
 class Student {
     -cpf : String
     -rg : String
-    -endereco : String
+    -address : String
     -institutionId : int
     -course : String
     -account : Account
@@ -45,9 +45,22 @@ class Account {
     +consultarExtrato() : int
 }
 
+class History {
+    -coins : int
+    -type: HistoryType
+    -date : Date
+    -student : Student
+    -professor : Professor
+    -advantage : Advantage
+}
+
+enum HistoryType {
+    TRANSFER,
+    PURCHASE
+}
+
 class Advantage {
     -id : int
-    -partnerId : int
     -name : String
     -coins : int
     -description : String
@@ -64,7 +77,7 @@ class Enterprise {
 
 enum InstitutionType {
     INSTITUTION,
-    PARTNER_ENTERPRISE
+    PARTNER
 }
 
 class Institution {
@@ -81,5 +94,6 @@ Student "1" o-- "1" Account
 Enterprise "1" o-- "0..*" Advantage
 Institution "1" o-- "1..*" Professor
 Institution "1" o--  "0..n" Student
+Account "1" o--  "0..n" History
 
 @enduml

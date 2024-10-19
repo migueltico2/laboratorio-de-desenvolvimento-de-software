@@ -51,7 +51,6 @@ Contract --down-( Persist
 
 Vehicle --down-( Persist
 
-
 FrontEnd --right- BackEnd : <<HTTP>>
 BackEnd --right- DB : <<ODBC>>
 

@@ -33,3 +33,12 @@ Eu como instituição quero que, ao início de cada semestre, o sistema adicione
 Eu como empresa parceira quero poder me afiliar ao programa para que eu possa disponibilizar vantagens para os alunos.
 
 Eu como empresa parceira quero ser notificada quando um aluno resgata uma vantagem para que eu possa conferir a troca.
+
+## Mapeamanto Modelo ER
+
+User(id, name, email, password)
+Student(id, CFP, RG, address, course, user_id, account_id, institution_id)
+Professor(id, CFP, department, user_id, account_id, institution_id)
+Enterprise(id, CNPJ, type, user_id)
+Advantage(id, name, coins, description, image, enterprise_id)
+History(id, name, coins, description, image, enterprise_id)
