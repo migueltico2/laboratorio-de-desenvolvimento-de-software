@@ -11,10 +11,10 @@ export class User {
 	@Column({ length: 200 })
 	name: string;
 
-	@Column({ length: 200 })
+	@Column({ unique: true })
 	email: string;
 
-	@Column({ length: 200 })
+	@Column()
 	password: string;
 
 	@OneToMany(() => Enterprise, (enterprise) => enterprise.user)

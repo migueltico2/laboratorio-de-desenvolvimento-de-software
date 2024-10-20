@@ -10,13 +10,13 @@ export class Advantage {
 	@Column({ length: 150 })
 	name: string;
 
-	@Column('double')
+	@Column('decimal', { precision: 10, scale: 2 })
 	coins: number;
 
 	@Column({ length: 250 })
 	description: string;
 
-	@Column('longblob')
+	@Column('bytea')
 	image: Buffer;
 
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.advantages)

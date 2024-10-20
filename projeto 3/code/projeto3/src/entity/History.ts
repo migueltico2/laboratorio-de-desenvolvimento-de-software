@@ -8,13 +8,13 @@ export class History {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column('double')
+	@Column('decimal', { precision: 10, scale: 2 })
 	coins: number;
 
 	@Column({ length: 8 })
 	type: string;
 
-	@Column('datetime')
+	@Column('timestamp')
 	date: Date;
 
 	@ManyToOne(() => Advantage, (advantage) => advantage.histories)
