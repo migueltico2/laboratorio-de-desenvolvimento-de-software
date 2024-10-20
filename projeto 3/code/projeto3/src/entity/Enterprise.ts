@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './User';
 import { Advantage } from './Advantage';
+import { Student } from './Student';
+import { Professor } from './Professor';
 
 @Entity()
 export class Enterprise {
@@ -18,4 +20,10 @@ export class Enterprise {
 
 	@OneToMany(() => Advantage, (advantage) => advantage.enterprise)
 	advantages: Advantage[];
+
+	@OneToMany(() => Student, (student) => student.institution)
+	students: Student[];
+
+	@OneToMany(() => Professor, (professor) => professor.institution)
+	professors: Professor[];
 }

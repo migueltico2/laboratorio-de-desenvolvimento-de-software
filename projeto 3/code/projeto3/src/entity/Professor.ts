@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Account } from './Account';
 import { History } from './History';
+import { Enterprise } from './Enterprise';
+
 @Entity()
 export class Professor {
 	@PrimaryGeneratedColumn()
@@ -19,8 +21,9 @@ export class Professor {
 	@ManyToOne(() => Account, (account) => account.professors)
 	account: Account;
 
-	@Column()
-	institution_id: number;
+	@ManyToOne(() => Enterprise, (enterprise) => enterprise.professors)
+	@JoinColumn({ name: 'institution_id' })
+	institution: Enterprise;
 
 	@OneToMany(() => History, (history) => history.professor)
 	histories: History[];

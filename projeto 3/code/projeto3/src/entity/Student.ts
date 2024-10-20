@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Account } from './Account';
 import { History } from './History';
+import { Enterprise } from './Enterprise';
 
 @Entity()
 export class Student {
@@ -26,8 +27,9 @@ export class Student {
 	@ManyToOne(() => Account, (account) => account.students)
 	account: Account;
 
-	@Column()
-	institution_id: number;
+	@ManyToOne(() => Enterprise, (enterprise) => enterprise.students)
+	@JoinColumn({ name: 'institution_id' })
+	institution: Enterprise;
 
 	@OneToMany(() => History, (history) => history.student)
 	histories: History[];
