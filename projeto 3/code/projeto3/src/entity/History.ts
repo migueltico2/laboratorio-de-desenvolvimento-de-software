@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Advantage } from './Advantage';
 import { Student } from './Student';
+import { Professor } from './Professor';
 
 @Entity()
 export class History {
@@ -22,6 +23,6 @@ export class History {
 	@ManyToOne(() => Student, (student) => student.histories)
 	student: Student;
 
-	@Column()
-	professor_id: number;
+	@ManyToOne(() => Professor, (professor) => professor.histories)
+	professor: Professor;
 }

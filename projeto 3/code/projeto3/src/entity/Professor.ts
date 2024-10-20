@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './User';
 import { Account } from './Account';
-
+import { History } from './History';
 @Entity()
 export class Professor {
 	@PrimaryGeneratedColumn()
@@ -21,4 +21,7 @@ export class Professor {
 
 	@Column()
 	institution_id: number;
+
+	@OneToMany(() => History, (history) => history.professor)
+	histories: History[];
 }
