@@ -5,6 +5,7 @@ left to right direction
 actor "Usuário" as User
 actor Aluno as A
 actor Professor as P
+actor Conta as C
 actor "Empresa parceira" as EP
 actor "Instituição de ensino" as IE
 
@@ -14,7 +15,6 @@ usecase "Consultar extrato" as UC2
 usecase "Adicionar vantagens" as UC3
 usecase "Enviar moedas" as UC4
 usecase "Receber moedas" as UC5
-usecase "Receber notificações" as UC6
 usecase "Adicionar detalhes" as UC8
 usecase "Adicionar motivo" as UC9
 usecase "Resgatar vantagem" as UC11
@@ -25,15 +25,15 @@ usecase "Fornece lista de professores" as UC16
 usecase "Validar troca de vantagem" as UC17
 }
 
-UC5 .> UC6 : include
 UC4 .> UC9 : include
 UC3 .> UC8 : include
 UC11 .> UC14 : include
 UC4 .> UC14 : include
 UC15 .> UC16 : include
 
-User <|-- A
-User <|-- P
+User <|-- C
+C <|-- A
+C <|-- P
 User <|-- EP
 User --> UC1
 
@@ -43,10 +43,9 @@ A --> UC5
 
 EP --> UC3
 EP --> UC17
-A --> UC2
+C --> UC2
 A --> UC11
 P --> UC4
-P --> UC2
 IE --> UC15
 User --> UC12
 
