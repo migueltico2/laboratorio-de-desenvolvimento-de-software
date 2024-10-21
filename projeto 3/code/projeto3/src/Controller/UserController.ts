@@ -27,8 +27,8 @@ export class UserController {
 
     // PUT - Update a user
     async update(request: Request, response: Response) {
-        const id = request.params.id;
-        const user = await this.userRepository.findOne(id);
+        const id = parseInt(request.params.id);
+        const user = await this.userRepository.findOne({ where: { id } });
         if (user) {
             this.userRepository.merge(user, request.body);
             const results = await this.userRepository.save(user);
