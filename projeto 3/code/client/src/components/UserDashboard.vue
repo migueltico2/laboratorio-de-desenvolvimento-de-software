@@ -29,7 +29,7 @@
 								required
 							></v-text-field>
 
-							<template v-if="userData.type === 'institution'">
+							<template v-if="userType === 'institution'">
 								<v-text-field
 									v-model="userData.CNPJ"
 									label="CNPJ"
@@ -38,7 +38,7 @@
 								></v-text-field>
 							</template>
 
-							<template v-if="userData.type === 'student'">
+							<template v-else>
 								<v-text-field
 									v-model="userData.CPF"
 									label="CPF"
@@ -50,7 +50,7 @@
 
 						<!-- Coluna Direita -->
 						<v-col cols="12" md="6">
-							<template v-if="userData.type === 'institution'">
+							<template v-if="userType === 'institution'">
 								<v-select
 									v-model="userData.institutionType"
 									:items="institutionTypes"
@@ -60,7 +60,7 @@
 								></v-select>
 							</template>
 
-							<template v-if="userData.type === 'student'">
+							<template v-else>
 								<v-text-field
 									v-model="userData.RG"
 									label="RG"
@@ -132,6 +132,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['logout']);
+
+const userType = props.userData.students ? 'student' : 'institution';
 
 const toast = useToast();
 const isEditing = ref(false);
