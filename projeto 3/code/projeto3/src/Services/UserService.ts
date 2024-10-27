@@ -50,8 +50,24 @@ export class UserService implements IUserInterface {
 		await this.userRepository.delete(id);
 	}
 
-	async login(credentials: LoginUserDTO): Promise<User> {
-		const user = await this.userRepository.findByEmail(credentials.email);
+	async loginEnterprise(credentials: LoginUserDTO): Promise<User> {
+		console.log('credentials', credentials);
+
+		const user = await this.userRepository.findByEmailWithEnterprise(credentials.email);
+		if (!user) {
+			throw new Error('Invalid credentials');
+		}
+
+		const validPassword = await compare(credentials.password, user.password);
+		if (!validPassword) {
+			throw new Error('Invalid credentials');
+		}
+
+		return user;
+	}
+
+	async loginStudent(credentials: LoginUserDTO): Promise<User> {
+		const user = await this.userRepository.findByEmailWithStudent(credentials.email);
 		if (!user) {
 			throw new Error('Invalid credentials');
 		}

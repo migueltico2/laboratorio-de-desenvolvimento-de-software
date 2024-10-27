@@ -54,9 +54,18 @@ export class UserController {
 		}
 	};
 
-	login = async (request: Request, response: Response) => {
+	loginEnterprise = async (request: Request, response: Response) => {
 		try {
-			const user = await this.userService.login(request.body);
+			const user = await this.userService.loginEnterprise(request.body);
+			return response.json(user);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	loginStudent = async (request: Request, response: Response) => {
+		try {
+			const user = await this.userService.loginStudent(request.body);
 			return response.json(user);
 		} catch (error) {
 			return this.handleError(error, response);

@@ -16,6 +16,10 @@ export const useFetchs = () => {
         return response.data;
     };
 
+    const login = async (data) => {
+        const response = await axios.post('http://localhost:3000/login', data);
+        return response.data;
+    };
 
     return {
         getInstitutions,
