@@ -148,12 +148,12 @@ const userData = reactive({
 	type: props.userData.type,
 	name: props.userData.name,
 	email: props.userData.email,
-	CNPJ: props.userData.CNPJ || '',
-	institutionType: props.userData.type || '',
-	CPF: props.userData.CPF || '',
-	RG: props.userData.RG || '',
-	address: props.userData.address || '',
-	course: props.userData.course || '',
+	CNPJ: props.userData.enterprises?.CNPJ || '',
+	institutionType: props.userData.enterprises?.institutionType || '',
+	CPF: props.userData.students?.CPF || '',
+	RG: props.userData.students?.RG || '',
+	address: props.userData.students?.address || '',
+	course: props.userData.students?.course || '',
 });
 
 watch(
@@ -164,19 +164,23 @@ watch(
 	{ deep: true }
 );
 
-const handleSave = () => {
+const handleSave = async () => {
 	isEditing.value = false;
+	await updateUser(userData);
 	toast.success('Suas informações foram atualizadas com sucesso!');
 };
 
 const handleDelete = async () => {
 	dialog.value = false;
-	if (userData.type === 'institution') {
+	if (props.userData.enterprises) {
+		console.log('userData.enterprises', props.userData.enterprises.id);
 		await deleteUser(props.userData.enterprises.id, 'enterprise');
-	} else if (userData.type === 'student') {
+	} else if (props.userData.students) {
+		console.log('userData.students', props.userData.students.id);
 		await deleteUser(props.userData.students.id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
+	emit('logout');
 };
 
 const handleLogout = () => {

@@ -50,6 +50,7 @@ export class EnterpriseController {
 
 	create = async (request: Request, response: Response) => {
 		try {
+			console.log('EnterpriseController.create', request.body);
 			const enterprise = await this.enterpriseService.create(request.body);
 			return response.status(201).json(enterprise);
 		} catch (error) {

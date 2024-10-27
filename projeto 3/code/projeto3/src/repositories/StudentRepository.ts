@@ -32,6 +32,7 @@ export class StudentRepository {
 	}
 
 	async create(data: CreateUserStudentDTO): Promise<Student> {
+		console.log(data);
 		const user = this.repositoryUser.create({ name: data.name, email: data.email, password: data.password });
 		const institution = await this.repositoryEnterprise.findOne({
 			where: { id: data.institutionId, type: 'institution' },

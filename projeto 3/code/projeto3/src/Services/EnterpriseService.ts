@@ -38,6 +38,7 @@ export class EnterpriseService implements IEnterpriseInterface {
 	}
 
 	async create(data: CreateUserEnterpriseDTO) {
+		console.log('EnterpriseService.create', data);
 		if (!Enterprise.isValidCNPJ(data.CNPJ)) {
 			throw new Error('Invalid CNPJ');
 		}

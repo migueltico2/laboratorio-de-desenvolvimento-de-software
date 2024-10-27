@@ -28,7 +28,9 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.enterprises?.length) {
+		console.log('repository', user);
+		// Verifica se o user existe e se enterprises existe
+		if (!user?.enterprises) {
 			return null;
 		}
 
@@ -42,7 +44,7 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.students?.length) {
+		if (!user?.students) {
 			return null;
 		}
 

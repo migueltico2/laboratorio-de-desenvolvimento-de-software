@@ -46,6 +46,7 @@ export class EnterpriseRepository {
 	};
 
 	async create(data: CreateUserEnterpriseDTO): Promise<Enterprise> {
+		console.log(data);
 		const user = this.repositoryUser.create({ name: data.name, email: data.email, password: data.password });
 		const savedUser = await this.repositoryUser.save(user);
 		const { name, email, password, ...enterpriseData } = data;

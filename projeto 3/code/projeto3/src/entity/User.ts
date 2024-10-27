@@ -15,7 +15,7 @@ export class User {
 	@Column({ unique: true })
 	email: string;
 
-	@Column()
+	@Column({ nullable: false })
 	password: string;
 
 	@OneToOne(() => Enterprise, (enterprise) => enterprise.user, { cascade: true })

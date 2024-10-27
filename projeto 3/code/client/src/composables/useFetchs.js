@@ -2,17 +2,17 @@ import axios from 'axios';
 
 export const useFetchs = () => {
     const getInstitutions = async () => {
-        const response = await axios.get('http://localhost:3000/enterprises/institutions');
+        const response = await axios.get('http://localhost:3000/enterprise/institutions');
         return response.data;
     };
 
     const createEnterprise = async (data) => {
-        const response = await axios.post('http://localhost:3000/enterprises', data);
+        const response = await axios.post('http://localhost:3000/enterprise', data);
         return response.data;
     };
 
     const createStudent = async (data) => {
-        const response = await axios.post('http://localhost:3000/students', data);
+        const response = await axios.post('http://localhost:3000/student', data);
         return response.data;
     };
 
@@ -31,6 +31,12 @@ export const useFetchs = () => {
         return response.data;
     };
 
+    const updateUser = async (data) => {
+        console.log(data);
+        const response = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, data);
+        return response.data;
+    };
+
     return {
         getInstitutions,
         createEnterprise,
@@ -38,5 +44,6 @@ export const useFetchs = () => {
         loginStudent,
         loginEnterprise,
         deleteUser,
+        updateUser,
     };
 };

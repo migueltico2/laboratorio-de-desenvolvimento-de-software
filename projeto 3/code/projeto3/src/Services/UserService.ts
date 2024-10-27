@@ -61,10 +61,10 @@ export class UserService implements IUserInterface {
 	async loginEnterprise(credentials: LoginUserDTO): Promise<User> {
 		try {
 			const user = await this.userRepository.findByEmailWithEnterprise(credentials.email);
+			console.log('user', user);
 			if (!user) {
 				throw new Error('Invalid credentials for user');
 			}
-			console.log('user', user);
 			if (credentials.password !== user.password) {
 				throw new Error('Invalid credentials password');
 			}
