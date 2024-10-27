@@ -3,6 +3,7 @@ import express from 'express';
 import userRoutes from './Router/UserRouter';
 import accountRoutes from './Router/AccountRouter';
 import enterpriseRoutes from './Router/EnterpriseRouter';
+import studentRoutes from './Router/StudentRouter';
 const app = express();
 
 AppDataSource.initialize()
@@ -11,6 +12,7 @@ AppDataSource.initialize()
 		app.use('/users', userRoutes);
 		app.use('/accounts', accountRoutes);
 		app.use('/enterprises', enterpriseRoutes);
+		app.use('/students', studentRoutes);
 		app.listen(3000, () => {
 			console.log('Server is running on port 3000');
 		});

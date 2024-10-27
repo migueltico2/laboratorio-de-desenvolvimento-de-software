@@ -27,4 +27,8 @@ export class Enterprise {
 
 	@OneToMany(() => Professor, (professor) => professor.institution)
 	professors: Professor[];
+
+	public static isValidCNPJ(cnpj: string): boolean {
+		return cnpj.length === 14 && /^\d+$/.test(cnpj);
+	}
 }

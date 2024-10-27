@@ -4,7 +4,7 @@ import {
 	UpdateEnterpriseDTO,
 } from '../Interfaces/IEnterpriseInterfaces';
 import { EnterpriseRepository } from '../repositories/EnterpriseRepository';
-
+import { Enterprise } from '../entity/Enterprise';
 export class EnterpriseService implements IEnterpriseInterface {
 	constructor(private enterpriseRepository: EnterpriseRepository) {}
 
@@ -30,7 +30,7 @@ export class EnterpriseService implements IEnterpriseInterface {
 
 	async create(data: CreateUserEnterpriseDTO) {
 		// Validar CNPJ
-		if (!this.isValidCNPJ(data.CNPJ)) {
+		if (!Enterprise.isValidCNPJ(data.CNPJ)) {
 			throw new Error('Invalid CNPJ');
 		}
 
@@ -52,7 +52,7 @@ export class EnterpriseService implements IEnterpriseInterface {
 		await this.findById(id);
 
 		// Validar CNPJ se fornecido
-		if (data.CNPJ && !this.isValidCNPJ(data.CNPJ)) {
+		if (data.CNPJ && !Enterprise.isValidCNPJ(data.CNPJ)) {
 			throw new Error('Invalid CNPJ');
 		}
 
@@ -71,10 +71,5 @@ export class EnterpriseService implements IEnterpriseInterface {
 	async delete(id: number) {
 		await this.findById(id);
 		await this.enterpriseRepository.delete(id);
-	}
-
-	private isValidCNPJ(cnpj: string): boolean {
-		// Implementar validação de CNPJ
-		return cnpj.length === 14 && /^\d+$/.test(cnpj);
 	}
 }

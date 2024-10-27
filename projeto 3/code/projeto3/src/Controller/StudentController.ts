@@ -1,42 +1,68 @@
-import { Student } from '../entity/Student';
-import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
+import { StudentService } from '../Services/StudentService';
+import { StudentRepository } from '../repositories/StudentRepository';
 
 export class StudentController {
-	private studentRepository = AppDataSource.getRepository(Student);
+	private studentService: StudentService;
 
-	async getAll(request: Request, response: Response) {
-		const students = await this.studentRepository.find();
-		return response.json(students);
+	constructor() {
+		const studentRepository = new StudentRepository();
+		this.studentService = new StudentService(studentRepository);
 	}
 
-	async create(request: Request, response: Response) {
-		const newStudent = this.studentRepository.create(request.body);
-		const results = await this.studentRepository.save(newStudent);
-		return response.json(results);
-	}
-
-	async delete(request: Request, response: Response) {
-		const id = request.params.id;
-		const result = await this.studentRepository.delete(id);
-		return response.json(result);
-	}
-
-	async update(request: Request, response: Response) {
-		const id = parseInt(request.params.id);
-		const updateData = request.body;
-
+	getAll = async (request: Request, response: Response) => {
 		try {
-			const result = await this.studentRepository.update(id, updateData);
-
-			if (result.affected === 0) {
-				return response.status(404).json({ message: 'Student not found' });
-			}
-
-			const updatedStudent = await this.studentRepository.findOne({ where: { id } });
-			return response.json(updatedStudent);
+			const students = await this.studentService.findAll();
+			return response.json(students);
 		} catch (error) {
-			return response.status(400).json({ message: 'Error updating student', error: error.message });
+			return this.handleError(error, response);
 		}
+	};
+
+	getById = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			const student = await this.studentService.findById(id);
+			return response.json(student);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	create = async (request: Request, response: Response) => {
+		try {
+			const student = await this.studentService.create(request.body);
+			return response.status(201).json(student);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	update = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			const student = await this.studentService.update(id, request.body);
+			return response.json(student);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	delete = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			await this.studentService.delete(id);
+			return response.status(204).send();
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	private handleError(error: any, response: Response) {
+		console.error(error);
+		return response.status(400).json({
+			status: 'error',
+			message: error.message || 'Unexpected error occurred',
+		});
 	}
 }
