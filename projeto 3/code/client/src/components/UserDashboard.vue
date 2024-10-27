@@ -144,22 +144,18 @@ const institutionTypes = [
 	{ title: 'Instituição', value: 'institution' },
 ];
 
-// Inicializa os dados do usuário com os props recebidos
 const userData = reactive({
 	type: props.userData.type,
 	name: props.userData.name,
 	email: props.userData.email,
-	// Campos específicos para institution
 	CNPJ: props.userData.CNPJ || '',
 	institutionType: props.userData.type || '',
-	// Campos específicos para student
 	CPF: props.userData.CPF || '',
 	RG: props.userData.RG || '',
 	address: props.userData.address || '',
 	course: props.userData.course || '',
 });
 
-// Atualiza os dados quando props mudar
 watch(
 	() => props.userData,
 	(newValue) => {
@@ -181,12 +177,11 @@ const handleDelete = async () => {
 		await deleteUser(props.userData.students.id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
-	// Implementar lógica de deleção
 };
 
 const handleLogout = () => {
 	toast.success('Você foi desconectado com sucesso.');
-	emit('logout'); // Emite o evento para o componente pai
+	emit('logout');
 };
 </script>
 

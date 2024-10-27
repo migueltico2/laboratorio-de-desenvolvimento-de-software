@@ -22,19 +22,31 @@ export class UserRepository {
 	}
 
 	async findByEmailWithEnterprise(email: string): Promise<User | null> {
-		return await this.repository
+		const user = await this.repository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.enterprises', 'enterprises')
 			.where('user.email = :email', { email })
 			.getOne();
+
+		if (!user?.enterprises?.length) {
+			return null;
+		}
+
+		return user;
 	}
 
 	async findByEmailWithStudent(email: string): Promise<User | null> {
-		return await this.repository
+		const user = await this.repository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.students', 'student')
 			.where('user.email = :email', { email })
 			.getOne();
+
+		if (!user?.students?.length) {
+			return null;
+		}
+
+		return user;
 	}
 
 	async create(data: CreateUserDTO): Promise<User> {
