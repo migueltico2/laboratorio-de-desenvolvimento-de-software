@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Advantage } from './Advantage';
 import { Student } from './Student';
@@ -16,6 +16,7 @@ export class Enterprise {
 	type: string;
 
 	@ManyToOne(() => User, (user) => user.enterprises)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
 	@OneToMany(() => Advantage, (advantage) => advantage.enterprise)

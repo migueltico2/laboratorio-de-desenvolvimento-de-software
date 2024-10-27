@@ -16,9 +16,11 @@ export class Professor {
 	department: string;
 
 	@ManyToOne(() => User, (user) => user.professors)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
 	@ManyToOne(() => Account, (account) => account.professors)
+	@JoinColumn({ name: 'account_id' })
 	account: Account;
 
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.professors)

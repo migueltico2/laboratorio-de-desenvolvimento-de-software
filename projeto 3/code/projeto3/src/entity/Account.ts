@@ -6,7 +6,8 @@ import { Professor } from './Professor';
 export class Account {
 	@PrimaryGeneratedColumn()
 	id: number;
-	@Column('decimal', { precision: 10, scale: 2 })
+
+	@Column('decimal', { precision: 10, scale: 2, default: 0 })
 	coins: number;
 
 	@OneToMany(() => Student, (student) => student.account)

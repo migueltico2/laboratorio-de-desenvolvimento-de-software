@@ -22,9 +22,11 @@ export class Student {
 	course: string;
 
 	@ManyToOne(() => User, (user) => user.students)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
 	@ManyToOne(() => Account, (account) => account.students)
+	@JoinColumn({ name: 'account_id' })
 	account: Account;
 
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.students)
