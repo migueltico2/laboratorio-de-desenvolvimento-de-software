@@ -18,6 +18,14 @@ export class UserService implements IUserInterface {
 		return user;
 	}
 
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.userRepository.findByEmail(email);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		return user;
+	}
+
 	async create(data: CreateUserDTO): Promise<User> {
 		const existingUser = await this.userRepository.findByEmail(data.email);
 		if (existingUser) {
@@ -51,30 +59,31 @@ export class UserService implements IUserInterface {
 	}
 
 	async loginEnterprise(credentials: LoginUserDTO): Promise<User> {
-		console.log('credentials', credentials);
+		try {
+			const user = await this.userRepository.findByEmailWithEnterprise(credentials.email);
+			if (!user) {
+				throw new Error('Invalid credentials for user');
+			}
+			console.log('user', user);
+			if (credentials.password !== user.password) {
+				throw new Error('Invalid credentials password');
+			}
 
-		const user = await this.userRepository.findByEmailWithEnterprise(credentials.email);
-		if (!user) {
-			throw new Error('Invalid credentials');
+			return user;
+		} catch (error: any) {
+			console.error('Error in loginEnterprise', error);
+			throw error;
 		}
-
-		const validPassword = await compare(credentials.password, user.password);
-		if (!validPassword) {
-			throw new Error('Invalid credentials');
-		}
-
-		return user;
 	}
 
 	async loginStudent(credentials: LoginUserDTO): Promise<User> {
 		const user = await this.userRepository.findByEmailWithStudent(credentials.email);
 		if (!user) {
-			throw new Error('Invalid credentials');
+			throw new Error('Invalid credentials for user');
 		}
 
-		const validPassword = await compare(credentials.password, user.password);
-		if (!validPassword) {
-			throw new Error('Invalid credentials');
+		if (credentials.password !== user.password) {
+			throw new Error('Invalid credentials password');
 		}
 
 		return user;

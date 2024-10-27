@@ -46,8 +46,8 @@ export class UserController {
 
 	delete = async (request: Request, response: Response) => {
 		try {
-			const id = parseInt(request.params.id);
-			await this.userService.delete(id);
+			const email = request.body.email;
+			await this.userService.delete(email);
 			return response.status(204).send();
 		} catch (error) {
 			return this.handleError(error, response);

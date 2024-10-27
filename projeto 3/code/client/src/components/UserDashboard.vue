@@ -116,11 +116,13 @@
 			</v-card-actions>
 		</v-form>
 	</v-card>
+	{{ props.userData }}
 </template>
 
 <script setup>
 import { ref, reactive, watch } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useFetchs } from '../composables/useFetchs';
 
 const props = defineProps({
 	userData: {
@@ -129,10 +131,12 @@ const props = defineProps({
 	},
 });
 
+const emit = defineEmits(['logout']);
+
 const toast = useToast();
 const isEditing = ref(false);
 const dialog = ref(false);
-
+const { deleteUser } = useFetchs();
 const institutionTypes = [
 	{ title: 'Parceiro', value: 'partner' },
 	{ title: 'Instituição', value: 'institution' },
@@ -167,15 +171,20 @@ const handleSave = () => {
 	toast.success('Suas informações foram atualizadas com sucesso!');
 };
 
-const handleDelete = () => {
+const handleDelete = async () => {
 	dialog.value = false;
+	if (userData.type === 'institution') {
+		await deleteUser(props.userData.enterprises.id, 'enterprise');
+	} else if (userData.type === 'student') {
+		await deleteUser(props.userData.students.id, 'student');
+	}
 	toast.error('Sua conta foi excluída permanentemente.');
 	// Implementar lógica de deleção
 };
 
 const handleLogout = () => {
 	toast.success('Você foi desconectado com sucesso.');
-	// Implementar lógica de logout
+	emit('logout'); // Emite o evento para o componente pai
 };
 </script>
 

@@ -14,8 +14,8 @@ AppDataSource.initialize()
 		app.use(cors('*'));
 		app.use('/users', userRoutes);
 		app.use('/accounts', accountRoutes);
-		app.use('/enterprises', enterpriseRoutes);
-		app.use('/students', studentRoutes);
+		app.use('/enterprise', enterpriseRoutes);
+		app.use('/student', studentRoutes);
 		app.listen(3000, () => {
 			console.log('Server is running on port 3000');
 		});

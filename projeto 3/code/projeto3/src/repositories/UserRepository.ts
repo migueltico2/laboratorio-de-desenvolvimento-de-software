@@ -24,8 +24,8 @@ export class UserRepository {
 	async findByEmailWithEnterprise(email: string): Promise<User | null> {
 		return await this.repository
 			.createQueryBuilder('user')
-			.where('user.email = :email', { email })
 			.leftJoinAndSelect('user.enterprises', 'enterprises')
+			.where('user.email = :email', { email })
 			.getOne();
 	}
 

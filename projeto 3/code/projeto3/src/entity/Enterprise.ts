@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './User';
 import { Advantage } from './Advantage';
 import { Student } from './Student';
@@ -15,17 +15,17 @@ export class Enterprise {
 	@Column({ length: 11 })
 	type: string;
 
-	@ManyToOne(() => User, (user) => user.enterprises)
+	@OneToOne(() => User, (user) => user.enterprises)
 	@JoinColumn({ name: 'user_id' })
 	user: User;
 
-	@OneToMany(() => Advantage, (advantage) => advantage.enterprise)
+	@OneToMany(() => Advantage, (advantage) => advantage.enterprise, { cascade: true })
 	advantages: Advantage[];
 
-	@OneToMany(() => Student, (student) => student.institution)
+	@OneToMany(() => Student, (student) => student.institution, { cascade: true })
 	students: Student[];
 
-	@OneToMany(() => Professor, (professor) => professor.institution)
+	@OneToMany(() => Professor, (professor) => professor.institution, { cascade: true })
 	professors: Professor[];
 
 	public static isValidCNPJ(cnpj: string): boolean {

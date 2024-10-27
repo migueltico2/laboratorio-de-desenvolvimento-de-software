@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<Registration v-if="!isLoggedIn" @user-registered="handleUserRegistered" />
-		<UserDashboard v-else :userData="currentUser" />
+		<UserDashboard v-else :userData="currentUser" @logout="handleLogout" />
 	</div>
 </template>
 
@@ -16,6 +16,11 @@ const currentUser = ref(null);
 const handleUserRegistered = (userData) => {
 	currentUser.value = userData;
 	isLoggedIn.value = true;
+};
+
+const handleLogout = () => {
+	isLoggedIn.value = false;
+	currentUser.value = null;
 };
 </script>
 

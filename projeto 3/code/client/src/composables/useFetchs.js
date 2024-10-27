@@ -16,8 +16,18 @@ export const useFetchs = () => {
         return response.data;
     };
 
-    const login = async (data) => {
-        const response = await axios.post('http://localhost:3000/login', data);
+    const loginStudent = async (data) => {
+        const response = await axios.post('http://localhost:3000/users/login/student', data);
+        return response.data;
+    };
+
+    const loginEnterprise = async (data) => {
+        const response = await axios.post('http://localhost:3000/users/login/enterprise', data);
+        return response.data;
+    };
+
+    const deleteUser = async (id, type) => {
+        const response = await axios.delete(`http://localhost:3000/${type}/${id}`);
         return response.data;
     };
 
@@ -25,5 +35,8 @@ export const useFetchs = () => {
         getInstitutions,
         createEnterprise,
         createStudent,
+        loginStudent,
+        loginEnterprise,
+        deleteUser,
     };
 };

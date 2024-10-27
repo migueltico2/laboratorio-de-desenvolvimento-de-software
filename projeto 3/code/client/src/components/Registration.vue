@@ -75,6 +75,10 @@
 
 				<!-- Login Form -->
 				<v-window-item value="login">
+					<v-radio-group v-model="loginType" row>
+						<v-radio label="Institution" value="enterprise" class="radio"></v-radio>
+						<v-radio label="Student" value="student" class="radio"></v-radio>
+					</v-radio-group>
 					<v-form @submit.prevent="handleLogin">
 						<v-container>
 							<v-text-field v-model="loginForm.email" label="Email" type="email" required></v-text-field>
@@ -104,7 +108,8 @@ const emit = defineEmits(['user-registered']);
 const toast = useToast();
 const activeTab = ref('register');
 const userType = ref('institution');
-const { getInstitutions, createEnterprise, createStudent, login } = useFetchs();
+const loginType = ref('student');
+const { getInstitutions, createEnterprise, createStudent, loginEnterprise, loginStudent } = useFetchs();
 
 const institutionTypes = [
 	{ title: 'Partner', value: 'partner' },
@@ -165,7 +170,12 @@ const handleSubmit = async () => {
 
 const handleLogin = async () => {
 	try {
-		const userData = await login(loginForm);
+		let userData;
+		if (loginType.value === 'enterprise') {
+			userData = await loginEnterprise(loginForm);
+		} else {
+			userData = await loginStudent(loginForm);
+		}
 		emit('user-registered', userData);
 		toast.success('Login successful');
 	} catch (error) {
