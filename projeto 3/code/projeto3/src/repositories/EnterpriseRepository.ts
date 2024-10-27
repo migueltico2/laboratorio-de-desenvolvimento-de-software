@@ -13,9 +13,11 @@ export class EnterpriseRepository {
 	}
 
 	async findAll(): Promise<Enterprise[]> {
-		return await this.repository.find({
-			relations: ['user', 'advantages'],
-		});
+		return await this.repository
+			.createQueryBuilder('enterprise')
+			.leftJoinAndSelect('enterprise.user', 'user')
+			.leftJoinAndSelect('enterprise.advantages', 'advantages')
+			.getMany();
 	}
 
 	async findById(id: number): Promise<Enterprise | null> {
@@ -34,15 +36,14 @@ export class EnterpriseRepository {
 	async create(data: CreateUserEnterpriseDTO): Promise<Enterprise> {
 		const user = this.repositoryUser.create({ name: data.name, email: data.email, password: data.password });
 		const savedUser = await this.repositoryUser.save(user);
-
 		const { name, email, password, ...enterpriseData } = data;
-		const dataEnterprise = {
-			...enterpriseData,
-			user_id: savedUser.id,
-		};
+		const enterprise = this.repository.create({
+			CNPJ: enterpriseData.CNPJ,
+			type: enterpriseData.type,
+			user: savedUser,
+		});
 
-		const enterprise = this.repository.create(dataEnterprise);
-		return await this.repository.save(enterprise);
+		return await this.repository.save({ ...enterprise, user: savedUser });
 	}
 
 	async update(id: number, data: UpdateEnterpriseDTO): Promise<Enterprise> {
