@@ -70,6 +70,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useFetchs } from '../composables/useFetchs';
 
+const emit = defineEmits(['user-registered']);
 const toast = useToast();
 const userType = ref('institution');
 const { getInstitutions, createEnterprise, createStudent } = useFetchs();
@@ -100,12 +101,26 @@ const studentFormData = reactive({
 });
 
 const handleSubmit = async () => {
-	if (userType.value === 'institution') {
-		await createEnterprise({ ...userFormData, ...institutionFormData });
-		toast.success('Institution created successfully');
-	} else {
-		await createStudent({ ...userFormData, ...studentFormData });
-		toast.success('Student created successfully');
+	try {
+		let userData;
+
+		if (userType.value === 'institution') {
+			userData = await createEnterprise({ ...userFormData, ...institutionFormData });
+			toast.success('Institution created successfully');
+		} else {
+			userData = await createStudent({ ...userFormData, ...studentFormData });
+			toast.success('Student created successfully');
+		}
+
+		// Emite o evento com os dados do usuário
+		emit('user-registered', {
+			type: userType.value,
+			...userFormData,
+			...(userType.value === 'institution' ? institutionFormData : studentFormData),
+		});
+	} catch (error) {
+		toast.error('Error creating user');
+		console.error('Registration error:', error);
 	}
 };
 
