@@ -4,6 +4,7 @@ import { EnterpriseController } from '../Controller/EnterpriseController';
 const router = Router();
 const enterpriseController = new EnterpriseController();
 
+router.get('/institutions', enterpriseController.getInstitutions.bind(enterpriseController));
 router.get('/', enterpriseController.getAll.bind(enterpriseController));
 router.get('/:id', enterpriseController.getById.bind(enterpriseController));
 router.post('/', enterpriseController.create.bind(enterpriseController));

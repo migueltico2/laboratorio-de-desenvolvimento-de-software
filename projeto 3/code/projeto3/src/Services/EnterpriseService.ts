@@ -28,18 +28,25 @@ export class EnterpriseService implements IEnterpriseInterface {
 		return enterprise;
 	}
 
+	async findInstitutions() {
+		try {
+			const institutions = await this.enterpriseRepository.findByType('institution');
+			return institutions;
+		} catch (error) {
+			throw new Error('Failed to fetch institutions');
+		}
+	}
+
 	async create(data: CreateUserEnterpriseDTO) {
-		// Validar CNPJ
 		if (!Enterprise.isValidCNPJ(data.CNPJ)) {
 			throw new Error('Invalid CNPJ');
 		}
 
-		// Verificar se já existe empresa com este CNPJ
 		const existingEnterprise = await this.enterpriseRepository.findByCNPJ(data.CNPJ);
 		if (existingEnterprise) {
 			throw new Error('CNPJ already registered');
 		}
-		// Validar tipo
+
 		if (!['partner', 'institution'].includes(data.type)) {
 			throw new Error('Invalid enterprise type');
 		}
@@ -48,15 +55,12 @@ export class EnterpriseService implements IEnterpriseInterface {
 	}
 
 	async update(id: number, data: UpdateEnterpriseDTO) {
-		// Verificar se existe
 		await this.findById(id);
 
-		// Validar CNPJ se fornecido
 		if (data.CNPJ && !Enterprise.isValidCNPJ(data.CNPJ)) {
 			throw new Error('Invalid CNPJ');
 		}
 
-		// Validar tipo se fornecido
 		if (data.type && !['partner', 'institution'].includes(data.type)) {
 			throw new Error('Invalid enterprise type');
 		}

@@ -33,6 +33,18 @@ export class EnterpriseRepository {
 		});
 	}
 
+	findByType = async (type: string) => {
+		try {
+			const institutions = await this.repository.find({
+				where: { type: type },
+				relations: ['user'],
+			});
+			return institutions;
+		} catch (error) {
+			throw new Error('Error finding institutions');
+		}
+	};
+
 	async create(data: CreateUserEnterpriseDTO): Promise<Enterprise> {
 		const user = this.repositoryUser.create({ name: data.name, email: data.email, password: data.password });
 		const savedUser = await this.repositoryUser.save(user);

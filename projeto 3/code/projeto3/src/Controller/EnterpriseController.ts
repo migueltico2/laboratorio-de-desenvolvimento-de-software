@@ -29,6 +29,25 @@ export class EnterpriseController {
 		}
 	};
 
+	getInstitutions = async (request: Request, response: Response) => {
+		try {
+			const institutions = await this.enterpriseService.findInstitutions();
+
+			if (!institutions || institutions.length === 0) {
+				return response.status(404).json({
+					message: 'No institutions found',
+				});
+			}
+
+			return response.status(200).json({
+				success: true,
+				data: institutions,
+			});
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
 	create = async (request: Request, response: Response) => {
 		try {
 			const enterprise = await this.enterpriseService.create(request.body);
