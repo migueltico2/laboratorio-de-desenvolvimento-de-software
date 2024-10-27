@@ -1,5 +1,5 @@
 <template>
-	<div style="width: 100vw;">
+	<div style="width: 100%;">
 		<Registration v-if="!isLoggedIn" @user-registered="handleUserRegistered" />
 		<UserDashboard v-else :userData="currentUser" @logout="handleLogout" />
 	</div>
