@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from './User';
 import { Account } from './Account';
 import { History } from './History';
@@ -15,10 +15,12 @@ export class Professor {
 	@Column({ length: 150 })
 	department: string;
 
-	@ManyToOne(() => User, (user) => user.professors)
+	@OneToOne(() => User, (user) => user.professors)
+	@JoinColumn({ name: 'user_id' })
 	user: User;
 
-	@ManyToOne(() => Account, (account) => account.professors)
+	@ManyToOne(() => Account, (account) => account.professors, { cascade: true })
+	@JoinColumn({ name: 'account_id' })
 	account: Account;
 
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.professors)

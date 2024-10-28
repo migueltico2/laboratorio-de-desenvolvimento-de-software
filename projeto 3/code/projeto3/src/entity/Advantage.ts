@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Enterprise } from './Enterprise';
 import { History } from './History';
 
@@ -20,6 +20,7 @@ export class Advantage {
 	image: Buffer;
 
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.advantages)
+	@JoinColumn({ name: 'enterprise_id' })
 	enterprise: Enterprise;
 
 	@OneToMany(() => History, (history) => history.advantage)

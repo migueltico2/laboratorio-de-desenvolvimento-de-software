@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Advantage } from './Advantage';
 import { Student } from './Student';
 import { Professor } from './Professor';
@@ -18,11 +18,14 @@ export class History {
 	date: Date;
 
 	@ManyToOne(() => Advantage, (advantage) => advantage.histories)
+	@JoinColumn({ name: 'advantage_id' })
 	advantage: Advantage;
 
 	@ManyToOne(() => Student, (student) => student.histories)
+	@JoinColumn({ name: 'student_id' })
 	student: Student;
 
 	@ManyToOne(() => Professor, (professor) => professor.histories)
+	@JoinColumn({ name: 'professor_id' })
 	professor: Professor;
 }

@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 import { Enterprise } from './Enterprise';
 import { Professor } from './Professor';
 import { Student } from './Student';
+import { compare, hash } from 'bcrypt';
 
 @Entity()
 export class User {
@@ -14,15 +15,23 @@ export class User {
 	@Column({ unique: true })
 	email: string;
 
-	@Column()
+	@Column({ nullable: false })
 	password: string;
 
-	@OneToMany(() => Enterprise, (enterprise) => enterprise.user)
+	@OneToOne(() => Enterprise, (enterprise) => enterprise.user, { cascade: true })
 	enterprises: Enterprise[];
 
-	@OneToMany(() => Professor, (professor) => professor.user)
+	@OneToOne(() => Professor, (professor) => professor.user, { cascade: true })
 	professors: Professor[];
 
-	@OneToMany(() => Student, (student) => student.user)
+	@OneToOne(() => Student, (student) => student.user, { cascade: true })
 	students: Student[];
+
+	public async validatePassword(password: string): Promise<boolean> {
+		return await compare(password, this.password);
+	}
+
+	public static async hashPassword(password: string): Promise<string> {
+		return await hash(password, 10);
+	}
 }
