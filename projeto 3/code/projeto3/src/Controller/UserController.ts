@@ -58,8 +58,8 @@ export class UserController {
 		try {
 			const user = await this.userService.loginEnterprise(request.body);
 			return response.json({
-				...user,
 				...user.enterprises,
+				...user,
 				type: 'enterprise',
 			});
 		} catch (error) {
@@ -71,8 +71,8 @@ export class UserController {
 		try {
 			const user = await this.userService.loginStudent(request.body);
 			return response.json({
-				...user,
 				...user.students,
+				...user,
 				type: 'student',
 			});
 		} catch (error) {

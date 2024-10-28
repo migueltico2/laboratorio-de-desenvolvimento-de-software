@@ -19,13 +19,13 @@ export class User {
 	password: string;
 
 	@OneToOne(() => Enterprise, (enterprise) => enterprise.user, { cascade: true })
-	enterprises: Enterprise[];
+	enterprises: Enterprise;
 
 	@OneToOne(() => Professor, (professor) => professor.user, { cascade: true })
-	professors: Professor[];
+	professors: Professor;
 
 	@OneToOne(() => Student, (student) => student.user, { cascade: true })
-	students: Student[];
+	students: Student;
 
 	public async validatePassword(password: string): Promise<boolean> {
 		return await compare(password, this.password);

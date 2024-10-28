@@ -1,7 +1,15 @@
 <template>
-	<div style="width: 100%;">
-		<Registration v-if="!isLoggedIn" @user-registered="handleUserRegistered" />
-		<UserDashboard v-else :userData="currentUser" @logout="handleLogout" />
+	<div style="width: 100%">
+		<Registration
+			v-if="!isLoggedIn"
+			@user-registered="handleUserRegistered"
+		/>
+		<UserDashboard
+			v-else
+			:userData="currentUser"
+			@logout="handleLogout"
+			@update-user="handleUpdateUser"
+		/>
 	</div>
 </template>
 

@@ -1,11 +1,20 @@
 <template>
-	<v-card class="mx-auto" max-width="800">
+	<v-card
+		class="mx-auto"
+		max-width="800"
+	>
 		<v-card-title class="d-flex justify-space-between align-center">
 			<div>
 				<h2>Perfil do Usuário</h2>
 				<p class="text-subtitle-1">Visualize e edite suas informações</p>
 			</div>
-			<v-btn variant="outlined" @click="handleLogout" prepend-icon="mdi-logout"> Logout </v-btn>
+			<v-btn
+				variant="outlined"
+				@click="handleLogout"
+				prepend-icon="mdi-logout"
+			>
+				Logout
+			</v-btn>
 		</v-card-title>
 
 		<v-form @submit.prevent="handleSave">
@@ -13,7 +22,10 @@
 				<v-container>
 					<v-row>
 						<!-- Coluna Esquerda -->
-						<v-col cols="12" md="6">
+						<v-col
+							cols="12"
+							md="6"
+						>
 							<v-text-field
 								v-model="userData.name"
 								label="Nome"
@@ -48,18 +60,11 @@
 						</v-col>
 
 						<!-- Coluna Direita -->
-						<v-col cols="12" md="6">
-							<template v-if="userType === 'enterprise'">
-								<v-select
-									v-model="userData.institutionType"
-									:items="institutionTypes"
-									label="Tipo de Instituição"
-									:readonly="true"
-									required
-								></v-select>
-							</template>
-
-							<template v-else>
+						<v-col
+							cols="12"
+							md="6"
+						>
+							<template v-if="userType === 'student'">
 								<v-text-field
 									v-model="userData.RG"
 									length="8"
@@ -89,14 +94,34 @@
 
 			<v-card-actions class="justify-space-between pa-4">
 				<div>
-					<v-btn v-if="!isEditing" color="primary" class="mr-4" @click="isEditing = true">
+					<v-btn
+						v-if="!isEditing"
+						color="primary"
+						class="mr-4"
+						@click="isEditing = true"
+					>
 						Editar Perfil
 					</v-btn>
-					<v-btn v-else color="primary" class="mr-4" type="submit"> Salvar Alterações </v-btn>
+					<v-btn
+						v-else
+						color="primary"
+						class="mr-4"
+						type="submit"
+					>
+						Salvar Alterações
+					</v-btn>
 
-					<v-dialog v-model="dialog" width="500">
+					<v-dialog
+						v-model="dialog"
+						width="500"
+					>
 						<template v-slot:activator="{ props }">
-							<v-btn color="error" v-bind="props"> Excluir Conta </v-btn>
+							<v-btn
+								color="error"
+								v-bind="props"
+							>
+								Excluir Conta
+							</v-btn>
 						</template>
 
 						<v-card>
@@ -107,8 +132,19 @@
 							</v-card-text>
 							<v-card-actions>
 								<v-spacer></v-spacer>
-								<v-btn color="grey" variant="text" @click="dialog = false"> Cancelar </v-btn>
-								<v-btn color="error" @click="handleDelete"> Sim, excluir conta </v-btn>
+								<v-btn
+									color="grey"
+									variant="text"
+									@click="dialog = false"
+								>
+									Cancelar
+								</v-btn>
+								<v-btn
+									color="error"
+									@click="handleDelete"
+								>
+									Sim, excluir conta
+								</v-btn>
 							</v-card-actions>
 						</v-card>
 					</v-dialog>
@@ -130,9 +166,9 @@ const props = defineProps({
 	},
 });
 
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['logout', 'updateUser']);
 
-const userType = props.userData.type;
+const userType = props.userData.type === 'institution' ? 'enterprise' : props.userData.type;
 
 const toast = useToast();
 const isEditing = ref(false);
@@ -144,12 +180,13 @@ const institutionTypes = [
 ];
 
 const userData = reactive({
-	id: props.userData.students ? props.userData.students.id : props.userData.enterprises.id,
+	user_id: props.userData.id,
+	id: props.userData.students?.id || props.userData.enterprises?.id || props.userData.id,
 	type: props.userData.type,
 	name: props.userData.name,
 	email: props.userData.email,
 	CNPJ: props.userData.CNPJ || '',
-	institutionType: props.userData.type || '',
+	institutionType: props.userData.institutionType || '',
 	CPF: props.userData.CPF || '',
 	RG: props.userData.RG || '',
 	address: props.userData.address || '',
@@ -166,6 +203,8 @@ watch(
 
 const handleSave = async () => {
 	isEditing.value = false;
+	emit('updateUser', userData);
+	localStorage.setItem('userData', JSON.stringify(userData));
 	await updateUser(userData, userType);
 	toast.success('Suas informações foram atualizadas com sucesso!');
 };
@@ -173,9 +212,9 @@ const handleSave = async () => {
 const handleDelete = async () => {
 	dialog.value = false;
 	if (props.userData.enterprises) {
-		await deleteUser(props.userData.enterprises.id, 'enterprise');
+		await deleteUser(props.userData.enterprises.id, userData.user_id, 'enterprise');
 	} else if (props.userData.students) {
-		await deleteUser(props.userData.students.id, 'student');
+		await deleteUser(props.userData.students.id, userData.user_id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
 	emit('logout');

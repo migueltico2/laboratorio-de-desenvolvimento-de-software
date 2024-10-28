@@ -26,13 +26,19 @@ export const useFetchs = () => {
         return response.data;
     };
 
-    const deleteUser = async (id, type) => {
+    const deleteUser = async (id, user_id, type) => {
         const response = await axios.delete(`http://localhost:3000/${type}/${id}`);
+        const response2 = await axios.delete(`http://localhost:3000/users/${user_id}`);
         return response.data;
     };
 
     const updateUser = async (data) => {
         const payload = {};
+
+        const userData = {
+            name: data.name,
+        };
+
         if (data.type === 'student') {
             payload.CPF = data.CPF;
             payload.RG = data.RG;
@@ -41,8 +47,11 @@ export const useFetchs = () => {
         } else {
             payload.CNPJ = data.CNPJ;
         }
-        const response = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, payload);
-        return response.data;
+
+
+        await axios.put(`http://localhost:3000/users/${data.user_id}`, userData);
+        const response2 = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, payload);
+        return response2.data;
     };
 
     return {
