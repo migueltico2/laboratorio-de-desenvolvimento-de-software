@@ -36,7 +36,12 @@
 
 							<!-- Institution Fields -->
 							<template v-if="userType === 'institution'">
-								<v-text-field v-model="institutionFormData.CNPJ" label="CNPJ" required></v-text-field>
+								<v-text-field
+									v-model="institutionFormData.CNPJ"
+									label="CNPJ"
+									:maxlength="14"
+									required
+								></v-text-field>
 
 								<v-select
 									v-model="institutionFormData.type"
@@ -48,9 +53,19 @@
 
 							<!-- Student Fields -->
 							<template v-if="userType === 'student'">
-								<v-text-field v-model="studentFormData.CPF" label="CPF" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.CPF"
+									label="CPF"
+									:maxlength="11"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.RG" label="RG" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.RG"
+									label="RG"
+									:maxlength="8"
+									required
+								></v-text-field>
 
 								<v-text-field v-model="studentFormData.address" label="Address" required></v-text-field>
 

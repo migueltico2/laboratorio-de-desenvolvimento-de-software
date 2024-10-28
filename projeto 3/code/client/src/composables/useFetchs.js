@@ -33,7 +33,16 @@ export const useFetchs = () => {
 
     const updateUser = async (data) => {
         console.log(data);
-        const response = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, data);
+        const payload = {};
+        if (data.type === 'student') {
+            payload.CPF = data.CPF;
+            payload.RG = data.RG;
+            payload.address = data.address;
+            payload.course = data.course;
+        } else {
+            payload.CNPJ = data.CNPJ;
+        }
+        const response = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, payload);
         return response.data;
     };
 

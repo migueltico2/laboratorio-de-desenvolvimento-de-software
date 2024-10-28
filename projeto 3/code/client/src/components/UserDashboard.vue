@@ -29,28 +29,27 @@
 								required
 							></v-text-field>
 
-							<template v-if="userType === 'institution'">
-								<v-text-field
-									v-model="userData.CNPJ"
-									label="CNPJ"
-									:readonly="!isEditing"
-									required
-								></v-text-field>
-							</template>
+							<v-text-field
+								v-if="userType === 'enterprise'"
+								v-model="userData.CNPJ"
+								label="CNPJ"
+								:readonly="!isEditing"
+								required
+							></v-text-field>
 
-							<template v-else>
-								<v-text-field
-									v-model="userData.CPF"
-									label="CPF"
-									:readonly="!isEditing"
-									required
-								></v-text-field>
-							</template>
+							<v-text-field
+								v-else
+								v-model="userData.CPF"
+								:maxlength="11"
+								label="CPF"
+								:readonly="!isEditing"
+								required
+							></v-text-field>
 						</v-col>
 
 						<!-- Coluna Direita -->
 						<v-col cols="12" md="6">
-							<template v-if="userType === 'institution'">
+							<template v-if="userType === 'enterprise'">
 								<v-select
 									v-model="userData.institutionType"
 									:items="institutionTypes"
@@ -63,6 +62,7 @@
 							<template v-else>
 								<v-text-field
 									v-model="userData.RG"
+									length="8"
 									label="RG"
 									:readonly="!isEditing"
 									required
@@ -116,7 +116,6 @@
 			</v-card-actions>
 		</v-form>
 	</v-card>
-	{{ props.userData }}
 </template>
 
 <script setup>
@@ -133,27 +132,28 @@ const props = defineProps({
 
 const emit = defineEmits(['logout']);
 
-const userType = props.userData.students ? 'student' : 'institution';
+const userType = props.userData.type;
 
 const toast = useToast();
 const isEditing = ref(false);
 const dialog = ref(false);
-const { deleteUser } = useFetchs();
+const { deleteUser, updateUser } = useFetchs();
 const institutionTypes = [
 	{ title: 'Parceiro', value: 'partner' },
 	{ title: 'Instituição', value: 'institution' },
 ];
 
 const userData = reactive({
+	id: props.userData.students ? props.userData.students.id : props.userData.enterprises.id,
 	type: props.userData.type,
 	name: props.userData.name,
 	email: props.userData.email,
-	CNPJ: props.userData.enterprises?.CNPJ || '',
-	institutionType: props.userData.enterprises?.institutionType || '',
-	CPF: props.userData.students?.CPF || '',
-	RG: props.userData.students?.RG || '',
-	address: props.userData.students?.address || '',
-	course: props.userData.students?.course || '',
+	CNPJ: props.userData.CNPJ || '',
+	institutionType: props.userData.type || '',
+	CPF: props.userData.CPF || '',
+	RG: props.userData.RG || '',
+	address: props.userData.address || '',
+	course: props.userData.course || '',
 });
 
 watch(
@@ -166,7 +166,7 @@ watch(
 
 const handleSave = async () => {
 	isEditing.value = false;
-	await updateUser(userData);
+	await updateUser(userData, userType);
 	toast.success('Suas informações foram atualizadas com sucesso!');
 };
 
