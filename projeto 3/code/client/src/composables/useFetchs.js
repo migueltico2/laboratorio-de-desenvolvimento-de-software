@@ -32,7 +32,6 @@ export const useFetchs = () => {
     };
 
     const updateUser = async (data) => {
-        console.log(data);
         const payload = {};
         if (data.type === 'student') {
             payload.CPF = data.CPF;

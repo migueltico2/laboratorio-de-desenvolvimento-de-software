@@ -133,7 +133,6 @@ const institutionTypes = [
 
 const institutions = ref([]);
 
-// Form data for registration
 const userFormData = reactive({
 	name: '',
 	email: '',
@@ -153,7 +152,6 @@ const studentFormData = reactive({
 	studentInstitution: null,
 });
 
-// Form data for login
 const loginForm = reactive({
 	email: '',
 	password: '',
@@ -201,7 +199,6 @@ const handleLogin = async () => {
 
 onMounted(async () => {
 	institutions.value = await getInstitutions();
-	console.log(institutions.value.data);
 });
 </script>
 

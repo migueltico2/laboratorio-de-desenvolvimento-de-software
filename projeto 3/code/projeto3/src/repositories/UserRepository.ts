@@ -28,8 +28,6 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		console.log('repository', user);
-		// Verifica se o user existe e se enterprises existe
 		if (!user?.enterprises) {
 			return null;
 		}

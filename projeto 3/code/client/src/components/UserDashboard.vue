@@ -54,7 +54,7 @@
 									v-model="userData.institutionType"
 									:items="institutionTypes"
 									label="Tipo de Instituição"
-									:readonly="!isEditing"
+									:readonly="true"
 									required
 								></v-select>
 							</template>
@@ -173,10 +173,8 @@ const handleSave = async () => {
 const handleDelete = async () => {
 	dialog.value = false;
 	if (props.userData.enterprises) {
-		console.log('userData.enterprises', props.userData.enterprises.id);
 		await deleteUser(props.userData.enterprises.id, 'enterprise');
 	} else if (props.userData.students) {
-		console.log('userData.students', props.userData.students.id);
 		await deleteUser(props.userData.students.id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
