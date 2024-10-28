@@ -1,6 +1,12 @@
 <template>
-	<v-card class="mx-auto" max-width="800">
-		<v-tabs v-model="activeTab" centered>
+	<v-card
+		class="mx-auto"
+		max-width="800"
+	>
+		<v-tabs
+			v-model="activeTab"
+			centered
+		>
 			<v-tab value="register">Register</v-tab>
 			<v-tab value="login">Login</v-tab>
 		</v-tabs>
@@ -12,13 +18,28 @@
 					<v-form @submit.prevent="handleSubmit">
 						<v-container>
 							<!-- User Type Selection -->
-							<v-radio-group v-model="userType" row>
-								<v-radio label="Institution" value="institution" class="radio"></v-radio>
-								<v-radio label="Student" value="student" class="radio"></v-radio>
+							<v-radio-group
+								v-model="userType"
+								row
+							>
+								<v-radio
+									label="Institution"
+									value="institution"
+									class="radio"
+								></v-radio>
+								<v-radio
+									label="Student"
+									value="student"
+									class="radio"
+								></v-radio>
 							</v-radio-group>
 
 							<!-- Common Fields -->
-							<v-text-field v-model="userFormData.name" label="Name" required></v-text-field>
+							<v-text-field
+								v-model="userFormData.name"
+								label="Name"
+								required
+							></v-text-field>
 
 							<v-text-field
 								v-model="userFormData.email"
@@ -67,9 +88,17 @@
 									required
 								></v-text-field>
 
-								<v-text-field v-model="studentFormData.address" label="Address" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.address"
+									label="Address"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.course" label="Course" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.course"
+									label="Course"
+									required
+								></v-text-field>
 
 								<v-select
 									v-model="studentFormData.studentInstitution"
@@ -81,7 +110,13 @@
 								></v-select>
 							</template>
 
-							<v-btn block color="primary" type="submit" rounded="lg" class="register-btn">
+							<v-btn
+								block
+								color="primary"
+								type="submit"
+								rounded="lg"
+								class="register-btn"
+							>
 								Register
 							</v-btn>
 						</v-container>
@@ -90,13 +125,29 @@
 
 				<!-- Login Form -->
 				<v-window-item value="login">
-					<v-radio-group v-model="loginType" row>
-						<v-radio label="Institution" value="enterprise" class="radio"></v-radio>
-						<v-radio label="Student" value="student" class="radio"></v-radio>
+					<v-radio-group
+						v-model="loginType"
+						row
+					>
+						<v-radio
+							label="Institution"
+							value="enterprise"
+							class="radio"
+						></v-radio>
+						<v-radio
+							label="Student"
+							value="student"
+							class="radio"
+						></v-radio>
 					</v-radio-group>
 					<v-form @submit.prevent="handleLogin">
 						<v-container>
-							<v-text-field v-model="loginForm.email" label="Email" type="email" required></v-text-field>
+							<v-text-field
+								v-model="loginForm.email"
+								label="Email"
+								type="email"
+								required
+							></v-text-field>
 
 							<v-text-field
 								v-model="loginForm.password"
@@ -105,7 +156,15 @@
 								required
 							></v-text-field>
 
-							<v-btn block color="primary" type="submit" rounded="lg" class="register-btn"> Login </v-btn>
+							<v-btn
+								block
+								color="primary"
+								type="submit"
+								rounded="lg"
+								class="register-btn"
+							>
+								Login
+							</v-btn>
 						</v-container>
 					</v-form>
 				</v-window-item>
