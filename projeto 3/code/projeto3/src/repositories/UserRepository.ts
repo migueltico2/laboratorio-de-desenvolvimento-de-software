@@ -28,7 +28,7 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.enterprises?.length) {
+		if (!user?.enterprises) {
 			return null;
 		}
 
@@ -42,7 +42,7 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.students?.length) {
+		if (!user?.students) {
 			return null;
 		}
 

@@ -5,7 +5,6 @@ abstract class User {
     -name : String
     -email : String
     -password : String
-    -role : Role
     +getId() : int
     +getName() : String
     +setName(String name) : void
@@ -16,16 +15,11 @@ abstract class User {
     +changePassword(String oldPass, String newPass) : void
 }
 
-enum Role {
-    PROFESSOR,
-    STUDENT,
-    ENTERPRISE
-}
 
 class Professor {
     -cpf : String
     -department : String
-    -institutionId : int
+    -institution : Institution
     -account : Account
     -sendCoins(int coins, Student student, String reason) : void
 }
@@ -34,7 +28,7 @@ class Student {
     -cpf : String
     -rg : String
     -address : String
-    -institutionId : int
+    -institution : Institution
     -course : String
     -account : Account
     -exchangeCoins(int coins, Advantage advantage) : void

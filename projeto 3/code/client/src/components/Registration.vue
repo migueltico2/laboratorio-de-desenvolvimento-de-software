@@ -36,7 +36,12 @@
 
 							<!-- Institution Fields -->
 							<template v-if="userType === 'institution'">
-								<v-text-field v-model="institutionFormData.CNPJ" label="CNPJ" required></v-text-field>
+								<v-text-field
+									v-model="institutionFormData.CNPJ"
+									label="CNPJ"
+									:maxlength="14"
+									required
+								></v-text-field>
 
 								<v-select
 									v-model="institutionFormData.type"
@@ -48,9 +53,19 @@
 
 							<!-- Student Fields -->
 							<template v-if="userType === 'student'">
-								<v-text-field v-model="studentFormData.CPF" label="CPF" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.CPF"
+									label="CPF"
+									:maxlength="11"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.RG" label="RG" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.RG"
+									label="RG"
+									:maxlength="8"
+									required
+								></v-text-field>
 
 								<v-text-field v-model="studentFormData.address" label="Address" required></v-text-field>
 
@@ -118,7 +133,6 @@ const institutionTypes = [
 
 const institutions = ref([]);
 
-// Form data for registration
 const userFormData = reactive({
 	name: '',
 	email: '',
@@ -138,7 +152,6 @@ const studentFormData = reactive({
 	studentInstitution: null,
 });
 
-// Form data for login
 const loginForm = reactive({
 	email: '',
 	password: '',
@@ -186,7 +199,6 @@ const handleLogin = async () => {
 
 onMounted(async () => {
 	institutions.value = await getInstitutions();
-	console.log(institutions.value.data);
 });
 </script>
 

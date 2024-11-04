@@ -29,33 +29,32 @@
 								required
 							></v-text-field>
 
-							<template v-if="userType === 'institution'">
-								<v-text-field
-									v-model="userData.CNPJ"
-									label="CNPJ"
-									:readonly="!isEditing"
-									required
-								></v-text-field>
-							</template>
+							<v-text-field
+								v-if="userType === 'enterprise'"
+								v-model="userData.CNPJ"
+								label="CNPJ"
+								:readonly="!isEditing"
+								required
+							></v-text-field>
 
-							<template v-else>
-								<v-text-field
-									v-model="userData.CPF"
-									label="CPF"
-									:readonly="!isEditing"
-									required
-								></v-text-field>
-							</template>
+							<v-text-field
+								v-else
+								v-model="userData.CPF"
+								:maxlength="11"
+								label="CPF"
+								:readonly="!isEditing"
+								required
+							></v-text-field>
 						</v-col>
 
 						<!-- Coluna Direita -->
 						<v-col cols="12" md="6">
-							<template v-if="userType === 'institution'">
+							<template v-if="userType === 'enterprise'">
 								<v-select
 									v-model="userData.institutionType"
 									:items="institutionTypes"
 									label="Tipo de Instituição"
-									:readonly="!isEditing"
+									:readonly="true"
 									required
 								></v-select>
 							</template>
@@ -63,6 +62,7 @@
 							<template v-else>
 								<v-text-field
 									v-model="userData.RG"
+									length="8"
 									label="RG"
 									:readonly="!isEditing"
 									required
@@ -116,7 +116,6 @@
 			</v-card-actions>
 		</v-form>
 	</v-card>
-	{{ props.userData }}
 </template>
 
 <script setup>
@@ -133,18 +132,19 @@ const props = defineProps({
 
 const emit = defineEmits(['logout']);
 
-const userType = props.userData.students ? 'student' : 'institution';
+const userType = props.userData.type;
 
 const toast = useToast();
 const isEditing = ref(false);
 const dialog = ref(false);
-const { deleteUser } = useFetchs();
+const { deleteUser, updateUser } = useFetchs();
 const institutionTypes = [
 	{ title: 'Parceiro', value: 'partner' },
 	{ title: 'Instituição', value: 'institution' },
 ];
 
 const userData = reactive({
+	id: props.userData.students ? props.userData.students.id : props.userData.enterprises.id,
 	type: props.userData.type,
 	name: props.userData.name,
 	email: props.userData.email,
@@ -164,19 +164,21 @@ watch(
 	{ deep: true }
 );
 
-const handleSave = () => {
+const handleSave = async () => {
 	isEditing.value = false;
+	await updateUser(userData, userType);
 	toast.success('Suas informações foram atualizadas com sucesso!');
 };
 
 const handleDelete = async () => {
 	dialog.value = false;
-	if (userData.type === 'institution') {
+	if (props.userData.enterprises) {
 		await deleteUser(props.userData.enterprises.id, 'enterprise');
-	} else if (userData.type === 'student') {
+	} else if (props.userData.students) {
 		await deleteUser(props.userData.students.id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
+	emit('logout');
 };
 
 const handleLogout = () => {

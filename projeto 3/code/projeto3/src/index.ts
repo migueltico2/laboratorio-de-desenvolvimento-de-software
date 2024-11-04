@@ -10,8 +10,8 @@ const app = express();
 
 AppDataSource.initialize()
 	.then(async () => {
-		app.use(express.json());
 		app.use(cors('*'));
+		app.use(express.json());
 		app.use('/users', userRoutes);
 		app.use('/accounts', accountRoutes);
 		app.use('/enterprise', enterpriseRoutes);
