@@ -1,0 +1,16 @@
+@startuml
+
+actor "Cliente" as cliente
+participant ":Advantage" as ad
+participant ":AdvantageRouter" as adRouter
+participant ":AdvantageController" as adController
+participant ":AdvantageRepository" as adRepository
+
+ref over cliente, ad: login successful
+
+cliente -> ad : registerAdvantage(Advantage advantage)
+ad -> adRouter : POST: /
+adRouter -> adController : registerAdvantage(Advantage advantage)
+adController -> adRepository : registerAdvantage(Advantage advantage)
+
+@enduml

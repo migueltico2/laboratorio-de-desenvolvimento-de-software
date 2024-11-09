@@ -1,0 +1,43 @@
+@startuml
+
+component User
+component Autentication
+component Finance
+component Notification
+component Persistence
+component Benefit
+
+interface Autenticate
+interface Persist
+interface "Send Email" as SendEmail
+interface "Manage Benefit" as MangeBen
+interface "Redeem Benefit" as RedeemBen
+interface "Consult Transactions" as ConsultTrans
+interface "Consult Balance" as ConsultBal
+interface "Transfer Coins" as TransferCoins
+
+Autenticate -right- Autentication
+SendEmail -down- Notification
+MangeBen - Benefit
+RedeemBen - Benefit
+Persist -down- Persistence
+Finance - ConsultTrans
+ConsultBal -up- Finance
+TransferCoins - Finance
+
+User --right-( Autenticate
+User --down-( Persist
+User --left-( ConsultTrans
+User --up-( ConsultBal
+User --up-( TransferCoins
+User --right-( MangeBen
+User --down-( RedeemBen
+
+Benefit --down-( SendEmail
+Benefit --down-( Persist
+Benefit --up-( ConsultBal
+
+Finance --down-( SendEmail
+Finance --down-( Persist
+
+@enduml
