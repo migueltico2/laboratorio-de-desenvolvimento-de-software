@@ -1,0 +1,56 @@
+@startuml
+
+left to right direction
+
+actor "Usuário" as User
+actor Aluno as A
+actor Professor as P
+actor Conta as C
+actor "Empresa parceira" as EP
+actor "Instituição de ensino" as IE
+
+rectangle Merito {
+usecase "Gerenciar dados pessoais" as UC1
+usecase "Consultar extrato" as UC2
+usecase "Adicionar vantagens" as UC3
+usecase "Enviar moedas" as UC4
+usecase "Receber moedas" as UC5
+usecase "Adicionar detalhes" as UC8
+usecase "Adicionar motivo" as UC9
+usecase "Resgatar vantagem" as UC11
+usecase "Logar no sistema" as UC12
+usecase "Enviar email" as UC14
+usecase "Cadastrar no programa" as UC15
+usecase "Fornece lista de professores" as UC16
+usecase "Validar troca de vantagem" as UC17
+}
+
+UC4 .> UC9 : include
+UC3 .> UC8 : include
+UC11 .> UC14 : include
+UC4 .> UC14 : include
+UC15 .> UC16 : include
+
+User <|-- C
+C <|-- A
+C <|-- P
+User <|-- EP
+User --> UC1
+
+EP <|-- IE
+
+A --> UC5
+
+EP --> UC3
+EP --> UC17
+C --> UC2
+A --> UC11
+P --> UC4
+IE --> UC15
+User --> UC12
+
+note right of UC1
+    Gerenciar: Adicionar, Remover, Atualizar e Consultar
+end note
+
+@enduml
