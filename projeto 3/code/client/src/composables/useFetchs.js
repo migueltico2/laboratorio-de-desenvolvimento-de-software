@@ -54,6 +54,11 @@ export const useFetchs = () => {
         return response2.data;
     };
 
+    const listAdvantages = async () => {
+        const response = await axios.get('http://localhost:3000/advantage');
+        return response.data;
+    };
+
     return {
         getInstitutions,
         createEnterprise,
@@ -62,5 +67,6 @@ export const useFetchs = () => {
         loginEnterprise,
         deleteUser,
         updateUser,
+        listAdvantages,
     };
 };
