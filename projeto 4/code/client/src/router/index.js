@@ -4,8 +4,6 @@ import Advantage from '../components/Advantage.vue'
 import UserDashboard from '../components/UserDashboard.vue'
 import { useAuth } from '../composables/useAuth';
 
-const { isLoggedIn } = useAuth();
-
 const routes = [
     {
         path: '/',
@@ -30,9 +28,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-	if (to.name !== 'Registration' && !isLoggedIn) {
+    const { isLoggedIn } = useAuth();
+
+	if (to.name !== 'Registration' && !isLoggedIn.value) {
 		next({ name: 'Registration' });
-    } else if (to.name === 'Registration' && isLoggedIn) {
+    } else if (to.name === 'Registration' && isLoggedIn.value) {
         next({ name: 'Profile' });
     } else {
         next();

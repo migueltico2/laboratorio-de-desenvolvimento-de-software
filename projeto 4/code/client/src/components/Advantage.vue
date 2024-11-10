@@ -35,7 +35,7 @@
           <tr v-for="advantage in paginatedAdvantages" :key="advantage.id">
             <td>{{ advantage.name }}</td>
             <td>{{ advantage.description }}</td>
-            <td>R$ {{ advantage.price }}</td>
+            <td>R$ {{ advantage.coins }}</td>
             <td v-if="permissions === 'enterprise'">
               <v-btn
                 size="small"
@@ -78,7 +78,7 @@
               label="Descrição"
             ></v-textarea>
             <v-text-field
-              v-model="editedItem.price"
+              v-model="editedItem.coins"
               label="Preço"
               prefix="R$"
               type="number"
@@ -125,11 +125,10 @@
 import { onMounted, ref, computed } from "vue";
 import { useFetchs } from "../composables/useFetchs";
 import { useAuth } from "../composables/useAuth";
-import { useToast } from "vue-toastification";
+import { toast } from 'vue3-toastify';
 
-const { listAdvantages } = useFetchs();
+const { listAdvantages, createAdvantage } = useFetchs();
 const { user } = useAuth();
-const toast = useToast();
 
 const advantages = ref([]);
 const page = ref(1);
@@ -141,7 +140,7 @@ const loading = ref(true);
 const defaultItem = {
   name: "",
   description: "",
-  price: 0,
+  coins: 0,
   image: null,
 };
 
@@ -163,7 +162,7 @@ const paginatedAdvantages = computed(() => {
 });
 
 const permissions = computed(() => {
-  return user.value.type === "institution" ? "enterprise" : user.value.type;
+  return user.type === "institution" ? "enterprise" : user.type;
 });
 
 const openDialog = (item) => {
@@ -191,12 +190,28 @@ const closeDeleteDialog = () => {
 };
 
 const save = async () => {
-  if (editedIndex.value > -1) {
-    Object.assign(advantages.value[editedIndex.value], editedItem.value);
-    toast.success("Vantagem atualizada com sucesso!");
-  } else {
-    advantages.value.push(editedItem.value);
-    toast.success("Vantagem criada com sucesso!");
+  if (
+    !editedItem.value.name ||
+    !editedItem.value.description ||
+    !editedItem.value.coins ||
+    !editedItem.value.image
+  ) {
+    toast.error("Preencha todos os campos!");
+    return;
+  }
+  try {
+	  if (editedIndex.value > -1) {
+		Object.assign(advantages.value[editedIndex.value], editedItem.value);
+		toast.success("Vantagem atualizada com sucesso!");
+	  } else {
+		editedItem.value.enterprise_id = user.id
+		await createAdvantage(editedItem.value)
+		advantages.value.push(editedItem.value);
+		toast.success("Vantagem criada com sucesso!");
+	  }
+  } catch (error) {
+	console.log(error)
+    toast.error("Erro ao salvar vantagem!");
   }
   closeDialog();
 };

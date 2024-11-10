@@ -177,13 +177,12 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useToast } from 'vue-toastification';
 import { useFetchs } from '../composables/useFetchs';
 import { useAuth } from '../composables/useAuth';
+import { toast } from 'vue3-toastify';
 
 const { login } = useAuth();
 const emit = defineEmits(['user-registered']);
-const toast = useToast();
 const activeTab = ref('register');
 const userType = ref('institution');
 const loginType = ref('enterprise');
@@ -231,13 +230,6 @@ const handleSubmit = async () => {
 			userData = await createStudent({ ...userFormData, ...studentFormData });
 			toast.success('Student created successfully');
 		}
-
-		emit('user-registered', {
-			type: userType.value,
-			...userFormData,
-			...(userType.value === 'institution' ? institutionFormData : studentFormData),
-			...(userType.value === 'institution' ? institutionFormData : studentFormData),
-		});
 
 		login(userData);
 	} catch (error) {

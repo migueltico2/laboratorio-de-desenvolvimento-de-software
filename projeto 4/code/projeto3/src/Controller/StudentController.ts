@@ -32,7 +32,12 @@ export class StudentController {
 	create = async (request: Request, response: Response) => {
 		try {
 			const student = await this.studentService.create(request.body);
-			return response.status(201).json(student);
+			return response.json({
+				...student.user,
+				...student,
+				user_id: student.user.id,
+				type: 'student',
+			});
 		} catch (error) {
 			return this.handleError(error, response);
 		}

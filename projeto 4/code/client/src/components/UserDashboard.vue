@@ -146,47 +146,41 @@
 			</v-card-actions>
 		</v-form>
 	</v-card>
+	{{ userData }}
+	{{ user }}
 </template>
 
 <script setup>
 import { ref, reactive, watch } from 'vue';
-import { useToast } from 'vue-toastification';
 import { useFetchs } from '../composables/useFetchs';
 import { useAuth } from '../composables/useAuth';
-
-const props = defineProps({
-	userData: {
-		type: Object,
-		required: true,
-	},
-});
+import { toast } from 'vue3-toastify';
 
 const emit = defineEmits(['logout', 'updateUser']);
 
 const { user, logout, updateUser: updateUserAuth } = useAuth();
-const userType = user.value.type === 'institution' ? 'enterprise' : user.value.type;
+const userType = user.type === 'institution' ? 'enterprise' : user.type;
 
-const toast = useToast();
 const isEditing = ref(false);
 const dialog = ref(false);
 const { deleteUser, updateUser } = useFetchs();
 
 const userData = reactive({
-	user_id: user.value.id,
-	id: user.value.students?.id || user.value.enterprises?.id || user.value.id,
-	type: user.value.type,
-	name: user.value.name,
-	email: user.value.email,
-	CNPJ: user.value.CNPJ || '',
-	institutionType: user.value.institutionType || '',
-	CPF: user.value.CPF || '',
-	RG: user.value.RG || '',
-	address: user.value.address || '',
-	course: user.value.course || '',
+	user_id: user.id,
+	id: user.students?.id || user.enterprises?.id || user.id,
+	type: user.type,
+	name: user.name,
+	email: user.email,
+	CNPJ: user.CNPJ || '',
+	institutionType: user.institutionType || '',
+	CPF: user.CPF || '',
+	RG: user.RG || '',
+	address: user.address || '',
+	course: user.course || '',
 });
 
 watch(
-	() => user.value,
+	() => user,
 	(newValue) => {
 		Object.assign(userData, newValue);
 	},
@@ -202,10 +196,10 @@ const handleSave = async () => {
 
 const handleDelete = async () => {
 	dialog.value = false;
-	if (user.value.enterprises) {
-		await deleteUser(user.value.enterprises.id, userData.user_id, 'enterprise');
-	} else if (user.value.students) {
-		await deleteUser(user.value.students.id, userData.user_id, 'student');
+	if (user.enterprises) {
+		await deleteUser(user.enterprises.id, userData.user_id, 'enterprise');
+	} else if (user.students) {
+		await deleteUser(user.students.id, userData.user_id, 'student');
 	}
 	toast.error('Sua conta foi excluída permanentemente.');
 	logout();

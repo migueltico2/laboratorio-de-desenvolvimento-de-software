@@ -1,9 +1,24 @@
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 export const useAuth = () => {
     const router = useRouter();
-    const authStore = useAuthStore();
+    let authStore = null;
+    
+    try {
+        authStore = useAuthStore();
+    } catch (error) {
+        console.warn('Auth store not ready yet');
+        return {
+            user: ref(null),
+            isLoggedIn: ref(false),
+            logout: () => {},
+            savedLocalStorage: () => {},
+            login: () => {},
+            updateUser: () => {}
+        };
+    }
 
     const updateUser = (userData) => {
         authStore.updateUser(userData);
@@ -11,7 +26,8 @@ export const useAuth = () => {
 
     const login = (userData) => {
         authStore.login(userData);
-        router.push('/profile');
+        console.log(authStore.isLoggedIn);
+        router.push({ name: 'Profile' });
     };
 
     const logout = () => {
@@ -25,7 +41,7 @@ export const useAuth = () => {
 
     return {
         user: authStore.user,
-        isLoggedIn: authStore.isLoggedIn,
+        isLoggedIn: computed(() => authStore.isLoggedIn),
         logout,
         savedLocalStorage,
         login,

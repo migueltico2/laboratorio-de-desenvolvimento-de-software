@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        user: JSON.parse(localStorage.getItem('userData')),
+        user: JSON.parse(localStorage.getItem('userData')) || {},
         isLoggedIn: !!localStorage.getItem('userData')
     }),
 
@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         logout() {
-            this.user = null;
+            this.user = {};
             this.isLoggedIn = false;
             localStorage.removeItem('userData');
         },
