@@ -64,9 +64,23 @@ export const useFetchs = () => {
         return response.data;
     };
 
-    const createAdvantage = async (data) => {
-        const response = await axios.post('http://localhost:3000/advantage', data);
-        return response.data;
+    const createAdvantage = async (formData) => {
+        try {
+            console.log(formData);
+            const response = await fetch(`http://localhost:3000/advantage`, {
+                method: 'POST',
+                body: formData // FormData será enviado automaticamente com o Content-Type correto
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao criar vantagem');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao criar vantagem:', error);
+            throw error;
+        }
     };
 
     return {

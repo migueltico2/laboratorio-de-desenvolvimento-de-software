@@ -1,32 +1,37 @@
-import {
-	IEnterpriseInterface,
-	CreateUserEnterpriseDTO,
-	UpdateEnterpriseDTO,
-} from '../Interfaces/IEnterpriseInterfaces';
-import { AdvantageRepository } from '../repositories/AdvantageRepository';
+import { AppDataSource } from '../data-source';
 import { Advantage } from '../entity/Advantage';
+import { Enterprise } from '../entity/Enterprise';
 
 export class AdvantageService {
-	private advantageRepository: AdvantageRepository;
+	private advantageRepository = AppDataSource.getRepository(Advantage);
+	private enterpriseRepository = AppDataSource.getRepository(Enterprise);
 
-	constructor() {
-		this.advantageRepository = new AdvantageRepository();
-	}
+	async create(advantageData: any): Promise<Advantage> {
+		try {
+			const enterprise = await this.enterpriseRepository.findOneBy({
+				id: advantageData.enterprise_id,
+			});
 
-	async create(advantageData: Partial<Advantage>) {
-		if (!advantageData.name || !advantageData.coins || !advantageData.description) {
-			throw new Error('Missing required fields');
+			if (!enterprise) {
+				throw new Error('Enterprise not found');
+			}
+
+			const advantage = this.advantageRepository.create({
+				name: advantageData.name,
+				description: advantageData.description,
+				coins: advantageData.coins,
+				image: advantageData.image,
+				enterprise: enterprise, // Associa a empresa à vantagem
+			});
+
+			return await this.advantageRepository.save(advantage);
+		} catch (error) {
+			throw new Error(`Error creating advantage: ${error.message}`);
 		}
-
-		if (advantageData.coins <= 0) {
-			throw new Error('Coins must be greater than 0');
-		}
-
-		return await this.advantageRepository.create(advantageData);
 	}
 
 	async listAllAdvantages() {
-		return await this.advantageRepository.listAllAdvantages();
+		return await this.advantageRepository.find();
 	}
 
 	async listAdvantagesByEnterprise(enterpriseId: number) {
@@ -34,7 +39,9 @@ export class AdvantageService {
 			throw new Error('Enterprise ID is required');
 		}
 
-		const advantages = await this.advantageRepository.listAdvantagesByEnterprise(enterpriseId);
+		const advantages = await this.advantageRepository.find({
+			where: { enterprise: { id: enterpriseId } },
+		});
 
 		if (!advantages.length) {
 			throw new Error('No advantages found for this enterprise');
