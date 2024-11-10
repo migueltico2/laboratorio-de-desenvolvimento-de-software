@@ -32,6 +32,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 	if (to.name !== 'Registration' && !isLoggedIn) {
 		next({ name: 'Registration' });
+    } else if (to.name === 'Registration' && isLoggedIn) {
+        next({ name: 'Profile' });
     } else {
         next();
     }

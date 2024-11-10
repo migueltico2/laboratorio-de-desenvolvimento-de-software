@@ -3,7 +3,6 @@
 		<v-app-bar app v-if="isLoggedIn">
 			<v-app-bar-title>Student Rewards</v-app-bar-title>
 			<v-spacer></v-spacer>
-			<v-btn to="/">Home</v-btn>
 			<v-btn to="/profile">Profile</v-btn>
 			<v-btn to="/advantages">Advantages</v-btn>
 			<v-btn @click="logout">Logout</v-btn>
