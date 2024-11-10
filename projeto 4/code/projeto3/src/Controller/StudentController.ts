@@ -34,8 +34,7 @@ export class StudentController {
 			const student = await this.studentService.create(request.body);
 			return response.json({
 				...student.user,
-				...student,
-				user_id: student.user.id,
+				students: student,
 				type: 'student',
 			});
 		} catch (error) {

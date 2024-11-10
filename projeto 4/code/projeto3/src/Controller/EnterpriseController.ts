@@ -53,8 +53,7 @@ export class EnterpriseController {
 			const enterprise = await this.enterpriseService.create(request.body);
 			return response.json({
 				...enterprise.user,
-				...enterprise,
-				user_id: enterprise.user.id,
+				enterprises: enterprise,
 				type: enterprise.type,
 			});
 		} catch (error) {

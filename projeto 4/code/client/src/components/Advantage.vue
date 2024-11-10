@@ -1,5 +1,4 @@
 <template>
-	{{ user.enterprises.id }}
 	<v-card class="mx-auto" min-width="80%" max-width="800" style="overflow: auto !important">
 		<v-btn v-if="permissions === 'enterprise'" color="primary" class="ma-4" @click="openDialog">
 			Criar Vantagem
@@ -79,7 +78,7 @@
 							label="Imagem"
 						></v-file-input>
 						<v-col cols="12" v-if="editedItem.image">
-							<v-img :src="editedItem.image" max-height="200"></v-img>
+							<v-img :src="createImageUrl(editedItem.image)" max-height="200"></v-img>
 						</v-col>
 					</v-container>
 				</v-card-text>
@@ -119,7 +118,7 @@
 							<v-col cols="12"> <strong>Descrição:</strong> {{ selectedItem.description }} </v-col>
 							<v-col cols="12"> <strong>Preço:</strong> R$ {{ selectedItem.coins }} </v-col>
 							<v-col cols="12" v-if="selectedItem.image">
-								<v-img :src="selectedItem.image" max-height="200"></v-img>
+								<v-img :src="createImageUrl(editedItem.image)" max-height="200"></v-img>
 							</v-col>
 						</v-row>
 					</v-container>
@@ -221,6 +220,26 @@ const redeemAdvantage = () => {
 	toast.info('Funcionalidade em desenvolvimento');
 };
 
+const createImageUrl = (image) => {
+	try {
+		if (typeof image === 'object' && image !== null && 'data' in image) {
+			return `data:image/jpeg;base64,${image.data.toString('base64')}`;
+		}
+		else if (typeof image === 'string') {
+			return `data:image/jpeg;base64,${image}`;
+		}
+		else if (image instanceof File) {
+			const url = URL.createObjectURL(image);
+			if (!url) throw new Error('Failed to create object URL');
+			return url;
+		}
+		return '';
+	} catch (error) {
+		console.error('Error creating image URL:', error);
+		return '';
+	}
+};
+
 const save = async () => {
 	if (!editedItem.value.name || !editedItem.value.description || !editedItem.value.coins || !editedItem.value.image) {
 		toast.error('Preencha todos os campos!');
@@ -243,7 +262,7 @@ const save = async () => {
 			formData.append('name', editedItem.value.name);
 			formData.append('description', editedItem.value.description);
 			formData.append('coins', editedItem.value.coins.toString());
-			formData.append('enterprise_id', 8);
+			formData.append('enterprise_id', user.enterprises.id);
 			formData.append('image', editedItem.value.image);
 
 			const newAdvantage = await createAdvantage(formData);
@@ -267,7 +286,6 @@ const deleteItemConfirm = async () => {
 
 const fetchAdvantages = async () => {
 	try {
-		console.log(user.enterprises.id);
 		const advantagesData = await listAdvantages(permissions.value === 'enterprise' ? user.enterprises.id : null);
 		advantages.value = advantagesData;
 	} catch (error) {
