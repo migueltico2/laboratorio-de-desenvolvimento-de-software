@@ -118,7 +118,7 @@
 							<v-col cols="12"> <strong>Descrição:</strong> {{ selectedItem.description }} </v-col>
 							<v-col cols="12"> <strong>Preço:</strong> R$ {{ selectedItem.coins }} </v-col>
 							<v-col cols="12" v-if="selectedItem.image">
-								<v-img :src="createImageUrl(editedItem.image)" max-height="200"></v-img>
+								<v-img :src="createImageUrl(selectedItem.image)" max-height="200"></v-img>
 							</v-col>
 						</v-row>
 					</v-container>
@@ -223,7 +223,9 @@ const redeemAdvantage = () => {
 const createImageUrl = (image) => {
 	try {
 		if (typeof image === 'object' && image !== null && 'data' in image) {
-			return `data:image/jpeg;base64,${image.data.toString('base64')}`;
+			const uint8Array = new Uint8Array(image.data);
+			const base64String = btoa(Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join(''));
+			return `data:image/jpeg;base64,${base64String}`;
 		}
 		else if (typeof image === 'string') {
 			return `data:image/jpeg;base64,${image}`;
