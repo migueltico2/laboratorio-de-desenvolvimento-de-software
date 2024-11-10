@@ -36,4 +36,19 @@ export class AdvantageController {
 			return response.status(400).json({ error: error.message });
 		}
 	}
+
+	async listAdvantagesByEnterprise(request: Request, response: Response) {
+		try {
+			const enterpriseId = parseInt(request.params.enterpriseId);
+
+			if (isNaN(enterpriseId)) {
+				return response.status(400).json({ error: 'Invalid enterprise ID' });
+			}
+
+			const advantages = await this.advantageService.listAdvantagesByEnterprise(enterpriseId);
+			return response.json(advantages);
+		} catch (error) {
+			return response.status(404).json({ error: error.message });
+		}
+	}
 }

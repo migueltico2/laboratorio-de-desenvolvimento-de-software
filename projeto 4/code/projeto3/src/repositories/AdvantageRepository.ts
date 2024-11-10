@@ -16,4 +16,13 @@ export class AdvantageRepository {
 		const advantage = this.repository.create(advantageData);
 		return await this.repository.save(advantage);
 	}
+
+	async listAdvantagesByEnterprise(enterpriseId: number) {
+		return await this.repository.find({
+			where: {
+				enterprise: { id: enterpriseId },
+			},
+			relations: ['enterprise'],
+		});
+	}
 }

@@ -28,4 +28,18 @@ export class AdvantageService {
 	async listAllAdvantages() {
 		return await this.advantageRepository.listAllAdvantages();
 	}
+
+	async listAdvantagesByEnterprise(enterpriseId: number) {
+		if (!enterpriseId) {
+			throw new Error('Enterprise ID is required');
+		}
+
+		const advantages = await this.advantageRepository.listAdvantagesByEnterprise(enterpriseId);
+
+		if (!advantages.length) {
+			throw new Error('No advantages found for this enterprise');
+		}
+
+		return advantages;
+	}
 }
