@@ -2,17 +2,17 @@ import axios from 'axios';
 
 export const useFetchs = () => {
     const getInstitutions = async () => {
-        const response = await axios.get('http://localhost:3000/enterprises/institutions');
+        const response = await axios.get('http://localhost:3000/enterprise/institutions');
         return response.data;
     };
 
     const createEnterprise = async (data) => {
-        const response = await axios.post('http://localhost:3000/enterprises', data);
+        const response = await axios.post('http://localhost:3000/enterprise', data);
         return response.data;
     };
 
     const createStudent = async (data) => {
-        const response = await axios.post('http://localhost:3000/students', data);
+        const response = await axios.post('http://localhost:3000/student', data);
         return response.data;
     };
 
@@ -26,8 +26,36 @@ export const useFetchs = () => {
         return response.data;
     };
 
-    const deleteUser = async (id, type) => {
+    const deleteUser = async (id, user_id, type) => {
         const response = await axios.delete(`http://localhost:3000/${type}/${id}`);
+        const response2 = await axios.delete(`http://localhost:3000/users/${user_id}`);
+        return response.data;
+    };
+
+    const updateUser = async (data) => {
+        const payload = {};
+
+        const userData = {
+            name: data.name,
+        };
+
+        if (data.type === 'student') {
+            payload.CPF = data.CPF;
+            payload.RG = data.RG;
+            payload.address = data.address;
+            payload.course = data.course;
+        } else {
+            payload.CNPJ = data.CNPJ;
+        }
+
+
+        await axios.put(`http://localhost:3000/users/${data.user_id}`, userData);
+        const response2 = await axios.put(`http://localhost:3000/${data.type}/${data.id}`, payload);
+        return response2.data;
+    };
+
+    const listAdvantages = async () => {
+        const response = await axios.get('http://localhost:3000/advantage');
         return response.data;
     };
 
@@ -38,5 +66,7 @@ export const useFetchs = () => {
         loginStudent,
         loginEnterprise,
         deleteUser,
+        updateUser,
+        listAdvantages,
     };
 };

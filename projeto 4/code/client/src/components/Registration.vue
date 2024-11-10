@@ -1,6 +1,14 @@
 <template>
-	<v-card class="mx-auto" max-width="800">
-		<v-tabs v-model="activeTab" centered>
+	<v-card
+		class="mx-auto"
+		min-width="80%"
+		max-width="800"
+		style="overflow: auto !important;"
+	>
+		<v-tabs
+			v-model="activeTab"
+			centered
+		>
 			<v-tab value="register">Register</v-tab>
 			<v-tab value="login">Login</v-tab>
 		</v-tabs>
@@ -10,15 +18,30 @@
 			<v-window v-model="activeTab">
 				<v-window-item value="register">
 					<v-form @submit.prevent="handleSubmit">
-						<v-container>
+						<div class="container">
 							<!-- User Type Selection -->
-							<v-radio-group v-model="userType" row>
-								<v-radio label="Institution" value="institution" class="radio"></v-radio>
-								<v-radio label="Student" value="student" class="radio"></v-radio>
+							<v-radio-group
+								v-model="userType"
+								row
+							>
+								<v-radio
+									label="Institution"
+									value="institution"
+									class="radio"
+								></v-radio>
+								<v-radio
+									label="Student"
+									value="student"
+									class="radio"
+								></v-radio>
 							</v-radio-group>
 
 							<!-- Common Fields -->
-							<v-text-field v-model="userFormData.name" label="Name" required></v-text-field>
+							<v-text-field
+								v-model="userFormData.name"
+								label="Name"
+								required
+							></v-text-field>
 
 							<v-text-field
 								v-model="userFormData.email"
@@ -36,7 +59,12 @@
 
 							<!-- Institution Fields -->
 							<template v-if="userType === 'institution'">
-								<v-text-field v-model="institutionFormData.CNPJ" label="CNPJ" required></v-text-field>
+								<v-text-field
+									v-model="institutionFormData.CNPJ"
+									label="CNPJ"
+									:maxlength="14"
+									required
+								></v-text-field>
 
 								<v-select
 									v-model="institutionFormData.type"
@@ -48,13 +76,31 @@
 
 							<!-- Student Fields -->
 							<template v-if="userType === 'student'">
-								<v-text-field v-model="studentFormData.CPF" label="CPF" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.CPF"
+									label="CPF"
+									:maxlength="11"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.RG" label="RG" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.RG"
+									label="RG"
+									:maxlength="8"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.address" label="Address" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.address"
+									label="Address"
+									required
+								></v-text-field>
 
-								<v-text-field v-model="studentFormData.course" label="Course" required></v-text-field>
+								<v-text-field
+									v-model="studentFormData.course"
+									label="Course"
+									required
+								></v-text-field>
 
 								<v-select
 									v-model="studentFormData.studentInstitution"
@@ -66,22 +112,44 @@
 								></v-select>
 							</template>
 
-							<v-btn block color="primary" type="submit" rounded="lg" class="register-btn">
+							<v-btn
+								block
+								color="primary"
+								type="submit"
+								rounded="lg"
+								class="register-btn"
+							>
 								Register
 							</v-btn>
-						</v-container>
+						</div>
 					</v-form>
 				</v-window-item>
 
 				<!-- Login Form -->
 				<v-window-item value="login">
-					<v-radio-group v-model="loginType" row>
-						<v-radio label="Institution" value="enterprise" class="radio"></v-radio>
-						<v-radio label="Student" value="student" class="radio"></v-radio>
-					</v-radio-group>
 					<v-form @submit.prevent="handleLogin">
-						<v-container>
-							<v-text-field v-model="loginForm.email" label="Email" type="email" required></v-text-field>
+						<div class="container">
+							<v-radio-group
+								v-model="loginType"
+								row
+							>
+								<v-radio
+									label="Institution"
+									value="enterprise"
+									class="radio"
+								></v-radio>
+								<v-radio
+									label="Student"
+									value="student"
+									class="radio"
+								></v-radio>
+							</v-radio-group>
+							<v-text-field
+								v-model="loginForm.email"
+								label="Email"
+								type="email"
+								required
+							></v-text-field>
 
 							<v-text-field
 								v-model="loginForm.password"
@@ -90,8 +158,16 @@
 								required
 							></v-text-field>
 
-							<v-btn block color="primary" type="submit" rounded="lg" class="register-btn"> Login </v-btn>
-						</v-container>
+							<v-btn
+								block
+								color="primary"
+								type="submit"
+								rounded="lg"
+								class="register-btn"
+							>
+								Login
+							</v-btn>
+						</div>
 					</v-form>
 				</v-window-item>
 			</v-window>
@@ -103,12 +179,14 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useFetchs } from '../composables/useFetchs';
+import { useAuth } from '../composables/useAuth';
 
+const { login } = useAuth();
 const emit = defineEmits(['user-registered']);
 const toast = useToast();
 const activeTab = ref('register');
 const userType = ref('institution');
-const loginType = ref('student');
+const loginType = ref('enterprise');
 const { getInstitutions, createEnterprise, createStudent, loginEnterprise, loginStudent } = useFetchs();
 
 const institutionTypes = [
@@ -118,7 +196,6 @@ const institutionTypes = [
 
 const institutions = ref([]);
 
-// Form data for registration
 const userFormData = reactive({
 	name: '',
 	email: '',
@@ -138,7 +215,6 @@ const studentFormData = reactive({
 	studentInstitution: null,
 });
 
-// Form data for login
 const loginForm = reactive({
 	email: '',
 	password: '',
@@ -162,6 +238,8 @@ const handleSubmit = async () => {
 			...(userType.value === 'institution' ? institutionFormData : studentFormData),
 			...(userType.value === 'institution' ? institutionFormData : studentFormData),
 		});
+
+		login(userData);
 	} catch (error) {
 		toast.error('Error creating user');
 		console.error('Registration error:', error);
@@ -176,7 +254,7 @@ const handleLogin = async () => {
 		} else {
 			userData = await loginStudent(loginForm);
 		}
-		emit('user-registered', userData);
+		login(userData);
 		toast.success('Login successful');
 	} catch (error) {
 		toast.error('Login failed');
@@ -186,8 +264,7 @@ const handleLogin = async () => {
 
 onMounted(async () => {
 	institutions.value = await getInstitutions();
-	console.log(institutions.value.data);
-});
+});	
 </script>
 
 <style scoped>
@@ -203,5 +280,9 @@ onMounted(async () => {
 
 .v-window {
 	margin-top: 20px;
+}
+
+.container {
+	padding: 8px;
 }
 </style>

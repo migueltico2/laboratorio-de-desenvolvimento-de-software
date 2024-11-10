@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Registration from '../components/Registration.vue'
 import Advantage from '../components/Advantage.vue'
+import UserDashboard from '../components/UserDashboard.vue'
+import { useAuth } from '../composables/useAuth';
+
+const { isLoggedIn } = useAuth();
 
 const routes = [
     {
@@ -11,7 +15,7 @@ const routes = [
     {
         path: '/profile',
         name: 'Profile',
-        component: Profile
+        component: UserDashboard
     },
     {
         path: '/advantages',
@@ -24,5 +28,13 @@ const router = createRouter({
     history: createWebHistory(),
     routes
 })
+
+router.beforeEach((to, from, next) => {
+	if (to.name !== 'Registration' && !isLoggedIn) {
+		next({ name: 'Registration' });
+    } else {
+        next();
+    }
+});
 
 export default router
