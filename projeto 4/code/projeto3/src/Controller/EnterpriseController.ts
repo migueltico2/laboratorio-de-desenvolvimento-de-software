@@ -51,7 +51,11 @@ export class EnterpriseController {
 	create = async (request: Request, response: Response) => {
 		try {
 			const enterprise = await this.enterpriseService.create(request.body);
-			return response.status(201).json(enterprise);
+			return response.json({
+				...enterprise.user,
+				enterprises: enterprise,
+				type: enterprise.type,
+			});
 		} catch (error) {
 			return this.handleError(error, response);
 		}

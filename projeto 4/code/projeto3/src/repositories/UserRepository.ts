@@ -28,7 +28,7 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.enterprises?.length) {
+		if (!user?.enterprises) {
 			return null;
 		}
 
@@ -42,7 +42,7 @@ export class UserRepository {
 			.where('user.email = :email', { email })
 			.getOne();
 
-		if (!user?.students?.length) {
+		if (!user?.students) {
 			return null;
 		}
 
@@ -60,6 +60,6 @@ export class UserRepository {
 	}
 
 	async delete(id: number): Promise<void> {
-		await this.repository.delete(id);
+		await this.repository.delete({ id });
 	}
 }

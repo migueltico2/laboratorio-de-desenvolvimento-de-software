@@ -57,7 +57,11 @@ export class UserController {
 	loginEnterprise = async (request: Request, response: Response) => {
 		try {
 			const user = await this.userService.loginEnterprise(request.body);
-			return response.json(user);
+			return response.json({
+				...user.enterprises,
+				...user,
+				type: 'enterprise',
+			});
 		} catch (error) {
 			return this.handleError(error, response);
 		}
@@ -66,7 +70,11 @@ export class UserController {
 	loginStudent = async (request: Request, response: Response) => {
 		try {
 			const user = await this.userService.loginStudent(request.body);
-			return response.json(user);
+			return response.json({
+				...user.students,
+				...user,
+				type: 'student',
+			});
 		} catch (error) {
 			return this.handleError(error, response);
 		}

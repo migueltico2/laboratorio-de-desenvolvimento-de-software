@@ -1,38 +1,42 @@
 <template>
-	<div style="width: 100%;">
-		<Registration v-if="!isLoggedIn" @user-registered="handleUserRegistered" />
-		<UserDashboard v-else :userData="currentUser" @logout="handleLogout" />
-	</div>
+	<v-app class="app" theme="dark">
+		<v-app-bar app v-if="isLoggedIn">
+			<v-app-bar-title>Student Rewards</v-app-bar-title>
+			<v-spacer></v-spacer>
+			<v-btn to="/profile">Perfil</v-btn>
+			<v-btn to="/advantages">Vantagens</v-btn>
+			<v-btn @click="logout">Sair</v-btn>
+		</v-app-bar>
+
+		<v-main class="main">
+			<router-view />
+		</v-main>
+	</v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import Registration from './components/Registration.vue';
-import UserDashboard from './components/UserDashboard.vue';
+import { useAuth } from './composables/useAuth';
 
-const isLoggedIn = ref(false);
-const currentUser = ref(null);
+const { logout, isLoggedIn, savedLocalStorage } = useAuth();
 
-const handleUserRegistered = (userData) => {
-	currentUser.value = userData;
-	isLoggedIn.value = true;
-	localStorage.setItem('userData', JSON.stringify(userData));
-};
-
-const handleLogout = () => {
-	isLoggedIn.value = false;
-	currentUser.value = null;
-	localStorage.removeItem('userData');
-};
-
-const savedLocalStorage = () => {
-	const userData = localStorage.getItem('userData');
-	if (userData) {
-		currentUser.value = JSON.parse(userData);
-		isLoggedIn.value = true;
-	}
-};
 savedLocalStorage();
 </script>
 
-<style scoped></style>
+<style scoped>
+.app {
+	width: 100vw;
+	height: 100vh;
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	padding: 4rem 2rem 2rem;
+	text-align: center;
+	overflow-y: auto;
+}
+</style>

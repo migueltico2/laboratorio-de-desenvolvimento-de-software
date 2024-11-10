@@ -8,9 +8,20 @@ participant ":AdvantageRepository" as adRepository
 
 ref over cliente, ad: login successful
 
-cliente -> ad : registerAdvantage(Advantage advantage)
-ad -> adRouter : POST: /
-adRouter -> adController : registerAdvantage(Advantage advantage)
-adController -> adRepository : registerAdvantage(Advantage advantage)
+opt user is enterprise or institution
+    cliente -> ad : registerAdvantage(Advantage advantage)
+    alt image is not null && name is not null && description is not null && price is not null
+        ad -> adRouter : POST: /
+        adRouter -> adController : registerAdvantage(Advantage advantage)
+        adController -> adRepository : registerAdvantage(Advantage advantage)
+        alt advantage is registered
+            ad -> cliente : Advantage registered successfully
+        else
+            ad -> cliente : Error registering advantage
+        end
+    else
+        ad -> cliente : Fill all fields
+    end
+end
 
 @enduml

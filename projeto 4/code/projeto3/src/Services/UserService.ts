@@ -64,7 +64,6 @@ export class UserService implements IUserInterface {
 			if (!user) {
 				throw new Error('Invalid credentials for user');
 			}
-			console.log('user', user);
 			if (credentials.password !== user.password) {
 				throw new Error('Invalid credentials password');
 			}
