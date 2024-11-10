@@ -199,12 +199,10 @@ const save = async () => {
     toast.success("Vantagem criada com sucesso!");
   }
   closeDialog();
-  await fetchAdvantages();
 };
 
 const deleteItemConfirm = async () => {
   advantages.value.splice(editedIndex.value, 1);
-  await fetchAdvantages();
   closeDeleteDialog();
   toast.success("Vantagem deletada com sucesso!");
 };
