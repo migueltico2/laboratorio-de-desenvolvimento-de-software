@@ -54,8 +54,13 @@ export const useFetchs = () => {
         return response2.data;
     };
 
-    const listAdvantages = async () => {
-        const response = await axios.get('http://localhost:3000/advantage');
+    const listAdvantages = async (enterprise_id) => {
+        let response;
+        if (enterprise_id) {
+            response = await axios.get(`http://localhost:3000/advantage/list/${enterprise_id}`);
+        } else {
+            response = await axios.get('http://localhost:3000/advantage');
+        }
         return response.data;
     };
 

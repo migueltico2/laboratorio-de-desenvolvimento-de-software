@@ -31,6 +31,14 @@
             </td>
           </tr>
         </template>
+        <template v-else-if="advantages.length === 0">
+          <tr>
+            <td colspan="4" class="text-center pa-5">
+              <v-icon icon="mdi-alert" size="large" color="warning" class="mb-2"/>
+              <div>Nenhuma vantagem encontrada</div>
+            </td>
+          </tr>
+        </template>
         <template v-else>
           <tr v-for="advantage in paginatedAdvantages" :key="advantage.id">
             <td>{{ advantage.name }}</td>
@@ -229,7 +237,7 @@ const deleteItemConfirm = async () => {
 
 const fetchAdvantages = async () => {
   try {
-    const advantagesData = await listAdvantages();
+    const advantagesData = await listAdvantages(permissions.value === 'enterprise' ? user.id : null);
     advantages.value = advantagesData;
   } catch (error) {
     toast.error("Erro ao carregar vantagens");
