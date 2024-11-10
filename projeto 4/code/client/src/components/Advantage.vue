@@ -95,7 +95,8 @@
           <v-btn color="error" variant="text" @click="closeDialog"
             >Cancelar</v-btn
           >
-          <v-btn color="primary" variant="text" @click="save">Salvar</v-btn>
+          <v-btn color="primary" variant="text" @click="save" :loading="formLoading"
+            >Salvar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -136,6 +137,7 @@ const itemsPerPage = 10;
 const dialog = ref(false);
 const deleteDialog = ref(false);
 const loading = ref(true);
+const formLoading = ref(false);
 
 const defaultItem = {
   name: "",
@@ -200,6 +202,7 @@ const save = async () => {
     return;
   }
   try {
+	formLoading.value = true;
 	  if (editedIndex.value > -1) {
 		Object.assign(advantages.value[editedIndex.value], editedItem.value);
 		toast.success("Vantagem atualizada com sucesso!");
@@ -212,6 +215,8 @@ const save = async () => {
   } catch (error) {
 	console.log(error)
     toast.error("Erro ao salvar vantagem!");
+  } finally {
+	formLoading.value = false;
   }
   closeDialog();
 };
