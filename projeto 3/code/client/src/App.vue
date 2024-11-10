@@ -1,16 +1,13 @@
 <template>
-	<div style="width: 100%">
-		<Registration
-			v-if="!isLoggedIn"
-			@user-registered="handleUserRegistered"
-		/>
-		<UserDashboard
-			v-else
-			:userData="currentUser"
-			@logout="handleLogout"
-			@update-user="handleUpdateUser"
-		/>
-	</div>
+	<template>
+		<v-app>
+			<router-view></router-view>
+		</v-app>
+	</template>
+	<!-- <div style="width: 100%">
+		<Registration v-if="!isLoggedIn" @user-registered="handleUserRegistered" />
+		<UserDashboard v-else :userData="currentUser" @logout="handleLogout" @update-user="handleUpdateUser" />
+	</div> -->
 </template>
 
 <script setup>

@@ -1,0 +1,20 @@
+@startuml
+
+actor "Cliente" as cliente
+participant ":Advantage" as ad
+participant ":AdvantageRouter" as adRouter
+participant ":AdvantageController" as adController
+participant ":AdvantageRepository" as adRepository
+
+ref over cliente, ad: login successful
+
+cliente -> ad : listAdvantages()
+ad -> adRouter : GET: /list
+adRouter -> adController : listAdvantages()
+adController -> adRepository : listAdvantages()
+alt advantages getted successfully
+    ad -> cliente : advantages: Advantages[]
+else
+    ad -> cliente : Error getting advantages
+end
+@enduml

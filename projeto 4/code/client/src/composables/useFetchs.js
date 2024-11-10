@@ -54,9 +54,31 @@ export const useFetchs = () => {
         return response2.data;
     };
 
-    const listAdvantages = async () => {
-        const response = await axios.get('http://localhost:3000/advantage');
+    const listAdvantages = async (enterprise_id) => {
+        let response;
+        if (enterprise_id) {
+            response = await axios.get(`http://localhost:3000/advantage/list/${enterprise_id}`);
+        } else {
+            response = await axios.get('http://localhost:3000/advantage');
+        }
         return response.data;
+    };
+
+    const createAdvantage = async (formData) => {
+        try {
+            const response = await axios.post('http://localhost:3000/advantage', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                transformRequest: [function (data) {
+                    return data;
+                }],
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            throw error;
+        }
     };
 
     return {
@@ -68,5 +90,6 @@ export const useFetchs = () => {
         deleteUser,
         updateUser,
         listAdvantages,
+        createAdvantage,
     };
 };
