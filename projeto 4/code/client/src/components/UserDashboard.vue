@@ -146,8 +146,6 @@
 			</v-card-actions>
 		</v-form>
 	</v-card>
-	{{ userData }}
-	{{ user }}
 </template>
 
 <script setup>
