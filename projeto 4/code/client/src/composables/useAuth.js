@@ -1,34 +1,34 @@
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
 export const useAuth = () => {
-	const router = useRouter();
-	const user = ref(JSON.parse(localStorage.getItem('userData')));
-    const isLoggedIn = ref(false);
+    const router = useRouter();
+    const authStore = useAuthStore();
 
     const updateUser = (userData) => {
-        user.value = userData;
-        localStorage.setItem('userData', JSON.stringify(userData));
+        authStore.updateUser(userData);
     };
 
     const login = (userData) => {
-        isLoggedIn.value = true;
-        localStorage.setItem('userData', JSON.stringify(userData));
+        authStore.login(userData);
         router.push('/profile');
     };
 
     const logout = () => {
-        localStorage.removeItem('userData');
-        isLoggedIn.value = false;
+        authStore.logout();
         router.push('/');
     };
 
     const savedLocalStorage = () => {
-        const userData = localStorage.getItem('userData');
-        if (userData) {
-            isLoggedIn.value = true;
-        }
+        authStore.checkAuth();
     };
 
-	return { user, logout, isLoggedIn, savedLocalStorage, login, updateUser };
+    return {
+        user: authStore.user,
+        isLoggedIn: authStore.isLoggedIn,
+        logout,
+        savedLocalStorage,
+        login,
+        updateUser
+    };
 };
