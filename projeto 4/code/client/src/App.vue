@@ -35,7 +35,7 @@ savedLocalStorage();
 	justify-content: center;
 	width: 100%;
 	height: 100%;
-	padding: 2rem;
+	padding: 4rem 2rem 2rem;
 	text-align: center;
 	overflow-y: auto;
 }
