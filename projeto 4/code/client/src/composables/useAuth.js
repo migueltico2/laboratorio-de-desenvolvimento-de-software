@@ -26,7 +26,6 @@ export const useAuth = () => {
 
     const login = (userData) => {
         authStore.login(userData);
-        console.log(authStore.isLoggedIn);
         router.push({ name: 'Profile' });
     };
 
