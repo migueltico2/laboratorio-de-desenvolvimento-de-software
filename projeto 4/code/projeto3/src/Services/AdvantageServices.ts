@@ -16,12 +16,16 @@ export class AdvantageService {
 				throw new Error('Enterprise not found');
 			}
 
+			if (!advantageData.image) {
+				throw new Error('Image is required');
+			}
+
 			const advantage = this.advantageRepository.create({
 				name: advantageData.name,
 				description: advantageData.description,
 				coins: advantageData.coins,
 				image: advantageData.image,
-				enterprise: enterprise, // Associa a empresa à vantagem
+				enterprise: enterprise,
 			});
 
 			return await this.advantageRepository.save(advantage);

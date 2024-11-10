@@ -225,12 +225,12 @@ const save = async () => {
 	if (!editedItem.value.name || !editedItem.value.description || !editedItem.value.coins || !editedItem.value.image) {
 		toast.error('Preencha todos os campos!');
 		return;
-	} else {
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-		if (!allowedTypes.includes(editedItem.value.image.type)) {
-			toast.error('Por favor, selecione apenas arquivos de imagem (JPG, PNG, GIF, WEBP)');
-			return;
-		}
+	}
+
+	const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+	if (!allowedTypes.includes(editedItem.value.image.type)) {
+		toast.error('Por favor, selecione apenas arquivos de imagem (JPG, PNG, GIF, WEBP)');
+		return;
 	}
 
 	try {
@@ -239,34 +239,24 @@ const save = async () => {
 			Object.assign(advantages.value[editedIndex.value], editedItem.value);
 			toast.success('Vantagem atualizada com sucesso!');
 		} else {
-			const formData = ref({});
-			formData.value.name = editedItem.value.name;
-			formData.value.description = editedItem.value.description;
-			formData.value.coins = editedItem.value.coins;
-			// TODO: Remove hardcoded enterprise_id
-			formData.value.enterprise_id = 8;
+			const formData = new FormData();
+			formData.append('name', editedItem.value.name);
+			formData.append('description', editedItem.value.description);
+			formData.append('coins', editedItem.value.coins.toString());
+			formData.append('enterprise_id', 8);
+			formData.append('image', editedItem.value.image);
 
-			// Convert image to binary data
-			const reader = new FileReader();
-			const imageFile = editedItem.value.image;
-			reader.readAsArrayBuffer(imageFile);
-
-			reader.onload = () => {
-				const binary = new Uint8Array(reader.result);
-				formData.value.image = new Blob([binary], { type: imageFile.type });
-			};
-
-			const newAdvantage = await createAdvantage(formData.value);
+			const newAdvantage = await createAdvantage(formData);
 			advantages.value.push(newAdvantage);
 			toast.success('Vantagem criada com sucesso!');
 		}
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		toast.error('Erro ao salvar vantagem!');
 	} finally {
 		formLoading.value = false;
+		closeDialog();
 	}
-	closeDialog();
 };
 
 const deleteItemConfirm = async () => {

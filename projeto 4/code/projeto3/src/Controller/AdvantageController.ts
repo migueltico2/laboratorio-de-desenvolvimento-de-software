@@ -19,12 +19,15 @@ export class AdvantageController {
 
 	async create(request: MulterRequest, response: Response) {
 		try {
-			const advantageData = request.body;
-
-			// Verifica se existe um arquivo na requisição
-			if (request.file) {
-				advantageData.image = request.file.buffer;
+			if (!request.file) {
+				return response.status(400).json({ error: 'Image is required' });
 			}
+
+			const advantageData = {
+				...request.body,
+				image: request.file.buffer,
+				coins: parseFloat(request.body.coins),
+			};
 
 			const advantage = await this.advantageService.create(advantageData);
 			return response.status(201).json(advantage);
