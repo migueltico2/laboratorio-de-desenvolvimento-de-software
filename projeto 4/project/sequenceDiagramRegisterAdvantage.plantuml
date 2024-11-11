@@ -5,6 +5,7 @@ participant ":Advantage" as ad
 participant ":AdvantageRouter" as adRouter
 participant ":AdvantageController" as adController
 participant ":AdvantageRepository" as adRepository
+participant ":AdvantageService" as adService
 
 ref over cliente, ad: login successful
 
@@ -18,6 +19,7 @@ opt user is enterprise or institution
         ad -> adRouter : POST: /
         adRouter -> adController : registerAdvantage(Advantage advantage)
         adController -> adRepository : registerAdvantage(Advantage advantage)
+        adRepository -> adService : registerAdvantage(Advantage advantage)
         alt advantage is registered
             ad --> cliente : Advantage registered successfully
         else
