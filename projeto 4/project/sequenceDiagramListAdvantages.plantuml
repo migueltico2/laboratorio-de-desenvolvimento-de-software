@@ -14,9 +14,7 @@ ad -> adRouter : GET: /list
 adRouter -> adController : listAllAdvantages()
 adController -> adRepository : listAllAdvantages()
 adRepository -> adService : listAllAdvantages()
-alt advantages getted successfully
-    ad --> cliente : advantages: Advantages[]
-else
-    ad --> cliente : Error getting advantages
-end
+adService --> cliente : advantages: Advantages[]
+adService --> cliente : [erro] Error getting advantages
+
 @enduml

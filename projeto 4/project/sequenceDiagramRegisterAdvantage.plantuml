@@ -20,11 +20,8 @@ opt user is enterprise or institution
         adRouter -> adController : create(Advantage advantage)
         adController -> adRepository : create(Advantage advantage)
         adRepository -> adService : create(Advantage advantage)
-        alt advantage is registered
-            ad --> cliente : Advantage registered successfully
-        else
-            ad --> cliente : Error registering advantage
-        end
+        adService --> cliente : Advantage registered successfully
+        adService --> cliente : [error] Error registering advantage
     end
 end
 
