@@ -17,9 +17,9 @@ opt user is enterprise or institution
         ad --> cliente : Price must be greater than 0
     else
         ad -> adRouter : POST: /
-        adRouter -> adController : registerAdvantage(Advantage advantage)
-        adController -> adRepository : registerAdvantage(Advantage advantage)
-        adRepository -> adService : registerAdvantage(Advantage advantage)
+        adRouter -> adController : create(Advantage advantage)
+        adController -> adRepository : create(Advantage advantage)
+        adRepository -> adService : create(Advantage advantage)
         alt advantage is registered
             ad --> cliente : Advantage registered successfully
         else

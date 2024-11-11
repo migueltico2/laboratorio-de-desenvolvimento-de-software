@@ -11,9 +11,9 @@ ref over cliente, ad: login successful
 
 cliente -> ad : listAdvantages()
 ad -> adRouter : GET: /list
-adRouter -> adController : listAdvantages()
-adController -> adRepository : listAdvantages()
-adRepository -> adService : listAdvantages()
+adRouter -> adController : listAllAdvantages()
+adController -> adRepository : listAllAdvantages()
+adRepository -> adService : listAllAdvantages()
 alt advantages getted successfully
     ad --> cliente : advantages: Advantages[]
 else
