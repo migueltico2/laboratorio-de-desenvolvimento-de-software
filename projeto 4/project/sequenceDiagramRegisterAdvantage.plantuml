@@ -10,17 +10,19 @@ ref over cliente, ad: login successful
 
 opt user is enterprise or institution
     cliente -> ad : registerAdvantage(Advantage advantage)
-    alt image is not null && name is not null && description is not null && price is not null
+    alt image is null || name is null || description is null || price is null
+        ad --> cliente : Fill all fields
+    else price <= 0
+        ad --> cliente : Price must be greater than 0
+    else
         ad -> adRouter : POST: /
         adRouter -> adController : registerAdvantage(Advantage advantage)
         adController -> adRepository : registerAdvantage(Advantage advantage)
         alt advantage is registered
-            ad -> cliente : Advantage registered successfully
+            ad --> cliente : Advantage registered successfully
         else
-            ad -> cliente : Error registering advantage
+            ad --> cliente : Error registering advantage
         end
-    else
-        ad -> cliente : Fill all fields
     end
 end
 

@@ -13,8 +13,8 @@ ad -> adRouter : GET: /list
 adRouter -> adController : listAdvantages()
 adController -> adRepository : listAdvantages()
 alt advantages getted successfully
-    ad -> cliente : advantages: Advantages[]
+    ad --> cliente : advantages: Advantages[]
 else
-    ad -> cliente : Error getting advantages
+    ad --> cliente : Error getting advantages
 end
 @enduml

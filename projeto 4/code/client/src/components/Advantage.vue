@@ -247,6 +247,10 @@ const save = async () => {
 		toast.error('Preencha todos os campos!');
 		return;
 	}
+	else if (editedItem.value.coins <= 0) {
+		toast.error('O preço da vantagem deve ser maior que 0!');
+		return;
+	}
 
 	const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 	if (!allowedTypes.includes(editedItem.value.image.type)) {
