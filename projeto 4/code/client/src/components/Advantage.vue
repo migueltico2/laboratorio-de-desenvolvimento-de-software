@@ -1,5 +1,5 @@
 <template>
-	<v-card class="mx-auto" min-width="80%" max-width="800" style="overflow: auto !important">
+	<v-card class="mx-auto" max-height="90%" min-width="80%" max-width="800" style="overflow: auto !important">
 		<v-btn v-if="permissions === 'enterprise'" color="primary" class="ma-4" @click="openDialog">
 			Criar Vantagem
 		</v-btn>

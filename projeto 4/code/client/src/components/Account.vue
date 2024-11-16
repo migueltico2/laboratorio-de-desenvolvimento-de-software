@@ -5,7 +5,7 @@
       <p class="text-h4 font-weight-bold">R$ {{ accountBalance }}</p>
     </v-card-text>
   </v-card>
-  <v-card class="mx-auto text-start overflow-y-auto" min-width="80%" max-width="800">
+  <v-card class="mx-auto text-start overflow-y-auto" max-height="calc(90% - 104px)" min-width="80%" max-width="800">
     <v-card-title> Extrato </v-card-title>
     <v-card-text>
       <v-table>
