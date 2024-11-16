@@ -1,13 +1,23 @@
 import { Request, Response } from 'express';
 import { StudentService } from '../Services/StudentService';
 import { StudentRepository } from '../repositories/StudentRepository';
-
+import { AdvantageRepository } from '../repositories/AdvantageRepository';
+import { HistoryRepository } from '../repositories/HistoryRepository';
+import { AccountRepository } from '../repositories/AccountRepository';
 export class StudentController {
 	private studentService: StudentService;
 
 	constructor() {
 		const studentRepository = new StudentRepository();
-		this.studentService = new StudentService(studentRepository);
+		const advantageRepository = new AdvantageRepository();
+		const historyRepository = new HistoryRepository();
+		const accountRepository = new AccountRepository();
+		this.studentService = new StudentService(
+			studentRepository,
+			advantageRepository,
+			historyRepository,
+			accountRepository
+		);
 	}
 
 	getAll = async (request: Request, response: Response) => {
@@ -23,6 +33,38 @@ export class StudentController {
 		try {
 			const id = parseInt(request.params.id);
 			const student = await this.studentService.findById(id);
+			return response.json(student);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	buyAdvantage = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			const { coins, advantageId } = request.body;
+			const student = await this.studentService.buyAdvantage(advantageId, coins, id);
+			return response.json(student);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	verifyHistory = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			const history = await this.studentService.verifyHistory(id);
+			return response.json(history);
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
+	addCoins = async (request: Request, response: Response) => {
+		try {
+			const id = parseInt(request.params.id);
+			const { coins } = request.body;
+			const student = await this.studentService.addCoins(id, coins);
 			return response.json(student);
 		} catch (error) {
 			return this.handleError(error, response);
