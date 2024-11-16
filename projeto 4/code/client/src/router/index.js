@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Registration from '../components/Registration.vue'
 import Advantage from '../components/Advantage.vue'
 import UserDashboard from '../components/UserDashboard.vue'
+import Account from '../components/Account.vue'
 import { useAuth } from '../composables/useAuth';
 
 const routes = [
@@ -19,6 +20,11 @@ const routes = [
         path: '/advantages',
         name: 'Advantage',
         component: Advantage
+    },
+    {
+        path: '/account',
+        name: 'Account',
+        component: Account
     }
 ]
 

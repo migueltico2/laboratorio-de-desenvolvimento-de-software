@@ -4,7 +4,8 @@
 			<v-app-bar-title>Student Rewards</v-app-bar-title>
 			<v-spacer></v-spacer>
 			<v-btn to="/profile">Perfil</v-btn>
-			<v-btn to="/advantages">Vantagens</v-btn>
+			<v-btn to="/advantages" v-if="userType != 'professor'">Vantagens</v-btn>
+			<v-btn to="/account" v-if="userType != 'enterprise'">Conta</v-btn>
 			<v-btn @click="logout">Sair</v-btn>
 		</v-app-bar>
 
@@ -15,11 +16,15 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useAuth } from './composables/useAuth';
 
-const { logout, isLoggedIn, savedLocalStorage } = useAuth();
+const { logout, isLoggedIn, savedLocalStorage, user } = useAuth();
 
 savedLocalStorage();
+const userType = computed(() => {
+	return user.type === 'institution' ? 'enterprise' : user.type;
+});
 </script>
 
 <style scoped>
