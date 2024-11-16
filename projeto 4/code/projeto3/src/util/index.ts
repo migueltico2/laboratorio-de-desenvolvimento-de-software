@@ -2,8 +2,8 @@ export function createHistoryPayloadForStudent(studentId: number, advantageId: n
 	return {
 		coins,
 		type,
-		studentId,
-		advantageId,
+		student: { id: studentId },
+		advantage: { id: advantageId },
 		date: new Date(),
 	};
 }
@@ -12,7 +12,7 @@ export function createGenericHistoryPayloadForStudent(studentId: number, coins: 
 	return {
 		coins,
 		type,
-		studentId,
+		student: { id: studentId },
 		date: new Date(),
 	};
 }

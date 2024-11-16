@@ -28,17 +28,24 @@ export class StudentService implements IStudentInterface {
 	}
 
 	async buyAdvantage(advantageId: number, coins: number, studentId: number) {
-		console.log(advantageId, coins, studentId);
+		const student = await this.studentRepository.findById(studentId);
+		if (!student) {
+			throw new Error('Student not found');
+		}
+
 		const advantage = await this.advantageRepository.findById(advantageId);
 		if (!advantage) {
 			throw new Error('Advantage not found');
 		}
-		if (coins < advantage.coins) {
+
+		if (student.account.coins < advantage.coins) {
 			throw new Error('Not enough coins');
 		}
 		await this.studentRepository.removeCoins(studentId, coins);
 		const historyEntry = createHistoryPayloadForStudent(studentId, advantageId, coins, 'compra');
 		await this.historyRepository.create(historyEntry);
+
+		return student;
 	}
 
 	async addCoins(id: number, coins: number) {

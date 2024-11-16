@@ -42,9 +42,9 @@ export class StudentController {
 	buyAdvantage = async (request: Request, response: Response) => {
 		try {
 			const id = parseInt(request.params.id);
-			const { coins, advantageId } = request.body;
-			const student = await this.studentService.buyAdvantage(advantageId, coins, id);
-			return response.json(student);
+			const { advantageId, coins } = request.body;
+			const result = await this.studentService.buyAdvantage(advantageId, coins, id);
+			return response.json(result);
 		} catch (error) {
 			return this.handleError(error, response);
 		}
