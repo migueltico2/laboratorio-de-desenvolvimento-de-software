@@ -11,7 +11,7 @@ export class History {
 	@Column('decimal', { precision: 10, scale: 2 })
 	coins: number;
 
-	@Column({ length: 8 })
+	@Column({ length: 250 })
 	type: string;
 
 	@Column('timestamp')

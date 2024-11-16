@@ -5,6 +5,7 @@ import accountRoutes from './Router/AccountRouter';
 import enterpriseRoutes from './Router/EnterpriseRouter';
 import studentRoutes from './Router/StudentRouter';
 import advantageRoutes from './Router/AdvantageRouter';
+import professorRoutes from './Router/ProfessorRouter';
 import cors from 'cors';
 const app = express();
 
@@ -17,6 +18,7 @@ AppDataSource.initialize()
 		app.use('/enterprise', enterpriseRoutes);
 		app.use('/student', studentRoutes);
 		app.use('/advantage', advantageRoutes);
+		app.use('/professor', professorRoutes);
 		app.listen(3000, () => {
 			console.log('Server is running on port 3000');
 		});

@@ -16,3 +16,17 @@ export function createGenericHistoryPayloadForStudent(studentId: number, coins: 
 		date: new Date(),
 	};
 }
+export function createGenericHistoryPayloadForTeacher(
+	professorId: number,
+	studentId: number,
+	coins: number,
+	type: string
+) {
+	return {
+		coins,
+		type,
+		professor: { id: professorId },
+		student: { id: studentId },
+		date: new Date(),
+	};
+}
