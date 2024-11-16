@@ -2,12 +2,14 @@ import { History } from '../entity/History';
 import { AppDataSource } from '../data-source';
 import { Student } from '../entity/Student';
 import { Advantage } from '../entity/Advantage';
+import { Professor } from '../entity/Professor';
 
 interface CreateHistoryDTO {
 	coins: number;
 	type: string;
 	date: Date;
-	student: { id: number };
+	student?: { id: number };
+	professor?: { id: number };
 	advantage?: { id: number };
 }
 
@@ -27,30 +29,45 @@ export class HistoryRepository {
 	}
 
 	async create(historyData: CreateHistoryDTO) {
-		const student = await AppDataSource.getRepository(Student).findOneBy({
-			id: historyData.student.id,
-		});
-
-		let advantage = null;
-		if (historyData.advantage) {
-			advantage = await AppDataSource.getRepository(Advantage).findOneBy({
-				id: historyData.advantage.id,
-			});
-		}
-
-		const history = this.repository.create({
+		const historyBase = {
 			coins: historyData.coins,
 			type: historyData.type,
 			date: historyData.date,
-			student: student,
-			advantage: advantage,
-		});
+		};
 
+		if (historyData.student) {
+			const student = await AppDataSource.getRepository(Student).findOneBy({
+				id: historyData.student.id,
+			});
+			if (student) {
+				Object.assign(historyBase, { student });
+			}
+		}
+
+		if (historyData.professor) {
+			const professor = await AppDataSource.getRepository(Professor).findOneBy({
+				id: historyData.professor.id,
+			});
+			if (professor) {
+				Object.assign(historyBase, { professor });
+			}
+		}
+
+		if (historyData.advantage) {
+			const advantage = await AppDataSource.getRepository(Advantage).findOneBy({
+				id: historyData.advantage.id,
+			});
+			if (advantage) {
+				Object.assign(historyBase, { advantage });
+			}
+		}
+
+		const history = this.repository.create(historyBase);
 		const savedHistory = await this.repository.save(history);
 
 		return await this.repository.findOne({
 			where: { id: savedHistory.id },
-			relations: ['student', 'advantage'],
+			relations: ['student', 'professor', 'advantage'],
 		});
 	}
 }

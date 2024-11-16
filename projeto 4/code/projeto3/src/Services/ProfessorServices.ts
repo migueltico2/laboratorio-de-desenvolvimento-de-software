@@ -29,64 +29,62 @@ export class ProfessorService {
 	private enterpriseRepository = AppDataSource.getRepository(Enterprise);
 
 	async sendCoinsToStudent(studentId: number, coins: number, professorId: number) {
-		// Buscar professor com todas as relações necessárias
-		const professor = await this.professorRepository.findOne({
-			where: { id: professorId },
-			relations: ['account', 'user'], // Incluir a relação com a conta
-		});
+		try {
+			const professor = await this.professorRepository.findOne({
+				where: { id: professorId },
+				relations: ['account', 'user'],
+			});
 
-		if (!professor) {
-			throw new Error('Professor not found');
+			if (!professor) {
+				throw new Error('Professor not found');
+			}
+
+			const student = await this.studentRepository.findOne({
+				where: { id: studentId },
+				relations: ['account', 'user'],
+			});
+
+			if (!student) {
+				throw new Error('Student not found');
+			}
+
+			if (!professor.account) {
+				throw new Error('Professor account not found');
+			}
+
+			if (!student.account) {
+				throw new Error('Student account not found');
+			}
+
+			if (professor.account.coins < coins) {
+				throw new Error('Professor does not have enough coins');
+			}
+
+			professor.account.coins -= coins;
+			await this.accountRepository.save(professor.account);
+
+			await this.studentService.addCoins(studentId, coins);
+
+			const historyEntry = createGenericHistoryPayloadForTeacher(professorId, studentId, coins, 'transferencia');
+			console.log(historyEntry);
+			await this.historyRepository.create(historyEntry);
+
+			return {
+				message: 'Coins transferred successfully',
+				professor: {
+					id: professor.id,
+					name: professor.user.name,
+					remainingCoins: professor.account.coins,
+				},
+				student: {
+					id: student.id,
+					name: student.user.name,
+					receivedCoins: coins,
+				},
+			};
+		} catch (error) {
+			console.log(error);
 		}
-
-		// Buscar estudante com suas relações
-		const student = await this.studentRepository.findOne({
-			where: { id: studentId },
-			relations: ['account', 'user'],
-		});
-
-		if (!student) {
-			throw new Error('Student not found');
-		}
-
-		// Verificar se as contas existem
-		if (!professor.account) {
-			throw new Error('Professor account not found');
-		}
-
-		if (!student.account) {
-			throw new Error('Student account not found');
-		}
-
-		// Verificar se há saldo suficiente
-		if (professor.account.coins < coins) {
-			throw new Error('Professor does not have enough coins');
-		}
-
-		// Atualizar saldo do professor
-		professor.account.coins -= coins;
-		await this.accountRepository.save(professor.account);
-
-		// Adicionar moedas ao estudante
-		await this.studentService.addCoins(studentId, coins);
-
-		// Criar histórico
-		const historyEntry = createGenericHistoryPayloadForTeacher(professorId, studentId, coins, 'transferencia');
-		await this.historyRepository.create(historyEntry);
-
-		return {
-			message: 'Coins transferred successfully',
-			professor: {
-				id: professor.id,
-				name: professor.user.name,
-				remainingCoins: professor.account.coins,
-			},
-			student: {
-				id: student.id,
-				name: student.user.name,
-				receivedCoins: coins,
-			},
-		};
 	}
 
 	async getHistory(professorId: number) {
