@@ -1,13 +1,15 @@
 import { AccountRepository } from '../repositories/AccountRepository';
 import { AdvantageRepository } from '../repositories/AdvantageRepository';
 import { HistoryRepository } from '../repositories/HistoryRepository';
-import { createHistoryPayloadForStudent } from '../util';
+import { createHistoryPayloadForStudent, createGenericHistoryPayloadForTeacher } from '../util';
+import { StudentRepository } from '../repositories/StudentRepository';
 
 export class AccountService {
 	constructor(
 		private accountRepository: AccountRepository,
 		private advantageRepository: AdvantageRepository,
-		private historyRepository: HistoryRepository
+		private historyRepository: HistoryRepository,
+		private studentRepository: StudentRepository
 	) {}
 
 	async buyAdvantage(advantageId: number, coins: number, accountId: number, studentId: number) {
@@ -35,5 +37,50 @@ export class AccountService {
 		}
 
 		return account;
+	}
+
+	async transferCoins(
+		fromAccountId: number,
+		toAccountId: number,
+		coins: number,
+		professorId: number,
+		studentId: number
+	) {
+		// Buscar contas
+		const fromAccount = await this.accountRepository.findById(fromAccountId);
+		const toAccount = await this.accountRepository.findById(toAccountId);
+
+		if (!fromAccount) {
+			throw new Error('Source account not found');
+		}
+
+		if (!toAccount) {
+			throw new Error('Destination account not found');
+		}
+
+		// Verificar saldo
+		if (fromAccount.coins < coins) {
+			throw new Error('Not enough coins');
+		}
+
+		// Realizar transferência
+		await this.accountRepository.removeCoins(fromAccountId, coins);
+		await this.accountRepository.addCoins(toAccountId, coins);
+
+		// Criar histórico
+		const historyEntry = createGenericHistoryPayloadForTeacher(professorId, studentId, coins, 'transferencia');
+		await this.historyRepository.create(historyEntry);
+
+		return {
+			message: 'Coins transferred successfully',
+			fromAccount: {
+				id: fromAccount.id,
+				remainingCoins: fromAccount.coins,
+			},
+			toAccount: {
+				id: toAccount.id,
+				receivedCoins: coins,
+			},
+		};
 	}
 }
