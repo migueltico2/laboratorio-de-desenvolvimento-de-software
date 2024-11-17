@@ -303,6 +303,7 @@ const redeemAdvantage = async () => {
     else toast.error("Erro ao resgatar vantagem!");
   }
   redeemLoading.value = false;
+  closeDetailsDialog();
 };
 
 const createImageUrl = (image) => {
