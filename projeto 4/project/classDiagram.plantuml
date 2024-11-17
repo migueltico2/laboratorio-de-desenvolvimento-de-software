@@ -96,6 +96,8 @@ Student "1" o-- "1" Account
 Enterprise "1" o-- "0..*" Advantage
 Institution "1" o-- "1..*" Professor
 Institution "1" o--  "0..n" Student
-Account "1" o--  "0..n" History
+Professor "1" --  "0..n" History
+Student "1" --  "0..n" History
+Advantage "1" --  "0..n" History
 
 @enduml
