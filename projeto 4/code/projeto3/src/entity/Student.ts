@@ -32,7 +32,4 @@ export class Student {
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.students)
 	@JoinColumn({ name: 'institution_id' })
 	institution: Enterprise;
-
-	@OneToMany(() => History, (history) => history.student)
-	histories: History[];
 }

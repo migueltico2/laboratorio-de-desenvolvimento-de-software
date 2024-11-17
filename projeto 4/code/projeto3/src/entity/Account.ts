@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { History } from './History';
 import { Student } from './Student';
 import { Professor } from './Professor';
 
@@ -15,4 +16,7 @@ export class Account {
 
 	@OneToMany(() => Professor, (professor) => professor.account)
 	professors: Professor[];
+
+	@OneToMany(() => History, (history) => history.account)
+	histories: History[];
 }
