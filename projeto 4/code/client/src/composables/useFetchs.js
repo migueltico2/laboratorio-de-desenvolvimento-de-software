@@ -16,13 +16,8 @@ export const useFetchs = () => {
         return response.data;
     };
 
-    const loginStudent = async (data) => {
-        const response = await axios.post('http://localhost:3000/users/login/student', data);
-        return response.data;
-    };
-
-    const loginEnterprise = async (data) => {
-        const response = await axios.post('http://localhost:3000/users/login/enterprise', data);
+    const login = async (type, data) => {
+        const response = await axios.post(`http://localhost:3000/users/login/${type}`, data);
         return response.data;
     };
 
@@ -86,16 +81,33 @@ export const useFetchs = () => {
         return response.data;
     };
 
+    const buyAdvantage = async (accountId, data) => {
+        const response = await axios.post(`http://localhost:3000/account/buy-advantage/${accountId}`, data);
+        return response.data;
+    };
+
+    const listStudents = async () => {
+        const response = await axios.get('http://localhost:3000/student');
+        return response.data;
+    };
+
+    const sendCoins = async (id, data) => {
+        const response = await axios.post(`http://localhost:3000/account/send-coins/${id}`, data);
+        return response.data;
+    };
+
     return {
         getInstitutions,
         createEnterprise,
         createStudent,
-        loginStudent,
-        loginEnterprise,
+        login,
         deleteUser,
         updateUser,
         listAdvantages,
         createAdvantage,
         findAccount,
+        buyAdvantage,
+        listStudents,
+        sendCoins,
     };
 };

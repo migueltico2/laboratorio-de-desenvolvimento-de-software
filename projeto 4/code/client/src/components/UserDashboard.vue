@@ -165,7 +165,7 @@ const { deleteUser, updateUser } = useFetchs();
 
 const userData = reactive({
 	user_id: user.id,
-	id: user.students?.id || user.enterprises?.id || user.id,
+	id: user.students?.id || user.professors?.id || user.enterprises?.id || user.id,
 	type: user.type,
 	name: user.name,
 	email: user.email,

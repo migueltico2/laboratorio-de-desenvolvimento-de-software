@@ -14,7 +14,6 @@
             <th>Data</th>
             <th>Descrição</th>
             <th>Valor</th>
-            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -41,22 +40,14 @@
           <template v-else>
             <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
               <td>{{ formatDate(transaction.date) }}</td>
-              <td>{{ transaction.description }}</td>
+              <td>{{ getDescription(transaction) }}</td>
               <td
                 :class="
-                  transaction.type === 'credit' ? 'text-success' : 'text-error'
+                  isNegative(transaction.type) ? 'text-error' : 'text-success'
                 "
               >
-                {{ transaction.type === "credit" ? "+" : "-" }} R$
-                {{ transaction.amount }}
-              </td>
-              <td>
-                <v-chip
-                  :color="getStatusColor(transaction.status)"
-                  size="small"
-                >
-                  {{ transaction.status }}
-                </v-chip>
+                {{ isNegative(transaction.type) ? "-" : "+" }} R$
+                {{ transaction.coins }}
               </td>
             </tr>
           </template>
@@ -101,24 +92,26 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString("pt-BR");
 };
 
-const getStatusColor = (status) => {
-  const colors = {
-    completed: "success",
-    pending: "warning",
-    failed: "error",
-  };
-  return colors[status] || "grey";
+const isNegative = (type) => {
+  if (type === 'compra') return true;
+  else if (type === 'transferencia' && user.type === 'professor') return true;
+  else return false;
+};
+
+const getDescription = (transaction) => { 
+  if (transaction.type === 'compra') return transaction.advantage?.name;
+  else if (transaction.type === 'transferencia' && user.type === 'professor') return transaction.student?.user?.name;
+  else return transaction.professor?.user?.name;
 };
 
 const fetchAccountData = async () => {
   try {
     loading.value = true;
-    // TODO: Implement API call to fetch account data
-    // Mock data for now
-    const account = await findAccount(user.value.relation, user.value.id);
-    accountBalance.value = account.balance;
-    transactions.value = account.transactions;
+    const account = await findAccount(user.type, user.students?.id || user.professors?.id);
+    accountBalance.value = account.coins;
+    transactions.value = account.transactions || [];
   } catch (error) {
+    console.log(error);
     toast.error("Erro ao carregar dados da conta");
   } finally {
     loading.value = false;

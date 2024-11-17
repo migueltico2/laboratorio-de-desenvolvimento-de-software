@@ -28,6 +28,18 @@ export class HistoryRepository {
 		});
 	}
 
+	async listAllHistories(relation: string, id: number) {
+		return await this.repository.find({
+			where: {
+				[relation]: { id },
+			},
+			relations: ['student', 'student.user', 'professor', 'professor.user', 'advantage'],
+			order: {
+				date: 'DESC',
+			},
+		});
+	}
+
 	async create(historyData: CreateHistoryDTO) {
 		const historyBase = {
 			coins: historyData.coins,

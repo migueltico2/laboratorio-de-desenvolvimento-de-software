@@ -139,6 +139,11 @@
 									class="radio"
 								></v-radio>
 								<v-radio
+									label="Professor"
+									value="professor"
+									class="radio"
+								></v-radio>
+								<v-radio
 									label="Student"
 									value="student"
 									class="radio"
@@ -186,7 +191,7 @@ const emit = defineEmits(['user-registered']);
 const activeTab = ref('register');
 const userType = ref('institution');
 const loginType = ref('enterprise');
-const { getInstitutions, createEnterprise, createStudent, loginEnterprise, loginStudent } = useFetchs();
+const { getInstitutions, createEnterprise, createStudent, login: loginUser } = useFetchs();
 
 const institutionTypes = [
 	{ title: 'Partner', value: 'partner' },
@@ -241,11 +246,7 @@ const handleSubmit = async () => {
 const handleLogin = async () => {
 	try {
 		let userData;
-		if (loginType.value === 'enterprise') {
-			userData = await loginEnterprise(loginForm);
-		} else {
-			userData = await loginStudent(loginForm);
-		}
+		userData = await loginUser(loginType.value, loginForm);
 		login(userData);
 		toast.success('Login successful');
 	} catch (error) {

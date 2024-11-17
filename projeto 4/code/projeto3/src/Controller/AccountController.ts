@@ -38,7 +38,9 @@ export class AccountController {
 	transferCoins = async (request: Request, response: Response) => {
 		try {
 			const fromAccountId = parseInt(request.params.fromId);
-			const { toAccountId, coins, professorId, studentId } = request.body;
+			const { coins, professorId, studentId } = request.body;
+			const account = await this.accountService.findByRelation('student', studentId);
+			const toAccountId = account.id;
 
 			const result = await this.accountService.transferCoins(
 				fromAccountId,
@@ -59,8 +61,8 @@ export class AccountController {
 
 	findByRelation = async (request: Request, response: Response) => {
 		const { relation, id } = request.params;
-		const result = await this.accountService.findByRelation(relation, parseInt(id));
-		// result.transactions = await this.accountService.;
+		const result = await this.accountService.findByRelation(relation, parseInt(id)) as any;
+		result.transactions = await this.accountService.listAllHistories(relation, parseInt(id));
 		return response.json(result);
 	};
 }

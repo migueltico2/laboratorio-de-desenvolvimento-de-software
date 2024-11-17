@@ -87,4 +87,8 @@ export class AccountService {
 	async findByRelation(relation: string, id: number) {
 		return await this.accountRepository.findByRelation(relation, id);
 	}
+
+	async listAllHistories(relation: string, id: number) {
+		return await this.historyRepository.listAllHistories(relation, id);
+	}
 }

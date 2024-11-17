@@ -25,7 +25,7 @@ export class AccountRepository {
 
 	async findByRelation(relation: string, id: number): Promise<Account | null> {
 		return await this.repository.findOne({
-			where: { [relation]: { id } },
+			where: { [relation + 's']: { id } },
 		});
 	}
 
