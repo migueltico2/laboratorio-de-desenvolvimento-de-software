@@ -81,6 +81,11 @@ export const useFetchs = () => {
         }
     };
 
+    const findAccount = async (relation, id) => {
+        const response = await axios.get(`http://localhost:3000/account/${relation}/${id}`);
+        return response.data;
+    };
+
     return {
         getInstitutions,
         createEnterprise,
@@ -91,5 +96,6 @@ export const useFetchs = () => {
         updateUser,
         listAdvantages,
         createAdvantage,
+        findAccount,
     };
 };

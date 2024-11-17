@@ -4,17 +4,17 @@ actor "Cliente" as cliente
 participant ":Advantage" as ad
 participant ":AdvantageRouter" as adRouter
 participant ":AdvantageController" as adController
-participant ":AdvantageRepository" as adRepository
 participant ":AdvantageService" as adService
+participant ":AdvantageRepository" as adRepository
 
 ref over cliente, ad: login successful
 
 cliente -> ad : listAdvantages()
 ad -> adRouter : GET: /list
 adRouter -> adController : listAllAdvantages()
-adController -> adRepository : listAllAdvantages()
-adRepository -> adService : listAllAdvantages()
-adService --> cliente : advantages: Advantages[]
-adService --> cliente : [erro] Error getting advantages
+adController -> adService : listAllAdvantages()
+adService -> adRepository : listAllAdvantages()
+adRepository --> cliente : advantages: Advantages[]
+adRepository --> cliente : [erro] Error getting advantages
 
 @enduml

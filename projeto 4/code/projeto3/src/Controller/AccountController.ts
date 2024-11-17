@@ -56,4 +56,11 @@ export class AccountController {
 			});
 		}
 	};
+
+	findByRelation = async (request: Request, response: Response) => {
+		const { relation, id } = request.params;
+		const result = await this.accountService.findByRelation(relation, parseInt(id));
+		// result.transactions = await this.accountService.;
+		return response.json(result);
+	};
 }

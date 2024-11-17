@@ -76,9 +76,11 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useAuth } from "../composables/useAuth";
+import { useFetchs } from "../composables/useFetchs";
 import { toast } from "vue3-toastify";
 
 const { user } = useAuth();
+const { findAccount } = useFetchs();
 const loading = ref(true);
 const accountBalance = ref(0);
 const transactions = ref([]);
@@ -113,25 +115,9 @@ const fetchAccountData = async () => {
     loading.value = true;
     // TODO: Implement API call to fetch account data
     // Mock data for now
-    accountBalance.value = 1250.5;
-    transactions.value = [
-      {
-        id: 1,
-        date: new Date(),
-        description: "Recebimento de moedas",
-        amount: 100,
-        type: "credit",
-        status: "completed",
-      },
-      {
-        id: 2,
-        date: new Date(),
-        description: "Compra de vantagem",
-        amount: 50,
-        type: "debit",
-        status: "completed",
-      },
-    ];
+    const account = await findAccount(user.value.relation, user.value.id);
+    accountBalance.value = account.balance;
+    transactions.value = account.transactions;
   } catch (error) {
     toast.error("Erro ao carregar dados da conta");
   } finally {

@@ -23,6 +23,12 @@ export class AccountRepository {
 		});
 	}
 
+	async findByRelation(relation: string, id: number): Promise<Account | null> {
+		return await this.repository.findOne({
+			where: { [relation]: { id } },
+		});
+	}
+
 	async removeCoins(id: number, coins: number) {
 		const account = await this.findById(id);
 		if (!account) {
