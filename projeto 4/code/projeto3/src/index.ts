@@ -14,7 +14,7 @@ AppDataSource.initialize()
 		app.use(cors('*'));
 		app.use(express.json());
 		app.use('/users', userRoutes);
-		app.use('/accounts', accountRoutes);
+		app.use('/account', accountRoutes);
 		app.use('/enterprise', enterpriseRoutes);
 		app.use('/student', studentRoutes);
 		app.use('/advantage', advantageRoutes);
