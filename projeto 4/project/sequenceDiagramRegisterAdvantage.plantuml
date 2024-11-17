@@ -4,8 +4,8 @@ actor "Cliente" as cliente
 participant ":Advantage" as ad
 participant ":AdvantageRouter" as adRouter
 participant ":AdvantageController" as adController
-participant ":AdvantageRepository" as adRepository
 participant ":AdvantageService" as adService
+participant ":AdvantageRepository" as adRepository
 
 ref over cliente, ad: login successful
 
@@ -18,10 +18,10 @@ opt user is enterprise or institution
     else
         ad -> adRouter : POST: /
         adRouter -> adController : create(Advantage advantage)
-        adController -> adRepository : create(Advantage advantage)
-        adRepository -> adService : create(Advantage advantage)
-        adService --> cliente : Advantage registered successfully
-        adService --> cliente : [error] Error registering advantage
+        adController -> adService : create(Advantage advantage)
+        adService -> adRepository : create(Advantage advantage)
+        adRepository --> cliente : Advantage registered successfully
+        adRepository --> cliente : [error] Error registering advantage
     end
 end
 

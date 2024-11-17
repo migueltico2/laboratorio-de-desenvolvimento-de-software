@@ -87,4 +87,17 @@ export class UserService implements IUserInterface {
 
 		return user;
 	}
+
+	async loginProfessor(credentials: LoginUserDTO): Promise<User> {
+		const user = await this.userRepository.findByEmailWithProfessor(credentials.email);
+		if (!user) {
+			throw new Error('Invalid credentials for user');
+		}
+
+		if (credentials.password !== user.password) {
+			throw new Error('Invalid credentials password');
+		}
+
+		return user;
+	}
 }

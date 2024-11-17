@@ -23,6 +23,6 @@
    "scripts": {
       "start": "ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
-      "dev": "node --loader ts-node/esm src/app.ts"
+      "dev": "ts-node src/index.ts"
    }
 }
