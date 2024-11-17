@@ -26,7 +26,4 @@ export class Professor {
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.professors)
 	@JoinColumn({ name: 'institution_id' })
 	institution: Enterprise;
-
-	@OneToMany(() => History, (history) => history.professor)
-	histories: History[];
 }
