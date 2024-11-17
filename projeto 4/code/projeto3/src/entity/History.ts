@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Advantage } from './Advantage';
 import { Account } from './Account';
+import { Student } from './Student';
+import { Professor } from './Professor';
 
 @Entity()
 export class History {
@@ -19,6 +21,14 @@ export class History {
 	@ManyToOne(() => Advantage, (advantage) => advantage.histories)
 	@JoinColumn({ name: 'advantage_id' })
 	advantage: Advantage;
+
+	@ManyToOne(() => Student, (student) => student.histories)
+	@JoinColumn({ name: 'student_id' })
+	student: Student;
+
+	@ManyToOne(() => Professor, (professor) => professor.histories)
+	@JoinColumn({ name: 'professor_id' })
+	professor: Professor;
 
 	@ManyToOne(() => Account, (account) => account.histories)
 	@JoinColumn({ name: 'account_id' })

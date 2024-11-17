@@ -39,11 +39,18 @@ export class AccountRepository {
 	}
 
 	async addCoins(id: number, coins: number) {
-		const account = await this.findById(id);
-		if (!account) {
-			throw new Error('Account not found');
+		try {
+			const account = await this.findById(id);
+			if (!account) {
+				throw new Error('Account not found');
+			}
+			coins = Number(coins);
+			const currentCoins = Number(account.coins);
+			const newCoins = currentCoins + coins;
+			account.coins = newCoins;
+			return await this.repository.save(account);
+		} catch (error) {
+			throw new Error(error.message || 'Error adding coins to account');
 		}
-		account.coins += coins;
-		return await this.repository.save(account);
 	}
 }

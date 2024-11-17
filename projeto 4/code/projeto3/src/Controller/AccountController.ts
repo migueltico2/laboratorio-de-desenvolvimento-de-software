@@ -61,7 +61,7 @@ export class AccountController {
 
 	findByRelation = async (request: Request, response: Response) => {
 		const { relation, id } = request.params;
-		const result = await this.accountService.findByRelation(relation, parseInt(id)) as any;
+		const result = (await this.accountService.findByRelation(relation, parseInt(id))) as any;
 		result.transactions = await this.accountService.listAllHistories(relation, parseInt(id));
 		return response.json(result);
 	};

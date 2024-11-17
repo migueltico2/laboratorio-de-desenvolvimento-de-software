@@ -29,6 +29,9 @@ export class Student {
 	@JoinColumn({ name: 'account_id' })
 	account: Account;
 
+	@OneToMany(() => History, (history) => history.student)
+	histories: History[];
+
 	@ManyToOne(() => Enterprise, (enterprise) => enterprise.students)
 	@JoinColumn({ name: 'institution_id' })
 	institution: Enterprise;
