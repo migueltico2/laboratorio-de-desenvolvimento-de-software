@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Advantage } from './Advantage';
+import { Account } from './Account';
 import { Student } from './Student';
 import { Professor } from './Professor';
 
@@ -11,7 +12,7 @@ export class History {
 	@Column('decimal', { precision: 10, scale: 2 })
 	coins: number;
 
-	@Column({ length: 8 })
+	@Column({ length: 250 })
 	type: string;
 
 	@Column('timestamp')
@@ -28,4 +29,8 @@ export class History {
 	@ManyToOne(() => Professor, (professor) => professor.histories)
 	@JoinColumn({ name: 'professor_id' })
 	professor: Professor;
+
+	@ManyToOne(() => Account, (account) => account.histories)
+	@JoinColumn({ name: 'account_id' })
+	account: Account;
 }

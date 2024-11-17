@@ -19,6 +19,7 @@ export interface CreateUserStudentDTO {
 	course: string;
 	user_id: number;
 	institutionId: number;
+	account_id: number;
 }
 
 export interface UpdateStudentDTO extends Partial<CreateUserStudentDTO> {}

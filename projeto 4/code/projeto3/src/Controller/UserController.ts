@@ -80,6 +80,19 @@ export class UserController {
 		}
 	};
 
+	loginProfessor = async (request: Request, response: Response) => {
+		try {
+			const user = await this.userService.loginProfessor(request.body);
+			return response.json({
+				...user.professors,
+				...user,
+				type: 'professor',
+			});
+		} catch (error) {
+			return this.handleError(error, response);
+		}
+	};
+
 	private handleError(error: any, response: Response) {
 		console.error(error);
 		return response.status(400).json({

@@ -12,6 +12,10 @@ export class AdvantageRepository {
 		return await this.repository.find();
 	}
 
+	async findById(id: number) {
+		return await this.repository.findOneBy({ id });
+	}
+
 	async create(advantageData: Partial<Advantage>) {
 		const advantage = this.repository.create(advantageData);
 		return await this.repository.save(advantage);

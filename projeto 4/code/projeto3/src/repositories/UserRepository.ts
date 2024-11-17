@@ -49,6 +49,20 @@ export class UserRepository {
 		return user;
 	}
 
+	async findByEmailWithProfessor(email: string): Promise<User | null> {
+		const user = await this.repository
+			.createQueryBuilder('user')
+			.leftJoinAndSelect('user.professors', 'professors')
+			.where('user.email = :email', { email })
+			.getOne();
+
+		if (!user?.professors) {
+			return null;
+		}
+
+		return user;
+	}
+
 	async create(data: CreateUserDTO): Promise<User> {
 		const user = this.repository.create(data);
 		return await this.repository.save(user);

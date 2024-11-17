@@ -4,23 +4,24 @@ actor "Cliente" as cliente
 participant ":Advantage" as ad
 participant ":AdvantageRouter" as adRouter
 participant ":AdvantageController" as adController
+participant ":AdvantageService" as adService
 participant ":AdvantageRepository" as adRepository
 
 ref over cliente, ad: login successful
 
 opt user is enterprise or institution
     cliente -> ad : registerAdvantage(Advantage advantage)
-    alt image is not null && name is not null && description is not null && price is not null
-        ad -> adRouter : POST: /
-        adRouter -> adController : registerAdvantage(Advantage advantage)
-        adController -> adRepository : registerAdvantage(Advantage advantage)
-        alt advantage is registered
-            ad -> cliente : Advantage registered successfully
-        else
-            ad -> cliente : Error registering advantage
-        end
+    alt image is null || name is null || description is null || price is null
+        ad --> cliente : Fill all fields
+    else price <= 0
+        ad --> cliente : Price must be greater than 0
     else
-        ad -> cliente : Fill all fields
+        ad -> adRouter : POST: /
+        adRouter -> adController : create(Advantage advantage)
+        adController -> adService : create(Advantage advantage)
+        adService -> adRepository : create(Advantage advantage)
+        adRepository --> cliente : Advantage registered successfully
+        adRepository --> cliente : [error] Error registering advantage
     end
 end
 

@@ -1,19 +1,68 @@
-import { Account } from '../entity/Account';
-import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
+import { AccountService } from '../Services/AccountService';
+import { AccountRepository } from '../repositories/AccountRepository';
+import { AdvantageRepository } from '../repositories/AdvantageRepository';
+import { HistoryRepository } from '../repositories/HistoryRepository';
+import { StudentRepository } from '../repositories/StudentRepository';
 
 export class AccountController {
-	private accountRepository = AppDataSource.getRepository(Account);
+	private accountService: AccountService;
 
-	async create(request: Request, response: Response) {
-		const newAccount = this.accountRepository.create(request.body);
-		const results = await this.accountRepository.save(newAccount);
-		return response.json(results);
+	constructor() {
+		const accountRepository = new AccountRepository();
+		const advantageRepository = new AdvantageRepository();
+		const historyRepository = new HistoryRepository();
+		const studentRepository = new StudentRepository();
+		this.accountService = new AccountService(
+			accountRepository,
+			advantageRepository,
+			historyRepository,
+			studentRepository
+		);
 	}
 
-	async checkAccount(request: Request, response: Response) {
-		const id = parseInt(request.params.id);
-		const account = await this.accountRepository.findOne({ where: { id } });
-		return response.json(account);
-	}
+	buyAdvantage = async (request: Request, response: Response) => {
+		try {
+			const accountId = parseInt(request.params.id);
+			const { advantageId, coins, studentId } = request.body;
+			const result = await this.accountService.buyAdvantage(advantageId, coins, accountId, studentId);
+			return response.json(result);
+		} catch (error) {
+			return response.status(400).json({
+				status: 'error',
+				message: error.message || 'Unexpected error occurred',
+			});
+		}
+	};
+
+	transferCoins = async (request: Request, response: Response) => {
+		try {
+			const fromAccountId = parseInt(request.params.fromId);
+			const { coins, professorId, studentId } = request.body;
+			const account = await this.accountService.findByRelation('student', studentId);
+			const toAccountId = account.id;
+
+			const result = await this.accountService.transferCoins(
+				fromAccountId,
+				toAccountId,
+				coins,
+				professorId,
+				studentId
+			);
+
+			return response.json(result);
+		} catch (error) {
+			return response.status(400).json({
+				status: 'error',
+				message: error.message || 'Unexpected error occurred',
+			});
+		}
+	};
+
+	findByRelation = async (request: Request, response: Response) => {
+		const { relation, id } = request.params;
+		const result = (await this.accountService.findByRelation(relation, parseInt(id))) as any;
+		result.transactions = await this.accountService.listAllHistories(relation, parseInt(id));
+		return response.json(result);
+	};
 }
