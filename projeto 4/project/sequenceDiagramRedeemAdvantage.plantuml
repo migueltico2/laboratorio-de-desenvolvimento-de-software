@@ -1,0 +1,39 @@
+@startuml
+
+actor "Cliente" as cliente
+participant ":Account" as ac
+participant ":AccountRouter" as acRouter
+participant ":AccountController" as acController
+participant ":AccountService" as acService
+participant ":AccountRepository" as acRepository
+participant ":HistoryRepository" as historyRepository
+participant ":AdvantageRepository" as advantageRepository
+participant ":Util" as util
+
+ref over cliente, ac: login successful
+
+cliente -> ac : buyAdvantage()
+ac -> acRouter : POST: /buy-advantage/:id
+acRouter -> acController : buyAdvantage()
+acController -> acService : buyAdvantage(advantageId: number, coins: number, accountId: number, studentId: number)
+acService -> acRepository : findAccount(id: number)
+opt no account found
+	acService --> cliente : [error] No account found
+end
+acService -> advantageRepository : findAdvantage(id: number)
+opt no advantage found
+	acService --> cliente : [error] No advantage found
+end
+opt not enough coins
+	acService --> cliente : [error] Not enough coins
+end
+acService -> acRepository : removeCoins(accountId: number, coins: number)
+opt has studentId
+	acService -> util : createHistoryPayloadForStudent(studentId: number, advantageId: number, coins: number, type: string)
+	util --> acService : historyEntry: History
+	acService -> historyRepository : create(historyEntry: History)
+end
+acRepository --> cliente : Advantage bought successfully
+acRepository --> cliente : [erro] Error buying advantage
+
+@enduml
