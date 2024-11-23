@@ -11,6 +11,7 @@ interface CreateHistoryDTO {
 	student?: { id: number };
 	professor?: { id: number };
 	advantage?: { id: number };
+	description?: string;
 }
 
 export class HistoryRepository {
@@ -45,6 +46,7 @@ export class HistoryRepository {
 			coins: historyData.coins,
 			type: historyData.type,
 			date: historyData.date,
+			description: historyData.description,
 		};
 
 		if (historyData.student) {

@@ -20,7 +20,8 @@ export function createGenericHistoryPayloadForTeacher(
 	professorId: number,
 	studentId: number,
 	coins: number,
-	type: string
+	type: string,
+	description: string
 ) {
 	return {
 		coins,
@@ -28,5 +29,6 @@ export function createGenericHistoryPayloadForTeacher(
 		professor: { id: professorId },
 		student: { id: studentId },
 		date: new Date(),
+		description,
 	};
 }
