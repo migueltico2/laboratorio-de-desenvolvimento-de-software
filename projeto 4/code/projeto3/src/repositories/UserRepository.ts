@@ -39,6 +39,7 @@ export class UserRepository {
 		const user = await this.repository
 			.createQueryBuilder('user')
 			.leftJoinAndSelect('user.students', 'student')
+			.leftJoinAndSelect('student.institution', 'institution')
 			.where('user.email = :email', { email })
 			.getOne();
 

@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/auth';
 export const useAuth = () => {
     const router = useRouter();
     let authStore = null;
-    
+
     try {
         authStore = useAuthStore();
     } catch (error) {
@@ -13,10 +13,10 @@ export const useAuth = () => {
         return {
             user: ref(null),
             isLoggedIn: ref(false),
-            logout: () => {},
-            savedLocalStorage: () => {},
-            login: () => {},
-            updateUser: () => {}
+            logout: () => { },
+            savedLocalStorage: () => { },
+            login: () => { },
+            updateUser: () => { }
         };
     }
 
@@ -25,6 +25,7 @@ export const useAuth = () => {
     };
 
     const login = (userData) => {
+        console.log(userData);
         authStore.login(userData);
         router.push({ name: 'Profile' });
     };

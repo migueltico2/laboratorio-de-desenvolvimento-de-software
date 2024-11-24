@@ -18,6 +18,7 @@ export const useFetchs = () => {
 
     const login = async (type, data) => {
         const response = await axios.post(`http://localhost:3000/users/login/${type}`, data);
+        console.log(response.data);
         return response.data;
     };
 
@@ -56,6 +57,11 @@ export const useFetchs = () => {
         } else {
             response = await axios.get('http://localhost:3000/advantage');
         }
+        return response.data;
+    };
+
+    const listAdvantagesForStudent = async (institution_id) => {
+        const response = await axios.get(`http://localhost:3000/advantage/list/student/${institution_id}`);
         return response.data;
     };
 
@@ -109,5 +115,6 @@ export const useFetchs = () => {
         buyAdvantage,
         listStudents,
         sendCoins,
+        listAdvantagesForStudent,
     };
 };
