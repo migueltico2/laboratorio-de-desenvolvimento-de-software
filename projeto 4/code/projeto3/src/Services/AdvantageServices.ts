@@ -53,4 +53,15 @@ export class AdvantageService {
 
 		return advantages;
 	}
+
+	async listAllAdvantagesForStudent(institutionId: number) {
+		return await this.advantageRepository
+			.createQueryBuilder('a')
+			.innerJoinAndSelect('a.enterprise', 'e')
+			.where('e.type = :partnerType OR e.id = :institutionId', {
+				partnerType: 'partner',
+				institutionId: institutionId,
+			})
+			.getMany();
+	}
 }
