@@ -18,7 +18,6 @@ export const useFetchs = () => {
 
     const login = async (type, data) => {
         const response = await axios.post(`http://localhost:3000/users/login/${type}`, data);
-        console.log(response.data);
         return response.data;
     };
 

@@ -64,18 +64,15 @@
 							min="0"
 							:rules="[(v) => v > 0 || 'Quantidade deve ser maior que 0']"
 						></v-text-field>
+						<v-textarea
+							v-model="description"
+							label="Descrição"
+							:rules="[
+								(v) => !!v || 'Descrição é obrigatória',
+								(v) => v.length >= 1 || 'A descrição deve ter pelo menos 1 caractere',
+							]"
+						></v-textarea>
 					</v-container>
-				</v-card-text>
-
-				<v-card-text>
-					<v-textarea
-						v-model="description"
-						label="Descrição"
-						:rules="[
-							(v) => !!v || 'Descrição é obrigatória',
-							(v) => v.length >= 1 || 'A descrição deve ter pelo menos 1 caractere',
-						]"
-					></v-textarea>
 				</v-card-text>
 
 				<v-card-actions>

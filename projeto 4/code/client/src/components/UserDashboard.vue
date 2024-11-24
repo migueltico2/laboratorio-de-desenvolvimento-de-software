@@ -1,5 +1,4 @@
 <template>
-	{{ user }}
 	<v-card class="mx-auto" min-width="80%" max-width="800">
 		<v-card-title class="d-flex justify-space-between align-center">
 			<div>

@@ -16,7 +16,6 @@ export const useAuthStore = defineStore('auth', {
         login(userData) {
             this.user = userData;
             this.isLoggedIn = true;
-            console.log(userData);
             localStorage.setItem('userData', JSON.stringify(userData));
         },
 
