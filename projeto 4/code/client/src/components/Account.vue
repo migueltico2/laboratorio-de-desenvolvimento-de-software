@@ -1,17 +1,28 @@
 <template>
-  <v-card class="mx-auto mb-4 text-start" style="overflow: unset" min-width="80%" max-width="800">
+  <v-card
+    class="mx-auto mb-4 text-start"
+    style="overflow: unset"
+    min-width="80%"
+    max-width="800"
+  >
     <v-card-title> Saldo Atual </v-card-title>
     <v-card-text>
       <p class="text-h4 font-weight-bold">R$ {{ accountBalance }}</p>
     </v-card-text>
   </v-card>
-  <v-card class="mx-auto text-start overflow-y-auto" max-height="calc(90% - 104px)" min-width="80%" max-width="800">
+  <v-card
+    class="mx-auto text-start overflow-y-auto"
+    max-height="calc(90% - 104px)"
+    min-width="80%"
+    max-width="800"
+  >
     <v-card-title> Extrato </v-card-title>
     <v-card-text>
       <v-table>
         <thead>
           <tr>
             <th>Data</th>
+            <th>Nome{{ user.type === "professor" ? "" : "/Remetente" }}</th>
             <th>Descrição</th>
             <th>Valor</th>
           </tr>
@@ -38,8 +49,12 @@
             </tr>
           </template>
           <template v-else>
-            <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
+            <tr
+              v-for="transaction in paginatedTransactions"
+              :key="transaction.id"
+            >
               <td>{{ formatDate(transaction.date) }}</td>
+              <td>{{ getName(transaction) }}</td>
               <td>{{ getDescription(transaction) }}</td>
               <td
                 :class="
@@ -79,13 +94,13 @@ const page = ref(1);
 const itemsPerPage = 10;
 
 const pageCount = computed(() => {
-	return Math.ceil(transactions.value.length / itemsPerPage);
+  return Math.ceil(transactions.value.length / itemsPerPage);
 });
 
 const paginatedTransactions = computed(() => {
-	const start = (page.value - 1) * itemsPerPage;
-	const end = start + itemsPerPage;
-	return transactions.value.slice(start, end);
+  const start = (page.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return transactions.value.slice(start, end);
 });
 
 const formatDate = (date) => {
@@ -93,21 +108,30 @@ const formatDate = (date) => {
 };
 
 const isNegative = (type) => {
-  if (type === 'compra') return true;
-  else if (type === 'transferencia' && user.type === 'professor') return true;
+  if (type === "compra") return true;
+  else if (type === "transferencia" && user.type === "professor") return true;
   else return false;
 };
 
-const getDescription = (transaction) => { 
-  if (transaction.type === 'compra') return transaction.advantage?.name;
-  else if (transaction.type === 'transferencia' && user.type === 'professor') return transaction.student?.user?.name;
+const getName = (transaction) => {
+  if (transaction.type === "compra") return transaction.advantage?.name;
+  else if (transaction.type === "transferencia" && user.type === "professor")
+    return transaction.student?.user?.name || "-";
   else return transaction.professor?.user?.name;
+};
+
+const getDescription = (transaction) => {
+  if (transaction.type === "compra") return transaction.advantage?.description;
+  else return transaction.description;
 };
 
 const fetchAccountData = async () => {
   try {
     loading.value = true;
-    const account = await findAccount(user.type, user.students?.id || user.professors?.id);
+    const account = await findAccount(
+      user.type,
+      user.students?.id || user.professors?.id
+    );
     accountBalance.value = account.coins;
     transactions.value = account.transactions || [];
   } catch (error) {

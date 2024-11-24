@@ -44,9 +44,9 @@ export class AccountService {
 		toAccountId: number,
 		coins: number,
 		professorId: number,
-		studentId: number
+		studentId: number,
+		description: string
 	) {
-		// Buscar contas
 		const fromAccount = await this.accountRepository.findById(fromAccountId);
 		const toAccount = await this.accountRepository.findById(toAccountId);
 
@@ -58,17 +58,25 @@ export class AccountService {
 			throw new Error('Destination account not found');
 		}
 
-		// Verificar saldo
 		if (fromAccount.coins < coins) {
 			throw new Error('Not enough coins');
 		}
 
-		// Realizar transferência
+		if (coins <= 0) {
+			throw new Error('Coins must be greater than 0');
+		}
+
 		await this.accountRepository.removeCoins(fromAccountId, coins);
 		await this.accountRepository.addCoins(toAccountId, coins);
 
 		// Criar histórico
-		const historyEntry = createGenericHistoryPayloadForTeacher(professorId, studentId, coins, 'transferencia');
+		const historyEntry = createGenericHistoryPayloadForTeacher(
+			professorId,
+			studentId,
+			coins,
+			'transferencia',
+			description
+		);
 		await this.historyRepository.create(historyEntry);
 
 		return {

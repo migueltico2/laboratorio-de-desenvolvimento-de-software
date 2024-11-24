@@ -15,6 +15,9 @@ export class History {
 	@Column({ length: 250 })
 	type: string;
 
+	@Column({ length: 450, nullable: true })
+	description: string;
+
 	@Column('timestamp')
 	date: Date;
 

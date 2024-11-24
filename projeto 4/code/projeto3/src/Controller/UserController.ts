@@ -72,6 +72,7 @@ export class UserController {
 			const user = await this.userService.loginStudent(request.body);
 			return response.json({
 				...user.students,
+				...user.enterprises,
 				...user,
 				type: 'student',
 			});

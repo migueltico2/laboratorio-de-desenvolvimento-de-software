@@ -16,5 +16,6 @@ const upload = multer({
 router.get('/', advantageController.listAllAdvantages.bind(advantageController));
 router.post('/', upload.single('image'), advantageController.create.bind(advantageController));
 router.get('/list/:enterpriseId', advantageController.listAdvantagesByEnterprise.bind(advantageController));
+router.get('/list/student/:institutionId', advantageController.listAllAdvantagesForStudent.bind(advantageController));
 
 export default router;

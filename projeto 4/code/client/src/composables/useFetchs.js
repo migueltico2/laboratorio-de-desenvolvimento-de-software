@@ -59,6 +59,11 @@ export const useFetchs = () => {
         return response.data;
     };
 
+    const listAdvantagesForStudent = async (institution_id) => {
+        const response = await axios.get(`http://localhost:3000/advantage/list/student/${institution_id}`);
+        return response.data;
+    };
+
     const createAdvantage = async (formData) => {
         try {
             const response = await axios.post('http://localhost:3000/advantage', formData, {
@@ -109,5 +114,6 @@ export const useFetchs = () => {
         buyAdvantage,
         listStudents,
         sendCoins,
+        listAdvantagesForStudent,
     };
 };

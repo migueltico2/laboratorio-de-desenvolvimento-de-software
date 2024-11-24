@@ -59,4 +59,14 @@ export class AdvantageController {
 			return response.status(404).json({ error: error.message });
 		}
 	}
+
+	async listAllAdvantagesForStudent(request: Request, response: Response) {
+		try {
+			const institutionId = parseInt(request.params.institutionId);
+			const advantages = await this.advantageService.listAllAdvantagesForStudent(institutionId);
+			return response.json(advantages);
+		} catch (error) {
+			return response.status(400).json({ error: error.message });
+		}
+	}
 }
