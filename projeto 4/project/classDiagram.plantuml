@@ -49,6 +49,7 @@ class History {
     -coins : int
     -type: HistoryType
     -date : Date
+    -description : String
     -student : Student
     -professor : Professor
     -advantage : Advantage
