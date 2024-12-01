@@ -6,7 +6,7 @@ agent "Account" as account
 circle "Start" as start
 
 start -up-> professor: 1: sendCoins(coins: int, studentId: String)
-professor -right-> account: 1.1: findAccount(professorId: String)
-professor -up-> account: 1.2: findAccount(advantageId: String)
-professor -left-> emailService: 1.3: sendEmail(advantage: Advantage, cupom: String)
+professor -right-> account: 2: findAccount(professorId: String)
+professor -up-> account: 3: findAccount(studentId: String)
+professor -left-> emailService: 4: sendMailOnCoinSend(to: Student, coins: int, reason: String)
 @enduml
