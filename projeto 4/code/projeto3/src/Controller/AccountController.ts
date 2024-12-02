@@ -4,6 +4,7 @@ import { AccountRepository } from '../repositories/AccountRepository';
 import { AdvantageRepository } from '../repositories/AdvantageRepository';
 import { HistoryRepository } from '../repositories/HistoryRepository';
 import { StudentRepository } from '../repositories/StudentRepository';
+import { sendMailOnCoinSend, sendMailOnAdvantageRedeem } from '../util/mailer';
 
 export class AccountController {
 	private accountService: AccountService;
@@ -26,6 +27,8 @@ export class AccountController {
 			const accountId = parseInt(request.params.id);
 			const { advantageId, coins, studentId } = request.body;
 			const result = await this.accountService.buyAdvantage(advantageId, coins, accountId, studentId);
+
+			sendMailOnAdvantageRedeem('joaopqr2004@gmail.com', advantageId);
 			return response.json(result);
 		} catch (error) {
 			return response.status(400).json({
@@ -50,6 +53,8 @@ export class AccountController {
 				studentId,
 				description
 			);
+
+			sendMailOnCoinSend('joaopqr2004@gmail.com', coins, description);
 
 			return response.json(result);
 		} catch (error) {

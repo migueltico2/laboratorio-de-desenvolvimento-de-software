@@ -7,7 +7,7 @@ agent "Account" as account
 circle "Start" as start
 
 start -up-> student: 1: buyAdvantage(advantageId: String)
-student -right-> account: 1.1: findAccount(studentId: String)
-student -up-> advantage: 1.2: findAdvantage(advantageId: String)
-student -left-> emailService: 1.3: sendEmail(advantage: Advantage, cupom: String)
+student -right-> account: 2: findAccount(studentId: String)
+student -up-> advantage: 3: findAdvantage(advantageId: String)
+student -left-> emailService: 4: sendMailOnAdvantageRedeem(to: Student, advantage: Advantage)
 @enduml
