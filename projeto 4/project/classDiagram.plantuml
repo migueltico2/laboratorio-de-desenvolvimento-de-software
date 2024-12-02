@@ -27,7 +27,7 @@ class Professor {
     -department : String
     -institutionId : int
     -account : Account
-    -sendCoins(int coins, Student student, String reason) : void
+    +sendCoins(int coins, Student student, String reason) : void
 }
 
 class Student {
@@ -37,7 +37,7 @@ class Student {
     -institutionId : int
     -course : String
     -account : Account
-    -exchangeCoins(int coins, Advantage advantage) : void
+    +exchangeCoins(int coins, Advantage advantage) : void
 }
 
 class Account {
@@ -49,6 +49,7 @@ class History {
     -coins : int
     -type: HistoryType
     -date : Date
+    -description : String
     -student : Student
     -professor : Professor
     -advantage : Advantage

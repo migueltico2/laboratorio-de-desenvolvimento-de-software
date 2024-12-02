@@ -1,0 +1,12 @@
+@startuml
+skinparam linestyle ortho
+agent "Professor" as professor
+agent "E-mail Service" as emailService
+agent "Account" as account
+circle "Start" as start
+
+start -up-> professor: 1: sendCoins(coins: int, studentId: String)
+professor -right-> account: 2: findAccount(professorId: String)
+professor -up-> account: 3: findAccount(studentId: String)
+professor -left-> emailService: 4: sendMailOnCoinSend(to: Student, coins: int, reason: String)
+@enduml

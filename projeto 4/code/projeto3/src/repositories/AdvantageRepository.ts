@@ -21,6 +21,12 @@ export class AdvantageRepository {
 		return await this.repository.save(advantage);
 	}
 
+	async findAdvantageById(id: number) {
+		return await this.repository.findOne({
+			where: { id },
+		});
+	}
+
 	async listAdvantagesByEnterprise(enterpriseId: number) {
 		return await this.repository.find({
 			where: {

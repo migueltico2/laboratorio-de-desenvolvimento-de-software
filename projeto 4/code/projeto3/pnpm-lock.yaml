@@ -23,6 +23,9 @@ importers:
       multer:
         specifier: 1.4.5-lts.1
         version: 1.4.5-lts.1
+      nodemailer:
+        specifier: ^6.9.16
+        version: 6.9.16
       pg:
         specifier: ^8.4.0
         version: 8.13.0
@@ -39,6 +42,9 @@ importers:
       '@types/node':
         specifier: ^16.18.114
         version: 16.18.114
+      '@types/nodemailer':
+        specifier: ^6.4.17
+        version: 6.4.17
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@16.18.114)(typescript@4.5.2)
@@ -112,6 +118,9 @@ packages:
 
   '@types/node@16.18.114':
     resolution: {integrity: sha512-7oAtnxrgkMNzyzT443UDWwzkmYew81F1ZSPm3/lsITJfW/WludaSOpegTvUG+UdapcbrtWOtY/E4LyTkhPGJ5Q==}
+
+  '@types/nodemailer@6.4.17':
+    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
   '@types/qs@6.9.16':
     resolution: {integrity: sha512-7i+zxXdPD0T4cKDuxCUXJ4wHcsJLwENa6Z3dCu8cfCK743OGy5Nu1RmAGqDPsoTDINVEcdXKRvR/zre+P2Ku1A==}
@@ -599,6 +608,10 @@ packages:
     peerDependenciesMeta:
       encoding:
         optional: true
+
+  nodemailer@6.9.16:
+    resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
+    engines: {node: '>=6.0.0'}
 
   nopt@5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
@@ -1111,6 +1124,10 @@ snapshots:
 
   '@types/node@16.18.114': {}
 
+  '@types/nodemailer@6.4.17':
+    dependencies:
+      '@types/node': 16.18.114
+
   '@types/qs@6.9.16': {}
 
   '@types/range-parser@1.2.7': {}
@@ -1604,6 +1621,8 @@ snapshots:
   node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
+
+  nodemailer@6.9.16: {}
 
   nopt@5.0.0:
     dependencies:

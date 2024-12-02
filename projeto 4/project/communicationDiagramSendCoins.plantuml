@@ -1,0 +1,13 @@
+@startuml
+skinparam linestyle ortho
+agent "Student" as student
+agent "E-mail Service" as emailService
+agent "Advantage" as advantage
+agent "Account" as account
+circle "Start" as start
+
+start -up-> student: 1: buyAdvantage(advantageId: String)
+student -right-> account: 2: findAccount(studentId: String)
+student -up-> advantage: 3: findAdvantage(advantageId: String)
+student -left-> emailService: 4: sendMailOnAdvantageRedeem(to: Student, advantage: Advantage)
+@enduml
